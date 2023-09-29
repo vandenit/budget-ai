@@ -1,11 +1,14 @@
 import Link from "next/link";
 import { Budget } from "../api/budget.server";
+import { SignOut } from "./login";
 
 type Props = {
   budgets: Budget[];
+  loggedIn: boolean;
 };
 
-const BudgetNavigation = ({ budgets }: Props) => {
+const BudgetNavigation = ({ budgets, loggedIn }: Props) => {
+  const signOut = loggedIn ? <SignOut /> : "";
   return (
     <div className="navbar bg-base-100">
       <div className="navbar-start">
@@ -48,9 +51,8 @@ const BudgetNavigation = ({ budgets }: Props) => {
           ))}
         </ul>
       </div>
-      <div className="navbar-end">
-        <a className="btn">Button</a>
-      </div>
+
+      <div className="navbar-end">{signOut}</div>
     </div>
   );
 };

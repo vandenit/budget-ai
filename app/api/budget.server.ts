@@ -1,6 +1,11 @@
 import { cache } from "react";
 import "server-only";
 import * as ynab from "ynab";
+import { getServerSession } from "next-auth";
+import { authOptions } from "./auth/[...nextauth]/route";
+
+// todo : doesn't seem to be taken into account
+export const revalidate = 3600; // revalidate the data at most every hour
 
 export type Budget = {
   id: string;
@@ -41,8 +46,19 @@ export type MonthSummary = {
   categoryUsage: Array<CategoryUsage>;
 };
 
+const getToken = async () => {
+  const session = await getServerSession(authOptions);
+  if (session) {
+    return (session as any).token;
+  }
+};
+
 export async function getBudgets(): Promise<Array<Budget>> {
-  const api = new ynab.api(process.env.YNAB_ACCESS_TOKEN || "");
+  const token = await getToken();
+  if (!token) {
+    return [];
+  }
+  const api = new ynab.api(token || "");
   const budgets = await api.budgets.getBudgets();
   console.log("getting budgets");
   return budgets.data.budgets.map((budget: ynab.BudgetDetail) => ({
@@ -50,6 +66,9 @@ export async function getBudgets(): Promise<Array<Budget>> {
     name: budget.name,
   }));
 }
+
+// todo : this still seems to be called everytime
+export const getCachedBudgets = cache(getBudgets);
 
 export async function getTransactions(id: string): Promise<Array<Transaction>> {
   const api = new ynab.api(process.env.YNAB_ACCESS_TOKEN || "");
