@@ -26,11 +26,7 @@ const MonthSummaryBlock = ({ month, categories, hideBalance }: Props) => {
       emptyCategory
     );
   };
-  const balanceHeader = hideBalance ? (
-    ""
-  ) : (
-    <th className="px-6 py-4">Balance</th>
-  );
+  const balanceHeader = hideBalance ? "" : <th>Balance</th>;
   const balanceColumn = (category: CategoryUsage) =>
     hideBalance ? (
       ""
@@ -38,7 +34,7 @@ const MonthSummaryBlock = ({ month, categories, hideBalance }: Props) => {
       <td>{formatYnabAmount(getCategory(category.category).balance)}</td>
     );
   return (
-    <div key={month.month} className="card w-auto bg-base-100 shadow-xl m-10">
+    <div key={month.month} className="card bg-base-100 shadow-xl m-2">
       <div className="card-body">
         <h2 className="card-title">{month.month}</h2>
 

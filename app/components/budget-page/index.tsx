@@ -12,11 +12,9 @@ import MonthSummaryBlock from "./month-summary-block";
 export default function BudgetPage({ budgetId }: { budgetId: string }) {
   return (
     <>
-      <div className="relative p-10">
-        <Suspense fallback={<Loading />}>
-          <BudgetInfo budgetId={budgetId} />
-        </Suspense>
-      </div>
+      <Suspense fallback={<Loading />}>
+        <BudgetInfo budgetId={budgetId} />
+      </Suspense>
     </>
   );
 }
