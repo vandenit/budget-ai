@@ -2,10 +2,12 @@ import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { SignIn } from "../components/login";
 import { authOptions } from "../api/auth/[...nextauth]/route";
+import { getCachedBudgets } from "../api/budget.server";
 
 async function LoginPage() {
   const session = await getServerSession(authOptions);
-  if (session) {
+  const budgets = await getCachedBudgets();
+  if (session && budgets.length) {
     redirect("/");
   }
   return (

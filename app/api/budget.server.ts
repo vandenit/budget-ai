@@ -53,21 +53,24 @@ const getToken = async () => {
   }
 };
 
-export async function getBudgets(): Promise<Array<Budget>> {
+async function getBudgets(): Promise<Array<Budget>> {
   const token = await getToken();
   if (!token) {
     return [];
   }
   const api = new ynab.api(token || "");
-  const budgets = await api.budgets.getBudgets();
-  console.log("getting budgets");
-  return budgets.data.budgets.map((budget: ynab.BudgetDetail) => ({
-    id: budget.id,
-    name: budget.name,
-  }));
+  try {
+    const budgets = await api.budgets.getBudgets();
+    console.log("getting budgets");
+    return budgets.data.budgets.map((budget: ynab.BudgetDetail) => ({
+      id: budget.id,
+      name: budget.name,
+    }));
+  } catch (exception) {
+    return [];
+  }
 }
 
-// todo : this still seems to be called everytime
 export const getCachedBudgets = cache(getBudgets);
 
 export async function getTransactions(id: string): Promise<Array<Transaction>> {
