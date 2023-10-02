@@ -67,6 +67,7 @@ async function getBudgets(): Promise<Array<Budget>> {
       name: budget.name,
     }));
   } catch (exception) {
+    console.warn(exception);
     return [];
   }
 }
@@ -74,19 +75,28 @@ async function getBudgets(): Promise<Array<Budget>> {
 export const getCachedBudgets = cache(getBudgets);
 
 export async function getTransactions(id: string): Promise<Array<Transaction>> {
-  const api = new ynab.api(process.env.YNAB_ACCESS_TOKEN || "");
-  const { data } = await api.transactions.getTransactions(id);
+  const token = await getToken();
+  if (!token) {
+    return [];
+  }
+  const api = new ynab.api(token || "");
+  try {
+    const { data } = await api.transactions.getTransactions(id);
 
-  return sortMostRecentFirst(data.transactions).map(
-    (transaction: ynab.TransactionDetail) => ({
-      id: transaction.id,
-      accountName: transaction.account_name,
-      amount: transaction.amount,
-      date: transaction.date,
-      categoryId: transaction.category_id,
-      categoryName: transaction.category_name || "Uncategorized",
-    })
-  );
+    return sortMostRecentFirst(data.transactions).map(
+      (transaction: ynab.TransactionDetail) => ({
+        id: transaction.id,
+        accountName: transaction.account_name,
+        amount: transaction.amount,
+        date: transaction.date,
+        categoryId: transaction.category_id,
+        categoryName: transaction.category_name || "Uncategorized",
+      })
+    );
+  } catch (exception) {
+    console.warn(exception);
+    return [];
+  }
 }
 
 export async function getMonthSummaries(
@@ -144,8 +154,11 @@ const sortMostRecentFirst = (
   });
 
 export async function getCategories(id: string): Promise<Array<Category>> {
-  const api = new ynab.api(process.env.YNAB_ACCESS_TOKEN || "");
-
+  const token = await getToken();
+  if (!token) {
+    return [];
+  }
+  const api = new ynab.api(token || "");
   const { data } = await api.categories.getCategories(id);
   const categories = data.category_groups.reduce(
     (acc: Array<ynab.Category>, group: ynab.CategoryGroupWithCategories) => {
