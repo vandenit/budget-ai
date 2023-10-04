@@ -34,7 +34,7 @@ const MonthSummaryBlock = ({ month, categories, hideBalance }: Props) => {
       <td>{formatYnabAmount(getCategory(category.category).balance)}</td>
     );
   return (
-    <div key={month.month} className="card bg-base-100 shadow-xl m-2">
+    <div key={month.month} className="card bg-base-100 shadow-xl m-10 sm:m-2">
       <div className="card-body">
         <h2 className="card-title">{month.month}</h2>
 

@@ -159,19 +159,24 @@ export async function getCategories(id: string): Promise<Array<Category>> {
     return [];
   }
   const api = new ynab.api(token || "");
-  const { data } = await api.categories.getCategories(id);
-  const categories = data.category_groups.reduce(
-    (acc: Array<ynab.Category>, group: ynab.CategoryGroupWithCategories) => {
-      return acc.concat(group.categories);
-    },
-    []
-  );
+  try {
+    const { data } = await api.categories.getCategories(id);
+    const categories = data.category_groups.reduce(
+      (acc: Array<ynab.Category>, group: ynab.CategoryGroupWithCategories) => {
+        return acc.concat(group.categories);
+      },
+      []
+    );
 
-  return categories.map((category: ynab.Category) => ({
-    categoryName: category.name,
-    categoryId: category.id,
-    balance: category.balance,
-    budgeted: category.budgeted,
-    activity: category.activity,
-  }));
+    return categories.map((category: ynab.Category) => ({
+      categoryName: category.name,
+      categoryId: category.id,
+      balance: category.balance,
+      budgeted: category.budgeted,
+      activity: category.activity,
+    }));
+  } catch (exception) {
+    console.warn(exception);
+    return [];
+  }
 }

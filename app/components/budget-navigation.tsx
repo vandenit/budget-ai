@@ -1,6 +1,8 @@
+"use client";
 import Link from "next/link";
 import { Budget } from "../api/budget.server";
 import { SignOut } from "./login";
+import { useParams } from "next/navigation";
 
 type Props = {
   budgets: Budget[];
@@ -9,6 +11,11 @@ type Props = {
 
 const BudgetNavigation = ({ budgets, loggedIn }: Props) => {
   const signOut = loggedIn ? <SignOut /> : "";
+  const params = useParams();
+  const currentBudgetId = params.budgetId;
+
+  const getActiveClass = (budgetId: string) =>
+    `link ${currentBudgetId === budgetId ? "active" : ""}`;
   return (
     <div className="navbar bg-base-100">
       <div className="navbar-start">
@@ -35,18 +42,30 @@ const BudgetNavigation = ({ budgets, loggedIn }: Props) => {
           >
             {budgets.map((budget) => (
               <li className="mr-6" key={budget.id}>
-                <Link href={`/budgets/${budget.id}`}>{budget.name}</Link>
+                <Link
+                  className={getActiveClass(budget.id)}
+                  href={`/budgets/${budget.id}`}
+                >
+                  {budget.name}
+                </Link>
               </li>
             ))}
           </ul>
         </div>
-        <a className="btn btn-ghost normal-case text-xl">Budget AI</a>
+        <Link href="/" className="btn btn-ghost normal-case text-xl">
+          Budget AI
+        </Link>
       </div>
       <div className="navbar-center hidden lg:flex">
         <ul className="menu menu-horizontal px-1">
           {budgets.map((budget) => (
             <li className="mr-6" key={budget.id}>
-              <Link href={`/budgets/${budget.id}`}>{budget.name}</Link>
+              <Link
+                className={getActiveClass(budget.id)}
+                href={`/budgets/${budget.id}`}
+              >
+                {budget.name}
+              </Link>
             </li>
           ))}
         </ul>

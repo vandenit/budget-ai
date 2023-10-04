@@ -24,7 +24,9 @@ async function BudgetInfo({ budgetId }: { budgetId: string }) {
   //const aiResponse = await getAIAnalysis(monthSummaries);
   const aiResponse = { response: "AI response" };
   const categories = await getCategories(budgetId);
-
+  if (monthSummaries.length === 0) {
+    redirect("/login");
+  }
   return (
     <>
       <h1>Month overview</h1>
