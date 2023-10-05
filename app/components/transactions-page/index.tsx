@@ -50,7 +50,6 @@ async function TransactionsInfo({
   return (
     <>
       <h1>Transactions</h1>
-      <h2>{categoryId}</h2>
       <h2>{month}</h2>
       <>
         <table className="table">

@@ -55,6 +55,7 @@ const MonthSummaryBlock = ({
               <tr key={category.category}>
                 <td>
                   <Link
+                    className="link"
                     href={`${budgetId}/transactions?month=${month.month}&categoryId=${category.categoryId}`}
                   >
                     {category.category}
