@@ -38,6 +38,7 @@ async function BudgetInfo({ budgetId }: { budgetId: string }) {
           .filter((month) => month.isCurrentMonth)
           .map((month) => (
             <MonthSummaryBlock
+              budgetId={budgetId}
               month={month}
               categories={categories}
               key={month.month}
@@ -49,6 +50,7 @@ async function BudgetInfo({ budgetId }: { budgetId: string }) {
           .filter((month) => !month.isCurrentMonth)
           .map((month) => (
             <MonthSummaryBlock
+              budgetId={budgetId}
               month={month}
               categories={categories}
               key={month.month}

@@ -33,10 +33,13 @@ export type Transaction = {
   amount: number;
   date: string;
   categoryName: string;
+  categoryId: string | undefined | null;
+  payeeName: string;
 };
 
 export type CategoryUsage = {
   category: string;
+  categoryId: string | undefined | null;
   amount: number;
 };
 
@@ -74,6 +77,29 @@ async function getBudgets(): Promise<Array<Budget>> {
 
 export const getCachedBudgets = cache(getBudgets);
 
+export async function getFilteredTransactions(
+  budgetId: string,
+  categoryId: string | null | undefined,
+  month: string | null | undefined
+): Promise<Array<Transaction>> {
+  const transactions = await getTransactions(budgetId);
+  return transactions.filter((transaction) => {
+    const transactionMonth = transaction.date.substring(0, 7);
+
+    if (month && categoryId) {
+      return (
+        transactionMonth === month && transaction.categoryId === categoryId
+      );
+    }
+    if (month) {
+      return transactionMonth === month;
+    }
+    if (categoryId) {
+      return transaction.categoryId === categoryId;
+    }
+    return true;
+  });
+}
 export async function getTransactions(id: string): Promise<Array<Transaction>> {
   const token = await getToken();
   if (!token) {
@@ -87,6 +113,7 @@ export async function getTransactions(id: string): Promise<Array<Transaction>> {
       (transaction: ynab.TransactionDetail) => ({
         id: transaction.id,
         accountName: transaction.account_name,
+        payeeName: transaction.payee_name || '',
         amount: transaction.amount,
         date: transaction.date,
         categoryId: transaction.category_id,
@@ -128,6 +155,7 @@ export const monthSummaryReducer = (
       monthSummary.categoryUsage.push({
         category: transaction.categoryName,
         amount: transaction.amount,
+        categoryId: transaction.categoryId,
       });
     }
   } else {
@@ -138,6 +166,7 @@ export const monthSummaryReducer = (
         {
           category: transaction.categoryName,
           amount: transaction.amount,
+          categoryId: transaction.categoryId,
         },
       ],
     });

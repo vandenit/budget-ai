@@ -4,22 +4,26 @@ import {
   MonthSummary,
   emptyCategory,
 } from "@/app/api/budget.server";
+import { formatYnabAmount } from "@/app/utils/ynab";
+import Link from "next/link";
 
 type Props = {
+  budgetId: string;
   month: MonthSummary;
   categories: Category[];
   hideBalance?: boolean;
-};
-
-const formatYnabAmount = (amount: number) => {
-  return (amount / 1000).toFixed(2) + "€";
 };
 
 const sortByCategoryAmount = (a: CategoryUsage, b: CategoryUsage) => {
   return a.amount - b.amount;
 };
 
-const MonthSummaryBlock = ({ month, categories, hideBalance }: Props) => {
+const MonthSummaryBlock = ({
+  month,
+  categories,
+  hideBalance,
+  budgetId,
+}: Props) => {
   const getCategory = (categoryName: string): Category => {
     return (
       categories.find((category) => category.categoryName === categoryName) ||
@@ -49,7 +53,13 @@ const MonthSummaryBlock = ({ month, categories, hideBalance }: Props) => {
           <tbody>
             {month.categoryUsage.sort(sortByCategoryAmount).map((category) => (
               <tr key={category.category}>
-                <td>{category.category}</td>
+                <td>
+                  <Link
+                    href={`${budgetId}/transactions?month=${month.month}&categoryId=${category.categoryId}`}
+                  >
+                    {category.category}
+                  </Link>
+                </td>
                 <td>{formatYnabAmount(category.amount)}</td>
                 {balanceColumn(category)}
               </tr>
