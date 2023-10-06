@@ -1,14 +1,9 @@
 import Link from "next/link";
-import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import Loading from "../Loading";
-import {
-  getCategories,
-  getFilteredTransactions,
-  getMonthSummaries,
-  getTransactions,
-} from "@/app/api/budget.server";
+import { getFilteredTransactions } from "@/app/api/budget.server";
 import { formatYnabAmount } from "@/app/utils/ynab";
+import CategorySelect from "./category-select";
 
 export default function TransactionsPage({
   budgetId,
@@ -46,11 +41,15 @@ async function TransactionsInfo({
     categoryId,
     month
   );
-
+  // explain
   return (
     <>
       <h1>Transactions</h1>
-      <h2>{month}</h2>
+      <CategorySelect
+        budgetId={budgetId}
+        categoryId={categoryId}
+        month={month}
+      />
       <>
         <table className="table">
           <thead>
