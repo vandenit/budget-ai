@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test": "vitest"
   },
   "dependencies": {
     "next": "latest",
@@ -16,15 +17,22 @@
     "ynab": "^2.0.0"
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "6.1.2",
+    "@testing-library/react": "14.0.0",
+    "@testing-library/user-event": "14.4.3",
     "@types/node": "latest",
     "@types/react": "latest",
     "@types/react-dom": "latest",
+    "@types/testing-library__jest-dom": "6.0.0",
+    "@vitejs/plugin-react": "4.0.4",
     "autoprefixer": "latest",
     "daisyui": "^3.8.1",
     "eslint": "latest",
     "eslint-config-next": "latest",
+    "jsdom": "^22.1.0",
     "postcss": "latest",
     "tailwindcss": "latest",
-    "typescript": "latest"
+    "typescript": "latest",
+    "vitest": "^0.34.6"
   }
 }

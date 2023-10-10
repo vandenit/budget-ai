@@ -12,7 +12,7 @@ type Props = {
 const BudgetNavigation = ({ budgets, loggedIn }: Props) => {
   const signOut = loggedIn ? <SignOut /> : "";
   const params = useParams();
-  const currentBudgetId = params.budgetId;
+  const currentBudgetId = params ? params.budgetId : "";
 
   const getActiveClass = (budgetId: string) =>
     `link ${currentBudgetId === budgetId ? "active" : ""}`;
