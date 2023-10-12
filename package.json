@@ -23,7 +23,6 @@
     "@types/node": "latest",
     "@types/react": "latest",
     "@types/react-dom": "latest",
-    "@types/testing-library__jest-dom": "6.0.0",
     "@vitejs/plugin-react": "4.0.4",
     "autoprefixer": "latest",
     "daisyui": "^3.8.1",
