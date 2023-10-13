@@ -3,11 +3,14 @@ import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import Loading from "../Loading";
 import {
+  calculateCurrentMontPercentage,
+  calculateTotals,
   getCategories,
   getMonthSummaries,
-  getTransactions,
 } from "@/app/api/budget.server";
 import MonthSummaryBlock from "./month-summary-block";
+import CurrentMonth from "./current-month";
+import { c } from "vitest/dist/reporters-5f784f42.js";
 
 export default function BudgetPage({ budgetId }: { budgetId: string }) {
   return (
@@ -20,10 +23,13 @@ export default function BudgetPage({ budgetId }: { budgetId: string }) {
 }
 
 async function BudgetInfo({ budgetId }: { budgetId: string }) {
+  const monthPercentage = calculateCurrentMontPercentage();
   const monthSummaries = await getMonthSummaries(budgetId);
   //const aiResponse = await getAIAnalysis(monthSummaries);
   const aiResponse = { response: "AI response" };
   const categories = await getCategories(budgetId);
+  const monthTotal = calculateTotals(categories);
+
   if (monthSummaries.length === 0) {
     redirect("/login");
   }
@@ -34,16 +40,13 @@ async function BudgetInfo({ budgetId }: { budgetId: string }) {
         <div className="chat-bubble">{aiResponse.response}</div>
       </div>
       <div className="mb-4 -mx-2">
-        {monthSummaries
-          .filter((month) => month.isCurrentMonth)
-          .map((month) => (
-            <MonthSummaryBlock
-              budgetId={budgetId}
-              month={month}
-              categories={categories}
-              key={month.month}
-            />
-          ))}
+        <CurrentMonth
+          budgetId={budgetId}
+          currentMonthLbl={monthSummaries[0].month}
+          categories={categories}
+          monthPercentage={monthPercentage}
+          monthTotal={monthTotal}
+        />
       </div>
       <div className="flex flex-wrap mb-4 -mx-2">
         {monthSummaries
@@ -54,7 +57,6 @@ async function BudgetInfo({ budgetId }: { budgetId: string }) {
               month={month}
               categories={categories}
               key={month.month}
-              hideBalance
             />
           ))}
       </div>

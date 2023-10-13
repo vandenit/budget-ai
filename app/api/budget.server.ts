@@ -1,6 +1,8 @@
 import { cache } from "react";
+import moment from "moment";
 import "server-only";
 import * as ynab from "ynab";
+
 import { getServerSession } from "next-auth";
 import { authOptions } from "./auth/[...nextauth]/route";
 
@@ -10,6 +12,12 @@ export const revalidate = 3600; // revalidate the data at most every hour
 export type Budget = {
   id: string;
   name: string;
+};
+
+export type MonthTotal = {
+  totalActivity: number;
+  totalBudgeted: number;
+  totalBalance: number;
 };
 
 export type Category = {
@@ -64,7 +72,6 @@ async function getBudgets(): Promise<Array<Budget>> {
   const api = new ynab.api(token || "");
   try {
     const budgets = await api.budgets.getBudgets();
-    console.log("getting budgets");
     return budgets.data.budgets.map((budget: ynab.BudgetDetail) => ({
       id: budget.id,
       name: budget.name,
@@ -74,6 +81,32 @@ async function getBudgets(): Promise<Array<Budget>> {
     return [];
   }
 }
+
+export const calculateCurrentMontPercentage = () => {
+  const now = moment();
+  const daysInMonth = now.daysInMonth();
+  const currentDay = now.date();
+  return (currentDay / daysInMonth) * 100;
+};
+
+const withoutInflowCategoryFilter = (category: Category) =>
+  !category.categoryName.startsWith("Inflow");
+
+export const calculateTotals = (categories: Array<Category>): MonthTotal => {
+  return categories.filter(withoutInflowCategoryFilter).reduce(
+    (acc: MonthTotal, category: Category) => {
+      acc.totalActivity += category.activity;
+      acc.totalBudgeted += category.budgeted;
+      acc.totalBalance += category.balance;
+      return acc;
+    },
+    {
+      totalActivity: 0,
+      totalBudgeted: 0,
+      totalBalance: 0,
+    }
+  );
+};
 
 export const getCachedBudgets = cache(getBudgets);
 
@@ -113,7 +146,7 @@ export async function getTransactions(id: string): Promise<Array<Transaction>> {
       (transaction: ynab.TransactionDetail) => ({
         id: transaction.id,
         accountName: transaction.account_name,
-        payeeName: transaction.payee_name || '',
+        payeeName: transaction.payee_name || "",
         amount: transaction.amount,
         date: transaction.date,
         categoryId: transaction.category_id,

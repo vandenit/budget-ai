@@ -1,6 +1,6 @@
 import { expect, test } from "vitest";
 import { render, screen } from "@testing-library/react";
-import BudgetNavigation from "./budget-navigation";
+import BudgetNavigation from "../../app/components/budget-navigation";
 
 const mockBudgets = [
   { id: "1", name: "Budget 1" },
@@ -13,7 +13,7 @@ test("BudgetNavigation renders correctly when logged in", () => {
     name: mockBudgets[0].name,
   });
   // every budget has a link for mobile and web
-  expect(budgetLinks).toHaveLength(3);
+  expect(budgetLinks).toHaveLength(2);
 
   // todo : always works
   expect(screen.queryByRole("button", { name: "Sign Outje?" })).toBeDefined();

@@ -6,37 +6,26 @@ import {
 } from "@/app/api/budget.server";
 import { formatYnabAmount } from "@/app/utils/ynab";
 import Link from "next/link";
+import StatusIndicator from "./status-indicator";
 
 type Props = {
   budgetId: string;
   month: MonthSummary;
   categories: Category[];
-  hideBalance?: boolean;
 };
 
 const sortByCategoryAmount = (a: CategoryUsage, b: CategoryUsage) => {
   return a.amount - b.amount;
 };
 
-const MonthSummaryBlock = ({
-  month,
-  categories,
-  hideBalance,
-  budgetId,
-}: Props) => {
+const MonthSummaryBlock = ({ month, categories, budgetId }: Props) => {
   const getCategory = (categoryName: string): Category => {
     return (
       categories.find((category) => category.categoryName === categoryName) ||
       emptyCategory
     );
   };
-  const balanceHeader = hideBalance ? "" : <th>Balance</th>;
-  const balanceColumn = (category: CategoryUsage) =>
-    hideBalance ? (
-      ""
-    ) : (
-      <td>{formatYnabAmount(getCategory(category.category).balance)}</td>
-    );
+
   return (
     <div key={month.month} className="card bg-base-100 shadow-xl m-2">
       <div className="card-body">
@@ -47,7 +36,6 @@ const MonthSummaryBlock = ({
             <tr>
               <th>Category</th>
               <th>Amount</th>
-              {balanceHeader}
             </tr>
           </thead>
           <tbody>
@@ -61,8 +49,7 @@ const MonthSummaryBlock = ({
                     {category.category}
                   </Link>
                 </td>
-                <td>{formatYnabAmount(category.amount)}</td>
-                {balanceColumn(category)}
+                <td>{formatYnabAmount(category.amount, true)}</td>
               </tr>
             ))}
           </tbody>
