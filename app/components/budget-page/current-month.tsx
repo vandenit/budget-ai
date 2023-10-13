@@ -4,6 +4,7 @@ import Link from "next/link";
 import StatusIndicator from "./status-indicator";
 import { percentageToStatusClass } from "@/app/utils/styling";
 import MonthTotalOverview from "./month-total-overview";
+import HiddenProgressBars from "./hidden-progress-bars";
 
 type Props = {
   budgetId: string;
@@ -33,7 +34,7 @@ const CurrentMonth = ({
       <div className="card-body">
         <h2 className="card-title">{currentMonthLbl}</h2>
         <h3>
-          Month progress:{" "}
+          Month progress:
           <progress
             className={`progress progress-${percentageToStatusClass(
               monthPercentage
@@ -41,6 +42,7 @@ const CurrentMonth = ({
             value={monthPercentage}
             max="100"
           ></progress>
+          <HiddenProgressBars />
         </h3>
 
         <MonthTotalOverview monthTotal={monthTotal} />
