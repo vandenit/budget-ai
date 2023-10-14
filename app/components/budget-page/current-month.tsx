@@ -30,34 +30,32 @@ const CurrentMonth = ({
   monthTotal,
 }: Props) => {
   return (
-    <div className="card bg-base-100 shadow-xl m-2">
-      <div className="card-body">
-        <h2 className="card-title">{currentMonthLbl}</h2>
-        <h3>
-          Month progress:
-          <progress
-            className={`progress progress-${percentageToStatusClass(
-              monthPercentage
-            )} w-56`}
-            value={monthPercentage}
-            max="100"
-          ></progress>
-          <HiddenProgressBars />
-        </h3>
-        <MonthTotalOverview monthTotal={monthTotal} />
-        <div className="flex flex-wrap mb-2 -mx-2">
-          {categories
-            .filter(withBudgetFilter)
-            .sort(sortByCategoryUsage)
-            .map((category) => (
-              <CategoryCard
-                key={category.categoryId}
-                budgetId={budgetId}
-                currentMonthLbl={currentMonthLbl}
-                category={category}
-              />
-            ))}
-        </div>
+    <div className="card-body">
+      <h2 className="card-title">{currentMonthLbl}</h2>
+      <h3>
+        Month progress:
+        <progress
+          className={`progress progress-${percentageToStatusClass(
+            monthPercentage
+          )} w-56`}
+          value={monthPercentage}
+          max="100"
+        ></progress>
+        <HiddenProgressBars />
+      </h3>
+      <MonthTotalOverview monthTotal={monthTotal} />
+      <div className="flex flex-wrap mb-2 -mx-2">
+        {categories
+          .filter(withBudgetFilter)
+          .sort(sortByCategoryUsage)
+          .map((category) => (
+            <CategoryCard
+              key={category.categoryId}
+              budgetId={budgetId}
+              currentMonthLbl={currentMonthLbl}
+              category={category}
+            />
+          ))}
       </div>
     </div>
   );

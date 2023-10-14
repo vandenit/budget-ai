@@ -21,7 +21,7 @@ const CategoryCard: React.FC<StatusIndicatorProps> = ({
 
   const statusClass = percentageToStatusClass(percentage);
   return (
-    <div className="card w-64 bg-base-100 shadow-xl mb-5">
+    <div className="card w-64 bg-base-100 shadow-xl mb-5 mx-2">
       <div className="card-body">
         <h2 className="card-title">{category.categoryName}</h2>
         <Link
