@@ -25,7 +25,6 @@ const MonthTotalOverview = ({ monthTotal }: Props) => {
           <th>Total activity</th>
           <th>Total balance</th>
           <th>Total budgeted</th>
-          <th>Status</th>
         </tr>
       </thead>
       <tbody>
@@ -33,7 +32,9 @@ const MonthTotalOverview = ({ monthTotal }: Props) => {
           <td>{formatYnabAmount(monthTotal.totalActivity, true)}</td>
           <td>{formatYnabAmount(monthTotal.totalBalance)}</td>
           <td>{formatYnabAmount(monthTotal.totalBudgeted)}</td>
-          <td>
+        </tr>
+        <tr>
+          <td colSpan={3}>
             <progress
               className={`progress progress-${statusClass} w-56`}
               value={percentage}

@@ -6,7 +6,7 @@ import {
 } from "@/app/api/budget.server";
 import { formatYnabAmount } from "@/app/utils/ynab";
 import Link from "next/link";
-import StatusIndicator from "./status-indicator";
+import CategoryCard from "./category-card";
 
 type Props = {
   budgetId: string;

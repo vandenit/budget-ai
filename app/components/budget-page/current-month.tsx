@@ -1,7 +1,7 @@
 import { Category, MonthTotal } from "@/app/api/budget.server";
 import { formatYnabAmount, percentageSpent } from "@/app/utils/ynab";
 import Link from "next/link";
-import StatusIndicator from "./status-indicator";
+import CategoryCard from "./category-card";
 import { percentageToStatusClass } from "@/app/utils/styling";
 import MonthTotalOverview from "./month-total-overview";
 import HiddenProgressBars from "./hidden-progress-bars";
@@ -44,40 +44,20 @@ const CurrentMonth = ({
           ></progress>
           <HiddenProgressBars />
         </h3>
-
         <MonthTotalOverview monthTotal={monthTotal} />
-        <table className="table">
-          <thead>
-            <tr>
-              <th>Category</th>
-              <th>Amount</th>
-              <th>Balance</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {categories
-              .filter(withBudgetFilter)
-              .sort(sortByCategoryUsage)
-              .map((category) => (
-                <tr key={category.categoryId}>
-                  <td>
-                    <Link
-                      className="link"
-                      href={`${budgetId}/transactions?month=${currentMonthLbl}&categoryId=${category.categoryId}`}
-                    >
-                      {category.categoryName}
-                    </Link>
-                  </td>
-                  <td>{formatYnabAmount(category.activity, true)}</td>
-                  <td>{formatYnabAmount(category.balance)}</td>
-                  <td>
-                    <StatusIndicator category={category} />
-                  </td>
-                </tr>
-              ))}
-          </tbody>
-        </table>
+        <div className="flex flex-wrap mb-2 -mx-2">
+          {categories
+            .filter(withBudgetFilter)
+            .sort(sortByCategoryUsage)
+            .map((category) => (
+              <CategoryCard
+                key={category.categoryId}
+                budgetId={budgetId}
+                currentMonthLbl={currentMonthLbl}
+                category={category}
+              />
+            ))}
+        </div>
       </div>
     </div>
   );
