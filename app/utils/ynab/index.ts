@@ -1,4 +1,5 @@
 import { Category, MonthTotal } from "@/app/api/budget.server";
+import { c } from "vitest/dist/reporters-5f784f42.js";
 
 export const formatYnabAmount = (amount: number, absolute: boolean = false) => {
   const number = absolute ? Math.abs(amount) : amount;
@@ -19,8 +20,11 @@ export const percentageSpent = (category: Category) => {
   if (absBudget === 0) {
     return 100;
   }
-  return (absAmount / absBudget) * 100;
+  return calculatePercentage(absAmount, absBudget);
 };
+
+export const calculatePercentage = (amount: number, total: number) =>
+  (amount / total) * 100;
 
 export const formatPercentage = (percentage: number) =>
   percentage.toFixed(2) + "%";
@@ -31,5 +35,5 @@ export const totalPercentageSpent = (total: MonthTotal) => {
   if (absBudget === 0) {
     return 100;
   }
-  return (absAmount / absBudget) * 100;
+  return calculatePercentage(absAmount, absBudget);
 };

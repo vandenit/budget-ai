@@ -47,6 +47,7 @@ const CurrentMonth = ({
               budgetId={budgetId}
               currentMonthLbl={currentMonthLbl}
               category={category}
+              monthTotal={monthTotal}
             />
           ))}
       </div>

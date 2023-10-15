@@ -1,23 +1,27 @@
-import { Category } from "@/app/api/budget.server";
+import { Category, MonthTotal } from "@/app/api/budget.server";
 import { percentageToStatusClass } from "@/app/utils/styling";
 import {
+  calculatePercentage,
   formatPercentage,
   formatYnabAmount,
   percentageSpent,
 } from "@/app/utils/ynab";
 import Link from "next/link";
 import { format } from "path";
+import Progress from "../progress";
 
 interface StatusIndicatorProps {
   category: Category;
   budgetId: string;
   currentMonthLbl: string;
+  monthTotal: MonthTotal;
 }
 
 const CategoryCard: React.FC<StatusIndicatorProps> = ({
   category,
   budgetId,
   currentMonthLbl,
+  monthTotal,
 }) => {
   const budget = formatYnabAmount(category.budgeted);
   const spent = formatYnabAmount(category.activity, true);
@@ -41,14 +45,38 @@ const CategoryCard: React.FC<StatusIndicatorProps> = ({
               <tr>
                 <td>Available</td>
                 <td>{formatYnabAmount(category.balance)}</td>
+                <td>
+                  <Progress
+                    percentage={calculatePercentage(
+                      category.balance,
+                      monthTotal.totalBalance
+                    )}
+                  />
+                </td>
               </tr>
               <tr>
                 <td>Budgeted</td>
                 <td>{budget}</td>
+                <td>
+                  <Progress
+                    percentage={calculatePercentage(
+                      category.budgeted,
+                      monthTotal.totalBudgeted
+                    )}
+                  />
+                </td>
               </tr>
               <tr>
                 <td>Spent</td>
                 <td>{spent}</td>
+                <td>
+                  <Progress
+                    percentage={calculatePercentage(
+                      category.activity,
+                      monthTotal.totalActivity
+                    )}
+                  />
+                </td>
               </tr>
             </tbody>
           </table>
