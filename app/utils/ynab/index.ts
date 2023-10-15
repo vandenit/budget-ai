@@ -22,6 +22,9 @@ export const percentageSpent = (category: Category) => {
   return (absAmount / absBudget) * 100;
 };
 
+export const formatPercentage = (percentage: number) =>
+  percentage.toFixed(2) + "%";
+
 export const totalPercentageSpent = (total: MonthTotal) => {
   const absAmount = ynabAbsoluteNumber(total.totalActivity);
   const absBudget = ynabAbsoluteNumber(total.totalBudgeted);

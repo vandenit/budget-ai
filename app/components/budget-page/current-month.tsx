@@ -32,10 +32,7 @@ const CurrentMonth = ({
   return (
     <div className="card-body">
       <h2 className="card-title">{currentMonthLbl}</h2>
-      <h3>
-        Month progress:
-        <HiddenProgressBars />
-      </h3>
+      <HiddenProgressBars />
       <MonthTotalOverview
         monthTotal={monthTotal}
         monthPercentage={monthPercentage}

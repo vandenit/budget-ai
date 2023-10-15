@@ -18,7 +18,7 @@ const MonthTotalOverview = ({ monthTotal, monthPercentage }: Props) => {
           <thead>
             <tr>
               <th>Total activity</th>
-              <th>Total balance</th>
+              <th>Total available</th>
               <th>Total budgeted</th>
             </tr>
           </thead>
