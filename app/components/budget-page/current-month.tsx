@@ -34,16 +34,12 @@ const CurrentMonth = ({
       <h2 className="card-title">{currentMonthLbl}</h2>
       <h3>
         Month progress:
-        <progress
-          className={`progress progress-${percentageToStatusClass(
-            monthPercentage
-          )} w-56`}
-          value={monthPercentage}
-          max="100"
-        ></progress>
         <HiddenProgressBars />
       </h3>
-      <MonthTotalOverview monthTotal={monthTotal} />
+      <MonthTotalOverview
+        monthTotal={monthTotal}
+        monthPercentage={monthPercentage}
+      />
       <div className="flex flex-wrap mb-2 -mx-2">
         {categories
           .filter(withBudgetFilter)

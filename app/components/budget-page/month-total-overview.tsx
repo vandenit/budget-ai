@@ -1,27 +1,20 @@
 import { Category, MonthTotal } from "@/app/api/budget.server";
 import { percentageToStatusClass } from "@/app/utils/styling";
-import {
-  formatYnabAmount,
-  percentageSpent,
-  totalPercentageSpent,
-} from "@/app/utils/ynab";
+import { formatYnabAmount, totalPercentageSpent } from "@/app/utils/ynab";
 import { format } from "path";
-
-interface StatusIndicatorProps {
-  category: Category;
-}
 
 type Props = {
   monthTotal: MonthTotal;
+  monthPercentage: number;
 };
-const MonthTotalOverview = ({ monthTotal }: Props) => {
+const MonthTotalOverview = ({ monthTotal, monthPercentage }: Props) => {
   const percentage = totalPercentageSpent(monthTotal);
 
   const statusClass = percentageToStatusClass(percentage);
   return (
-    <div className="card w-96 bg-base-100 shadow-xl mb-5">
-      <div className="card-body">
-        <table className="table">
+    <div className="card bg-base-100 shadow-xl mb-5">
+      <div className="card-body p-0.5 sm:p-5">
+        <table className="table w-80">
           <thead>
             <tr>
               <th>Total activity</th>
@@ -36,9 +29,24 @@ const MonthTotalOverview = ({ monthTotal }: Props) => {
               <td>{formatYnabAmount(monthTotal.totalBudgeted)}</td>
             </tr>
             <tr>
-              <td colSpan={3}>
+              <td>Month Progress</td>
+              <td colSpan={2}>
                 <progress
-                  className={`progress progress-${statusClass} w-56`}
+                  className={`progress progress-${percentageToStatusClass(
+                    monthPercentage
+                  )}`}
+                  value={monthPercentage}
+                  max="100"
+                ></progress>
+              </td>
+            </tr>
+            <tr>
+              <td>Budget Progress</td>
+              <td colSpan={2}>
+                <progress
+                  className={`progress progress-${percentageToStatusClass(
+                    percentage
+                  )}`}
                   value={percentage}
                   max="100"
                 ></progress>
