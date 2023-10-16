@@ -51,6 +51,7 @@ const CategoryCard: React.FC<StatusIndicatorProps> = ({
                       category.balance,
                       monthTotal.totalBalance
                     )}
+                    width={10}
                   />
                 </td>
               </tr>
@@ -63,6 +64,7 @@ const CategoryCard: React.FC<StatusIndicatorProps> = ({
                       category.budgeted,
                       monthTotal.totalBudgeted
                     )}
+                    width={10}
                   />
                 </td>
               </tr>
@@ -75,6 +77,7 @@ const CategoryCard: React.FC<StatusIndicatorProps> = ({
                       category.activity,
                       monthTotal.totalActivity
                     )}
+                    width={10}
                   />
                 </td>
               </tr>
