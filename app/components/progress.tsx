@@ -7,9 +7,7 @@ type Props = {
 
 const Progress = ({ percentage, width }: Props) => (
   <progress
-    className={`progress progress-${percentageToStatusClass(percentage)} w-${
-      width || 56
-    }`}
+    className={`progress progress-${percentageToStatusClass(percentage)} w-10`}
     value={percentage}
     max="100"
   ></progress>
