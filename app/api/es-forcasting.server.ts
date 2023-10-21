@@ -24,7 +24,7 @@ type MonthlySpending = {
   amount: number;
 };
 
-type MonthlyForcast = {
+export type MonthlyForcast = {
   totalSpentSoFar: number;
   predictedSpendingEndOfMonth: number;
   predictedRemainingPerDay: number;

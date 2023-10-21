@@ -52,6 +52,7 @@ async function BudgetInfo({ budgetId }: { budgetId: string }) {
           categories={categories}
           monthPercentage={monthPercentage}
           monthTotal={monthTotal}
+          forecast={forecast}
         />
       </div>
       <div className="flex flex-wrap mb-4 -mx-2">

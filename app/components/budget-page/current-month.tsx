@@ -5,6 +5,7 @@ import CategoryCard from "./category-card";
 import { percentageToStatusClass } from "@/app/utils/styling";
 import MonthTotalOverview from "./month-total-overview";
 import HiddenProgressBars from "./hidden-progress-bars";
+import { MonthlyForcast } from "@/app/api/es-forcasting.server";
 
 type Props = {
   budgetId: string;
@@ -12,6 +13,7 @@ type Props = {
   currentMonthLbl: string;
   monthPercentage: number;
   monthTotal: MonthTotal;
+  forecast: MonthlyForcast;
 };
 
 const sortByCategoryUsage = (a: Category, b: Category) => {
@@ -28,6 +30,7 @@ const CurrentMonth = ({
   currentMonthLbl,
   monthPercentage,
   monthTotal,
+  forecast,
 }: Props) => {
   return (
     <div className="card-body">
@@ -36,6 +39,7 @@ const CurrentMonth = ({
       <MonthTotalOverview
         monthTotal={monthTotal}
         monthPercentage={monthPercentage}
+        forecast={forecast}
       />
       <div className="flex flex-wrap mb-2 -mx-2">
         {categories

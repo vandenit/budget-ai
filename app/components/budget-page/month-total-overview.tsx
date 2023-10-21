@@ -1,13 +1,23 @@
 import { Category, MonthTotal } from "@/app/api/budget.server";
+import { MonthlyForcast } from "@/app/api/es-forcasting.server";
 import { percentageToStatusClass } from "@/app/utils/styling";
-import { formatYnabAmount, totalPercentageSpent } from "@/app/utils/ynab";
+import {
+  formatAmount,
+  formatYnabAmount,
+  totalPercentageSpent,
+} from "@/app/utils/ynab";
 import { format } from "path";
 
 type Props = {
   monthTotal: MonthTotal;
   monthPercentage: number;
+  forecast: MonthlyForcast;
 };
-const MonthTotalOverview = ({ monthTotal, monthPercentage }: Props) => {
+const MonthTotalOverview = ({
+  monthTotal,
+  monthPercentage,
+  forecast,
+}: Props) => {
   const percentage = totalPercentageSpent(monthTotal);
 
   const statusClass = percentageToStatusClass(percentage);
@@ -51,6 +61,28 @@ const MonthTotalOverview = ({ monthTotal, monthPercentage }: Props) => {
                   max="100"
                 ></progress>
               </td>
+            </tr>
+            <tr>
+              <td>Forecasted Remaining amount</td>
+              <td colSpan={2}>
+                {formatAmount(forecast.predictedRemainingAmount)}
+              </td>
+            </tr>
+            <tr>
+              <td>Forecasted Daily amount</td>
+              <td colSpan={2}>
+                {formatAmount(forecast.predictedRemainingPerDay)}
+              </td>
+            </tr>
+            <tr>
+              <td>Actual Remaing per day amount</td>
+              <td colSpan={2}>
+                {formatAmount(forecast.actualRemainingPerDay)}
+              </td>
+            </tr>
+            <tr>
+              <td>Extra suggested</td>
+              <td colSpan={2}>{formatAmount(forecast.extraAmountNeeded)}</td>
             </tr>
           </tbody>
         </table>

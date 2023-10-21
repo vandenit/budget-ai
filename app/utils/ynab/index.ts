@@ -1,10 +1,12 @@
 import { Category, MonthTotal } from "@/app/api/budget.server";
 import { c } from "vitest/dist/reporters-5f784f42.js";
 
-export const formatYnabAmount = (amount: number, absolute: boolean = false) => {
+export const formatAmount = (amount: number, absolute: boolean = false) => {
   const number = absolute ? Math.abs(amount) : amount;
-  return (number / 1000).toFixed(2) + "€";
+  return number.toFixed(2) + "€";
 };
+export const formatYnabAmount = (amount: number, absolute: boolean = false) =>
+  formatAmount(amount / 1000, absolute);
 
 export const ynabNumber = (amount: number) => {
   return amount / 1000;
