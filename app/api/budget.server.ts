@@ -49,6 +49,7 @@ export type CategoryUsage = {
   category: string;
   categoryId: string | undefined | null;
   amount: number;
+  transactions: Array<Transaction>;
 };
 
 export type MonthSummary = {
@@ -184,11 +185,13 @@ export const monthSummaryReducer = (
 
     if (categoryUsage) {
       categoryUsage.amount += transaction.amount;
+      categoryUsage.transactions.push(transaction);
     } else {
       monthSummary.categoryUsage.push({
         category: transaction.categoryName,
         amount: transaction.amount,
         categoryId: transaction.categoryId,
+        transactions: [transaction],
       });
     }
   } else {
@@ -200,6 +203,7 @@ export const monthSummaryReducer = (
           category: transaction.categoryName,
           amount: transaction.amount,
           categoryId: transaction.categoryId,
+          transactions: [transaction],
         },
       ],
     });

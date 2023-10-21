@@ -11,6 +11,10 @@ import {
 import MonthSummaryBlock from "./month-summary-block";
 import CurrentMonth from "./current-month";
 import { c } from "vitest/dist/reporters-5f784f42.js";
+import {
+  categoriesToCategoryData,
+  forecastSpendingWithES,
+} from "@/app/api/es-forcasting.server";
 
 export default function BudgetPage({ budgetId }: { budgetId: string }) {
   return (
@@ -29,7 +33,9 @@ async function BudgetInfo({ budgetId }: { budgetId: string }) {
   const aiResponse = { response: "AI response" };
   const categories = await getCategories(budgetId);
   const monthTotal = calculateTotals(categories);
-
+  const categoryData = categoriesToCategoryData(categories, monthSummaries);
+  const forecast = forecastSpendingWithES(categoryData);
+  console.log(JSON.stringify(forecast));
   if (monthSummaries.length === 0) {
     redirect("/login");
   }
