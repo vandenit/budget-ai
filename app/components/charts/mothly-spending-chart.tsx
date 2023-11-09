@@ -11,7 +11,7 @@ import {
   Legend,
 } from "chart.js";
 import { Line } from "react-chartjs-2";
-import faker from "faker";
+import { MonthlySpendingData } from "./util";
 
 ChartJS.register(
   CategoryScale,
@@ -36,28 +36,22 @@ export const options = {
   },
 };
 
-const labels = ["January", "February", "March", "April", "May", "June", "July"];
-
-type Props = {};
-
-export const data = {
-  labels,
-  datasets: [
-    {
-      label: "Dataset 1",
-      data: labels.map(() => faker.datatype.number({ min: -1000, max: 1000 })),
-      borderColor: "rgb(255, 99, 132)",
-      backgroundColor: "rgba(255, 99, 132, 0.5)",
-    },
-    {
-      label: "Dataset 2",
-      data: labels.map(() => faker.datatype.number({ min: -1000, max: 1000 })),
-      borderColor: "rgb(53, 162, 235)",
-      backgroundColor: "rgba(53, 162, 235, 0.5)",
-    },
-  ],
+type Props = {
+  spendingData: MonthlySpendingData[];
 };
 
-export const MonthlySpendingChart = ({}: Props) => {
+export const MonthlySpendingChart = ({ spendingData }: Props) => {
+  const data = {
+    labels: spendingData.map((data) => data.dayOfMonth),
+    datasets: [
+      {
+        label: "Dataset 1",
+        data: spendingData.map((data) => data.spent),
+        borderColor: "rgb(255, 99, 132)",
+        backgroundColor: "rgba(255, 99, 132, 0.5)",
+      },
+    ],
+  };
+  console.log(JSON.stringify(data));
   return <Line options={options} data={data} />;
 };

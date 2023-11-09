@@ -4,6 +4,8 @@ import Loading from "../Loading";
 import { getFilteredTransactions } from "@/app/api/budget.server";
 import { formatYnabAmount } from "@/app/utils/ynab";
 import CategorySelect from "./category-select";
+import { MonthlySpendingChart } from "../charts/mothly-spending-chart";
+import { transactionsToMonthlySpendingData } from "../charts/util";
 
 export default function TransactionsPage({
   budgetId,
@@ -51,6 +53,9 @@ async function TransactionsInfo({
         month={month}
       />
       <>
+        <MonthlySpendingChart
+          spendingData={transactionsToMonthlySpendingData(transactions)}
+        />
         <table className="table">
           <thead>
             <tr>

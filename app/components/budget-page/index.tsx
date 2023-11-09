@@ -48,7 +48,7 @@ async function BudgetInfo({ budgetId }: { budgetId: string }) {
       <div className="mb-4 -mx-2">
         <CurrentMonth
           budgetId={budgetId}
-          currentMonthLbl={monthSummaries[0].month}
+          monthSummary={monthSummaries[0]}
           categories={categories}
           monthPercentage={monthPercentage}
           monthTotal={monthTotal}

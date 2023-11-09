@@ -16,8 +16,7 @@
     "react": "latest",
     "react-dom": "latest",
     "ynab": "^2.0.0",
-    "react-chartjs-2": "^5.0.0",
-    "faker": "5.5.3"
+    "react-chartjs-2": "^5.0.0"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "6.1.2",
