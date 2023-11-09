@@ -1,4 +1,4 @@
-import { Category, MonthTotal } from "@/app/api/budget.server";
+import { Category, MonthTotal, Transaction } from "@/app/api/budget.server";
 import { MonthlyForcast } from "@/app/api/es-forcasting.server";
 import { percentageToStatusClass } from "@/app/utils/styling";
 import {
@@ -8,16 +8,19 @@ import {
 } from "@/app/utils/ynab";
 import { format } from "path";
 import { MonthlySpendingChart } from "../charts/mothly-spending-chart";
+import { transactionsToMonthlySpendingData } from "../charts/util";
 
 type Props = {
   monthTotal: MonthTotal;
   monthPercentage: number;
   forecast: MonthlyForcast;
+  transactions: Array<Transaction>;
 };
 const MonthTotalOverview = ({
   monthTotal,
   monthPercentage,
   forecast,
+  transactions,
 }: Props) => {
   const percentage = totalPercentageSpent(monthTotal);
 
@@ -93,7 +96,9 @@ const MonthTotalOverview = ({
             </table>
           </div>
           <div className="w-full sm:w-1/2 md:w-1/2 lg:w-3/4">
-            <MonthlySpendingChart />
+            <MonthlySpendingChart
+              spendingData={transactionsToMonthlySpendingData(transactions)}
+            />
           </div>
         </div>
       </div>

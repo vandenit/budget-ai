@@ -1,4 +1,4 @@
-import { Category, MonthTotal } from "@/app/api/budget.server";
+import { Category, MonthSummary, MonthTotal } from "@/app/api/budget.server";
 import { formatYnabAmount, percentageSpent } from "@/app/utils/ynab";
 import Link from "next/link";
 import CategoryCard from "./category-card";
@@ -10,7 +10,7 @@ import { MonthlyForcast } from "@/app/api/es-forcasting.server";
 type Props = {
   budgetId: string;
   categories: Category[];
-  currentMonthLbl: string;
+  monthSummary: MonthSummary;
   monthPercentage: number;
   monthTotal: MonthTotal;
   forecast: MonthlyForcast;
@@ -27,19 +27,20 @@ const withBudgetFilter = (category: Category) => {
 const CurrentMonth = ({
   categories,
   budgetId,
-  currentMonthLbl,
+  monthSummary,
   monthPercentage,
   monthTotal,
   forecast,
 }: Props) => {
   return (
     <div className="card-body">
-      <h2 className="card-title">{currentMonthLbl}</h2>
+      <h2 className="card-title">{monthSummary.month}</h2>
       <HiddenProgressBars />
       <MonthTotalOverview
         monthTotal={monthTotal}
         monthPercentage={monthPercentage}
         forecast={forecast}
+        transactions={monthSummary.overallTransactions}
       />
       <div className="flex flex-wrap mb-2 -mx-2">
         {categories
@@ -49,7 +50,7 @@ const CurrentMonth = ({
             <CategoryCard
               key={category.categoryId}
               budgetId={budgetId}
-              currentMonthLbl={currentMonthLbl}
+              currentMonthLbl={monthSummary.month}
               category={category}
               monthTotal={monthTotal}
             />

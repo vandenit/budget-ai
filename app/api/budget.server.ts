@@ -56,6 +56,7 @@ export type MonthSummary = {
   month: string;
   isCurrentMonth: boolean;
   categoryUsage: Array<CategoryUsage>;
+  overallTransactions: Array<Transaction>;
 };
 
 const getToken = async () => {
@@ -194,6 +195,7 @@ export const monthSummaryReducer = (
         transactions: [transaction],
       });
     }
+    monthSummary.overallTransactions.push(transaction);
   } else {
     acc.push({
       month,
@@ -206,6 +208,7 @@ export const monthSummaryReducer = (
           transactions: [transaction],
         },
       ],
+      overallTransactions: [transaction],
     });
   }
 
