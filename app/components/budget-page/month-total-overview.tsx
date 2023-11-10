@@ -8,7 +8,7 @@ import {
 } from "@/app/utils/ynab";
 import { format } from "path";
 import { MonthlySpendingChart } from "../charts/mothly-spending-chart";
-import { transactionsToMonthlySpendingData } from "../charts/util";
+import { getMonthlySpendingData } from "../charts/util";
 
 type Props = {
   monthTotal: MonthTotal;
@@ -97,7 +97,7 @@ const MonthTotalOverview = ({
           </div>
           <div className="w-full sm:w-1/2 md:w-1/2 lg:w-3/4">
             <MonthlySpendingChart
-              spendingData={transactionsToMonthlySpendingData(transactions)}
+              spendingData={getMonthlySpendingData(transactions)}
             />
           </div>
         </div>

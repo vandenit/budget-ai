@@ -4,20 +4,18 @@ import {
   Chart as ChartJS,
   CategoryScale,
   LinearScale,
-  PointElement,
-  LineElement,
+  BarElement,
   Title,
   Tooltip,
   Legend,
 } from "chart.js";
-import { Line } from "react-chartjs-2";
+import { Bar } from "react-chartjs-2";
 import { MonthlySpendingData } from "./util";
 
 ChartJS.register(
   CategoryScale,
   LinearScale,
-  PointElement,
-  LineElement,
+  BarElement,
   Title,
   Tooltip,
   Legend
@@ -31,7 +29,19 @@ export const options = {
     },
     title: {
       display: true,
-      text: "Chart.js Line Chart",
+      text: "Spending Chart",
+    },
+  },
+  interaction: {
+    mode: "index" as const,
+    intersect: false,
+  },
+  scales: {
+    x: {
+      stacked: true,
+    },
+    y: {
+      stacked: true,
     },
   },
 };
@@ -52,6 +62,5 @@ export const MonthlySpendingChart = ({ spendingData }: Props) => {
       },
     ],
   };
-  console.log(JSON.stringify(data));
-  return <Line options={options} data={data} />;
+  return <Bar options={options} data={data} />;
 };
