@@ -1,3 +1,4 @@
+import { compose } from "ramda";
 import { Transaction } from "@/app/api/budget.server";
 import { ynabAbsoluteNumber, ynabNumber } from "@/app/utils/ynab";
 
@@ -14,11 +15,13 @@ const daysOfMonthAsStrings = () => {
   return days;
 };
 
-export const getMonthlySpendingData = (transactions: Transaction[]) => {
-  return ifAllNegativeShowPositive(
-    transactionsToMonthlySpendingData(transactions)
-  );
-};
+export const getMonthlySpendingData = (
+  transactions: Transaction[]
+): MonthlySpendingData[] =>
+  compose(
+    ifAllNegativeShowPositive,
+    transactionsToMonthlySpendingData
+  )(transactions);
 
 const transactionsToMonthlySpendingData = (
   transactions: Transaction[]
