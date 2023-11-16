@@ -34,7 +34,14 @@ const CurrentMonth = ({
 }: Props) => {
   return (
     <div className="card-body">
-      <h2 className="card-title">{monthSummary.month}</h2>
+      <h2 className="card-title">
+        <Link
+          className="link"
+          href={`${budgetId}/transactions?month=${monthSummary.month}`}
+        >
+          {monthSummary.month}
+        </Link>
+      </h2>
       <HiddenProgressBars />
       <MonthTotalOverview
         monthTotal={monthTotal}
