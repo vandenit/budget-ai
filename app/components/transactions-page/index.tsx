@@ -11,10 +11,12 @@ export default function TransactionsPage({
   budgetId,
   categoryId,
   month,
+  dayOfMonth,
 }: {
   budgetId: string;
   categoryId: string | undefined;
   month: string | undefined;
+  dayOfMonth: string | undefined;
 }) {
   return (
     <>
@@ -23,6 +25,7 @@ export default function TransactionsPage({
           budgetId={budgetId}
           categoryId={categoryId}
           month={month}
+          dayOfMonth={dayOfMonth}
         />
       </Suspense>
     </>
@@ -33,15 +36,18 @@ async function TransactionsInfo({
   budgetId,
   categoryId,
   month,
+  dayOfMonth,
 }: {
   budgetId: string;
   categoryId?: string;
   month?: string;
+  dayOfMonth?: string;
 }) {
   const transactions = await getFilteredTransactions(
     budgetId,
     categoryId,
-    month
+    month,
+    dayOfMonth
   );
   // explain
   return (
@@ -55,6 +61,9 @@ async function TransactionsInfo({
       <>
         <MonthlySpendingChart
           spendingData={getMonthlySpendingData(transactions)}
+          categoryId={categoryId || ""}
+          month={month || ""}
+          budgetId={budgetId}
         />
         <table className="table">
           <thead>

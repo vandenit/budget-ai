@@ -8,12 +8,13 @@ async function TransactionsRoute({
   searchParams: { [key: string]: string | undefined };
 }) {
   const { budgetId } = params;
-  const { categoryId, month } = searchParams;
+  const { categoryId, month, dayOfMonth } = searchParams;
   return (
     <TransactionsPage
       budgetId={budgetId}
       categoryId={categoryId}
       month={month}
+      dayOfMonth={dayOfMonth}
     />
   );
 }

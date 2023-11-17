@@ -115,24 +115,18 @@ export const getCachedBudgets = cache(getBudgets);
 export async function getFilteredTransactions(
   budgetId: string,
   categoryId: string | null | undefined,
-  month: string | null | undefined
+  month: string | null | undefined,
+  dayOfMonth: string | null | undefined
 ): Promise<Array<Transaction>> {
   const transactions = await getTransactions(budgetId);
   return transactions.filter((transaction) => {
     const transactionMonth = transaction.date.substring(0, 7);
-
-    if (month && categoryId) {
-      return (
-        transactionMonth === month && transaction.categoryId === categoryId
-      );
-    }
-    if (month) {
-      return transactionMonth === month;
-    }
-    if (categoryId) {
-      return transaction.categoryId === categoryId;
-    }
-    return true;
+    const transactionDayOfMonth = transaction.date.substring(8, 10);
+    return (
+      (!month || transactionMonth === month) &&
+      (!dayOfMonth || Number(transactionDayOfMonth) === Number(dayOfMonth)) &&
+      (!categoryId || transaction.categoryId === categoryId)
+    );
   });
 }
 export async function getTransactions(id: string): Promise<Array<Transaction>> {

@@ -1,15 +1,23 @@
 "use client";
-import React from "react";
+import React, { MouseEvent, useRef } from "react";
+import { useRouter } from "next/navigation";
 import {
   Chart as ChartJS,
   CategoryScale,
   LinearScale,
   BarElement,
+  InteractionItem,
   Title,
   Tooltip,
   Legend,
 } from "chart.js";
-import { Bar } from "react-chartjs-2";
+import {
+  Bar,
+  Chart,
+  getDatasetAtEvent,
+  getElementAtEvent,
+  getElementsAtEvent,
+} from "react-chartjs-2";
 import { MonthlySpendingData } from "./util";
 
 ChartJS.register(
@@ -48,9 +56,19 @@ export const options = {
 
 type Props = {
   spendingData: MonthlySpendingData[];
+  categoryId: string;
+  month: string;
+  budgetId: string;
 };
 
-export const MonthlySpendingChart = ({ spendingData }: Props) => {
+export const MonthlySpendingChart = ({
+  spendingData,
+  month,
+  categoryId,
+  budgetId,
+}: Props) => {
+  const router = useRouter();
+
   const data = {
     labels: spendingData.map((data) => data.dayOfMonth),
     datasets: [
@@ -62,5 +80,49 @@ export const MonthlySpendingChart = ({ spendingData }: Props) => {
       },
     ],
   };
-  return <Bar options={options} data={data} />;
+
+  const printDatasetAtEvent = (dataset: InteractionItem[]) => {
+    if (!dataset.length) return;
+
+    const datasetIndex = dataset[0].datasetIndex;
+
+    console.log(data.datasets[datasetIndex].label);
+  };
+
+  type Props = {
+    spendingData: MonthlySpendingData[];
+  };
+
+  // see https://react-chartjs-2.js.org/examples/chart-events for handling more data
+  const handleChartEvent = (element: InteractionItem[]) => {
+    if (!element.length) return;
+
+    const { index } = element[0];
+    const { labels } = data;
+    const dayOfMonth = labels[index];
+    // todo: should parent be client component that handles this?
+    router.push(
+      `/budgets/${budgetId}/transactions?month=${month}&dayOfMonth=${dayOfMonth}&categoryId=${categoryId}`
+    );
+  };
+
+  const chartRef = useRef<ChartJS>(null);
+
+  const onClick = (event: MouseEvent<HTMLCanvasElement>) => {
+    const { current: chart } = chartRef;
+    if (!chart) {
+      return;
+    }
+    handleChartEvent(getElementAtEvent(chart, event));
+  };
+
+  return (
+    <Chart
+      type="bar"
+      options={options}
+      data={data}
+      onClick={onClick}
+      ref={chartRef}
+    />
+  );
 };
