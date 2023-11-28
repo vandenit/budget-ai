@@ -10,23 +10,20 @@ import {
   Title,
   Tooltip,
   Legend,
+  PointElement,
+  LineElement,
 } from "chart.js";
-import {
-  Bar,
-  Chart,
-  getDatasetAtEvent,
-  getElementAtEvent,
-  getElementsAtEvent,
-} from "react-chartjs-2";
+import { Chart, getElementAtEvent } from "react-chartjs-2";
 import { MonthlySpendingData } from "./util";
 
 ChartJS.register(
-  CategoryScale,
   LinearScale,
+  CategoryScale,
   BarElement,
-  Title,
-  Tooltip,
-  Legend
+  PointElement,
+  LineElement,
+  Legend,
+  Tooltip
 );
 
 export const options = {
