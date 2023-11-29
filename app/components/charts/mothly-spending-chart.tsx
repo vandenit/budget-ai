@@ -70,6 +70,7 @@ export const MonthlySpendingChart = ({
     labels: spendingData.map((data) => data.dayOfMonth),
     datasets: [
       {
+        type: "bar" as const,
         label: "Dataset 1",
         data: spendingData.map((data) => data.spent),
         borderColor: "rgb(255, 99, 132)",
