@@ -22,8 +22,8 @@ export async function getAIAnalysis(
       },
       {
         role: "user",
-        content: `This is the financial data of the last months ${JSON.stringify(
-          monthSummary
+        content: `This is the financial data of the last month ${JSON.stringify(
+          monthSummary.filter((m) => m.isCurrentMonth)
         )}`,
       },
       {
