@@ -27,12 +27,31 @@ ChartJS.register(
 
 export const options = {
   responsive: true,
+  plugins: {
+    legend: {
+      position: "top" as const,
+    },
+    title: {
+      display: true,
+      text: "Spending Chart",
+    },
+  },
+  interaction: {
+    mode: "index" as const,
+    intersect: false,
+  },
   scales: {
-    y: {
-      beginAtZero: true,
+    xAxis: {
+      // Use xAxis instead of x
+      stacked: true,
+    },
+    yAxis: {
+      // Use yAxis instead of y
+      stacked: true,
     },
   },
 };
+
 type Props = {
   spendingData: MonthlySpendingData[];
   categoryId: string;
