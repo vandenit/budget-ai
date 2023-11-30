@@ -1,7 +1,6 @@
 "use client";
 import React, { MouseEvent, useRef } from "react";
 import type { InteractionItem } from "chart.js";
-import Chart from "chart.js/auto";
 import {
   Chart as ChartJS,
   LinearScale,
@@ -13,7 +12,7 @@ import {
   Tooltip,
 } from "chart.js";
 import { useRouter } from "next/navigation";
-import { Chart as ChartReact, getElementAtEvent } from "react-chartjs-2";
+import { Bar, getElementAtEvent } from "react-chartjs-2";
 import { MonthlySpendingData } from "./util";
 
 ChartJS.register(
@@ -106,7 +105,7 @@ export const MonthlySpendingChart = ({
     );
   };
 
-  const chartRef = useRef<ChartJS>(null);
+  const chartRef = useRef();
 
   const onClick = (event: MouseEvent<HTMLCanvasElement>) => {
     const { current: chart } = chartRef;
@@ -116,13 +115,5 @@ export const MonthlySpendingChart = ({
     handleChartEvent(getElementAtEvent(chart, event));
   };
 
-  return (
-    <ChartReact
-      type="bar"
-      options={options}
-      data={data}
-      onClick={onClick}
-      ref={chartRef}
-    />
-  );
+  return <Bar options={options} data={data} onClick={onClick} ref={chartRef} />;
 };
