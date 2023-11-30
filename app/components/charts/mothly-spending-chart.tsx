@@ -16,6 +16,16 @@ import { useRouter } from "next/navigation";
 import { Chart as ChartReact, getElementAtEvent } from "react-chartjs-2";
 import { MonthlySpendingData } from "./util";
 
+ChartJS.register(
+  LinearScale,
+  CategoryScale,
+  BarElement,
+  PointElement,
+  LineElement,
+  Legend,
+  Tooltip
+);
+
 export const options = {
   responsive: true,
   plugins: {
