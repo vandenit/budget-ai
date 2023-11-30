@@ -6,7 +6,6 @@ import { formatYnabAmount } from "@/app/utils/ynab";
 import CategorySelect from "./category-select";
 import { MonthlySpendingChart } from "../charts/mothly-spending-chart";
 import { getMonthlySpendingData } from "../charts/util";
-import { TestChart } from "../charts/test-chart";
 
 export default function TransactionsPage({
   budgetId,
@@ -60,7 +59,12 @@ async function TransactionsInfo({
         month={month}
       />
       <>
-        <TestChart />
+        <MonthlySpendingChart
+          spendingData={getMonthlySpendingData(transactions)}
+          categoryId={categoryId || ""}
+          month={month || ""}
+          budgetId={budgetId}
+        />
         <table className="table">
           <thead>
             <tr>

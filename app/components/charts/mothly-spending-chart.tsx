@@ -1,18 +1,17 @@
 "use client";
 import React, { MouseEvent, useRef } from "react";
-import { useRouter } from "next/navigation";
+import type { InteractionItem } from "chart.js";
 import {
   Chart as ChartJS,
-  CategoryScale,
   LinearScale,
+  CategoryScale,
   BarElement,
-  InteractionItem,
-  Title,
-  Tooltip,
-  Legend,
   PointElement,
   LineElement,
+  Legend,
+  Tooltip,
 } from "chart.js";
+import { useRouter } from "next/navigation";
 import { Chart, getElementAtEvent } from "react-chartjs-2";
 import { MonthlySpendingData } from "./util";
 
