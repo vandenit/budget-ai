@@ -1,5 +1,5 @@
 "use client";
-import React, { MouseEvent, useRef } from "react";
+import React, { MouseEvent, useEffect, useRef } from "react";
 import type { InteractionItem } from "chart.js";
 import {
   Chart as ChartJS,
@@ -27,12 +27,31 @@ ChartJS.register(
 
 export const options = {
   responsive: true,
+  plugins: {
+    legend: {
+      position: "top" as const,
+    },
+    title: {
+      display: true,
+      text: "Spending Chart",
+    },
+  },
+  interaction: {
+    mode: "index" as const,
+    intersect: false,
+  },
   scales: {
-    y: {
-      beginAtZero: true,
+    xAxis: {
+      // Use xAxis instead of x
+      stacked: true,
+    },
+    yAxis: {
+      // Use yAxis instead of y
+      stacked: true,
     },
   },
 };
+
 type Props = {
   spendingData: MonthlySpendingData[];
   categoryId: string;
@@ -87,6 +106,18 @@ export const MonthlySpendingChart = ({
   };
 
   const chartRef = useRef<ChartJS>(null);
+  // Use useEffect to initialize the Chart.js chart after the component mounts
+  useEffect(() => {
+    const { current: chart } = chartRef;
+    if (chart) {
+      // Create the Chart.js chart here
+      new ChartJS(chart, {
+        type: "bar",
+        options: options,
+        data: data,
+      });
+    }
+  }, []);
 
   const onClick = (event: MouseEvent<HTMLCanvasElement>) => {
     const { current: chart } = chartRef;
