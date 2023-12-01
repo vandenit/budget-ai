@@ -15,6 +15,7 @@ import {
   categoriesToCategoryData,
   forecastSpendingWithES,
 } from "@/app/api/es-forcasting.server";
+import { getAIAnalysis } from "@/app/api/ai.server";
 
 export default function BudgetPage({ budgetId }: { budgetId: string }) {
   return (
@@ -29,7 +30,7 @@ export default function BudgetPage({ budgetId }: { budgetId: string }) {
 async function BudgetInfo({ budgetId }: { budgetId: string }) {
   const monthPercentage = calculateCurrentMontPercentage();
   const monthSummaries = await getMonthSummaries(budgetId);
-  //const aiResponse = await getAIAnalysis(monthSummaries);
+  // const aiResponse = await getAIAnalysis(monthSummaries);
   const aiResponse = { response: "AI response" };
   const categories = await getCategories(budgetId);
   const monthTotal = calculateTotals(categories);

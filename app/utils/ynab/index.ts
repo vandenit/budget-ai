@@ -1,6 +1,10 @@
 import { Category, MonthTotal } from "@/app/api/budget.server";
 import { c } from "vitest/dist/reporters-5f784f42.js";
 
+export const isInflowCategory = (category: Category) => {
+  return category.categoryName.toLocaleLowerCase().includes("inflow");
+};
+
 export const formatAmount = (amount: number, absolute: boolean = false) => {
   const number = absolute ? Math.abs(amount) : amount;
   return number.toFixed(2) + "€";

@@ -4,10 +4,10 @@ import {
   calculatePercentage,
   formatPercentage,
   formatYnabAmount,
+  isInflowCategory,
   percentageSpent,
 } from "@/app/utils/ynab";
 import Link from "next/link";
-import { format } from "path";
 import Progress from "../progress";
 
 interface StatusIndicatorProps {
@@ -23,8 +23,6 @@ const CategoryCard: React.FC<StatusIndicatorProps> = ({
   currentMonthLbl,
   monthTotal,
 }) => {
-  const budget = formatYnabAmount(category.budgeted);
-  const spent = formatYnabAmount(category.activity, true);
   const percentage = percentageSpent(category);
 
   const statusClass = percentageToStatusClass(percentage);
@@ -40,58 +38,94 @@ const CategoryCard: React.FC<StatusIndicatorProps> = ({
               {category.categoryName}
             </Link>{" "}
           </h2>
-          <table className="table w-full">
-            <tbody>
-              <tr>
-                <td>Available</td>
-                <td>{formatYnabAmount(category.balance)}</td>
-                <td>
-                  <Progress
-                    percentage={calculatePercentage(
-                      category.balance,
-                      monthTotal.totalBalance
-                    )}
-                  />
-                </td>
-              </tr>
-              <tr>
-                <td>Budgeted</td>
-                <td>{budget}</td>
-                <td>
-                  <Progress
-                    percentage={calculatePercentage(
-                      category.budgeted,
-                      monthTotal.totalBudgeted
-                    )}
-                  />
-                </td>
-              </tr>
-              <tr>
-                <td>Spent</td>
-                <td>{spent}</td>
-                <td>
-                  <Progress
-                    percentage={calculatePercentage(
-                      category.activity,
-                      monthTotal.totalActivity
-                    )}
-                  />
-                </td>
-              </tr>
-            </tbody>
-          </table>
-          <span className={`mx-3 badge badge-${statusClass} badge-outline`}>
-            {formatPercentage(percentage)}
-          </span>
-          <progress
-            className={`progress progress-${statusClass} w-56`}
-            value={percentage}
-            max="100"
-          ></progress>
+          {!isInflowCategory(category) && (
+            <ExpenseCategoryCard category={category} monthTotal={monthTotal} />
+          )}
+          {isInflowCategory(category) && (
+            <InflowCategoryCard category={category} />
+          )}
         </div>
       </div>
     </div>
   );
 };
 
+const ExpenseCategoryCard = ({
+  category,
+  monthTotal,
+}: {
+  category: Category;
+  monthTotal: MonthTotal;
+}) => {
+  const budget = formatYnabAmount(category.budgeted);
+  const spent = formatYnabAmount(category.activity, true);
+  const percentage = percentageSpent(category);
+  const statusClass = percentageToStatusClass(percentage);
+  return (
+    <>
+      <table className="table w-full">
+        <tbody>
+          <tr>
+            <td>Available</td>
+            <td>{formatYnabAmount(category.balance)}</td>
+            <td>
+              <Progress
+                percentage={calculatePercentage(
+                  category.balance,
+                  monthTotal.totalBalance
+                )}
+              />
+            </td>
+          </tr>
+          <tr>
+            <td>Budgeted</td>
+            <td>{budget}</td>
+            <td>
+              <Progress
+                percentage={calculatePercentage(
+                  category.budgeted,
+                  monthTotal.totalBudgeted
+                )}
+              />
+            </td>
+          </tr>
+          <tr>
+            <td>Spent</td>
+            <td>{spent}</td>
+            <td>
+              <Progress
+                percentage={calculatePercentage(
+                  category.activity,
+                  monthTotal.totalActivity
+                )}
+              />
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <span className={`mx-3 badge badge-${statusClass} badge-outline`}>
+        {formatPercentage(percentage)}
+      </span>
+      <progress
+        className={`progress progress-${statusClass} w-56`}
+        value={percentage}
+        max="100"
+      ></progress>
+    </>
+  );
+};
+
+const InflowCategoryCard = ({ category }: { category: Category }) => (
+  <>
+    <table className="table w-full">
+      <tbody>
+        <tr>
+          <td>Activity</td>
+          <td>{formatYnabAmount(category.activity)}</td>
+          <td></td>
+        </tr>
+      </tbody>
+    </table>
+  </>
+);
 export default CategoryCard;

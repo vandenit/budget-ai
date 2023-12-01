@@ -9,6 +9,26 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
+const filterLastXMonths = (monthSummary: Array<MonthSummary>, x = 4) => {
+  return monthSummary.slice(-x);
+};
+
+const stripTransactionsOnAllLevels = (monthSummary: Array<MonthSummary>) => {
+  return monthSummary.map((month) => {
+    return {
+      month: month.month,
+      isCurrentMonth: month.isCurrentMonth,
+      categoryUsage: month.categoryUsage.map((categoryUsage) => {
+        return {
+          category: categoryUsage.category,
+          categoryId: categoryUsage.categoryId,
+          amount: categoryUsage.amount,
+        };
+      }),
+    };
+  });
+};
+
 export async function getAIAnalysis(
   monthSummary: Array<MonthSummary>
 ): Promise<AIFinancialAnalysis> {
@@ -22,13 +42,13 @@ export async function getAIAnalysis(
       },
       {
         role: "user",
-        content: `This is the financial data of the last month ${JSON.stringify(
-          monthSummary.filter((m) => m.isCurrentMonth)
+        content: `This is the financial data of the last months ${JSON.stringify(
+          stripTransactionsOnAllLevels(filterLastXMonths(monthSummary))
         )}`,
       },
       {
         role: "user",
-        content: "What are your main insights and advices?",
+        content: "What ",
       },
     ],
   });

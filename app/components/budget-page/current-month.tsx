@@ -16,12 +16,18 @@ type Props = {
   forecast: MonthlyForcast;
 };
 
-const sortByCategoryUsage = (a: Category, b: Category) => {
+const sortByCategoryUsageWithInflowNameFirst = (a: Category, b: Category) => {
+  if (a.categoryName.toLowerCase().includes("inflow")) {
+    return -1;
+  }
+  if (b.categoryName.toLowerCase().includes("inflow")) {
+    return 1;
+  }
   return percentageSpent(a) - percentageSpent(b);
 };
 
 const withBudgetFilter = (category: Category) => {
-  return category.budgeted > 0;
+  return category.budgeted >= 0;
 };
 
 const CurrentMonth = ({
@@ -52,7 +58,7 @@ const CurrentMonth = ({
       <div className="flex flex-wrap mb-2 -mx-2">
         {categories
           .filter(withBudgetFilter)
-          .sort(sortByCategoryUsage)
+          .sort(sortByCategoryUsageWithInflowNameFirst)
           .map((category) => (
             <CategoryCard
               key={category.categoryId}
