@@ -32,6 +32,7 @@
     "@vitejs/plugin-react": "4.0.4",
     "autoprefixer": "latest",
     "daisyui": "^3.8.1",
+    "encoding": "^0.1.13",
     "eslint": "latest",
     "eslint-config-next": "latest",
     "jsdom": "^22.1.0",
