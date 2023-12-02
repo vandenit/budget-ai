@@ -35,6 +35,7 @@ export const emptyCategory: Category = {
   balance: 0,
   budgeted: 0,
   activity: 0,
+  targetAmount: 0,
 };
 export type Transaction = {
   id: string;
