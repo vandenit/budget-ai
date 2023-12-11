@@ -53,7 +53,7 @@ const CurrentMonth = ({
         monthTotal={monthTotal}
         monthPercentage={monthPercentage}
         forecast={forecast}
-        transactions={monthSummary.overallTransactions}
+        categories={categories}
       />
       <div className="flex flex-wrap mb-2 -mx-2">
         {categories
