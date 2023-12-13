@@ -1,5 +1,6 @@
 "use client";
 import React, { useRef, useState, MouseEvent } from "react";
+import { useRouter } from "next/navigation";
 import {
   Chart as ChartJS,
   ArcElement,
@@ -16,6 +17,7 @@ import { isInflowCategory, ynabAbsoluteNumber } from "@/app/utils/ynab";
 
 type Props = {
   categories: Category[];
+  month: string;
 };
 
 const options = {
@@ -91,7 +93,6 @@ const nameToColorIndex = (name: string): number => {
 
 const nameToUniqueColor = (name: string): string => {
   const color = colorPalette[nameToColorIndex(name)];
-  console.log("name:" + name + "/" + color);
   return color;
 };
 
@@ -114,7 +115,7 @@ const notExcludedCategory =
   (excludedCategories: string[]) => (category: Category) =>
     !excludedCategories.includes(category.categoryName);
 
-export const CategoryPieChart = ({ categories }: Props) => {
+export const CategoryPieChart = ({ categories, month }: Props) => {
   // category amount type state to be used by toggle
   const [categoryAmountType, setCategoryAmountType] =
     useState<CategoryAmountType>("activity");
@@ -147,6 +148,7 @@ export const CategoryPieChart = ({ categories }: Props) => {
     ],
   };
 
+  const router = useRouter();
   const chartRef = useRef();
 
   const onClick = (event: MouseEvent<HTMLCanvasElement>) => {
@@ -165,12 +167,25 @@ export const CategoryPieChart = ({ categories }: Props) => {
     );
   };
 
+  const navigateToCategory = (categoryName: string) => {
+    // navigate to category with router
+    // todo should be parent component that handles this
+    const category = categories.find(
+      (category) => category.categoryName === categoryName
+    );
+    if (!category) return;
+
+    router.push(
+      `/budgets/${category.budgetId}/transactions?month=${month}&categoryId=${category.categoryId}`
+    );
+  };
+
   const handleChartEvent = (element: InteractionItem[]) => {
     if (!element.length) return;
 
     const { index } = element[0];
     const { labels } = data;
-
+    navigateToCategory(labels[index]);
     toggleCategory(labels[index]);
   };
   return (

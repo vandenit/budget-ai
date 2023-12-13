@@ -50,6 +50,7 @@ const CurrentMonth = ({
       </h2>
       <HiddenProgressBars />
       <MonthTotalOverview
+        month={monthSummary.month}
         monthTotal={monthTotal}
         monthPercentage={monthPercentage}
         forecast={forecast}

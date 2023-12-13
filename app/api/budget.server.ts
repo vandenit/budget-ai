@@ -27,6 +27,7 @@ export type Category = {
   budgeted: number;
   activity: number;
   targetAmount: number;
+  budgetId: string;
 };
 
 export const emptyCategory: Category = {
@@ -36,6 +37,7 @@ export const emptyCategory: Category = {
   budgeted: 0,
   activity: 0,
   targetAmount: 0,
+  budgetId: "",
 };
 export type Transaction = {
   id: string;
@@ -240,6 +242,7 @@ export async function getCategories(id: string): Promise<Array<Category>> {
       budgeted: category.budgeted,
       activity: category.activity,
       targetAmount: category.goal_target || 0,
+      budgetId: id,
     }));
   } catch (exception) {
     console.warn(exception);
