@@ -63,7 +63,12 @@ const MonthSummaryBlock = ({ month, categories, budgetId }: Props) => {
   return (
     <div key={month.month} className="card bg-base-100 shadow-xl m-2">
       <div className="card-body">
-        <h2 className="card-title">{month.month}</h2>
+        <Link
+          className="link"
+          href={`${budgetId}/transactions?month=${month.month}`}
+        >
+          <h2 className="card-title">{month.month}</h2>
+        </Link>
 
         <table className="table">
           <thead>
