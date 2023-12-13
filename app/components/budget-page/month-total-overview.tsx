@@ -28,7 +28,7 @@ const MonthTotalOverview = ({
     <div className="card bg-base-100 shadow-xl mb-5">
       <div className="card-body p-0.5 sm:p-5">
         <div className="flex flex-wrap w-full">
-          <div className="w-1/2">
+          <div className="w-full md:w-1/2 lg:w-1/2 mb-5 md:mb-0 md:mb-0">
             <TotalTable
               monthTotal={monthTotal}
               forecast={forecast}
@@ -36,7 +36,7 @@ const MonthTotalOverview = ({
               monthPercentage={monthPercentage}
             />
           </div>
-          <div className="w-1/2">
+          <div className="w-full md:w-1/2 lg:w-1/2">
             <CategoryPieChart categories={categories} />
           </div>
         </div>
