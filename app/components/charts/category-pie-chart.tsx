@@ -14,6 +14,7 @@ ChartJS.register(ArcElement, Tooltip, Legend);
 
 import { Category } from "@/app/api/budget.server";
 import { isInflowCategory, ynabAbsoluteNumber } from "@/app/utils/ynab";
+import { isOnMobileDevice } from "./util";
 
 type Props = {
   categories: Category[];
@@ -185,8 +186,9 @@ export const CategoryPieChart = ({ categories, month }: Props) => {
 
     const { index } = element[0];
     const { labels } = data;
-    navigateToCategory(labels[index]);
-    toggleCategory(labels[index]);
+    if (!isOnMobileDevice()) {
+      navigateToCategory(labels[index]);
+    }
   };
   return (
     <>

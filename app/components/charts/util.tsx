@@ -66,3 +66,12 @@ const ifAllNegativeShowPositive = (
   }
   return spendingData;
 };
+
+export const isOnMobileDevice = () =>
+  // based on user agent string
+  // https://stackoverflow.com/a/8876069/10247962
+  navigator
+    ? /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+        navigator.userAgent
+      )
+    : false;
