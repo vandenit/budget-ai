@@ -21,7 +21,7 @@ export default async function RootLayout({
   const session = await getServerSession(authOptions);
   const budgets = session ? await getCachedBudgets() : [];
   return (
-    <html lang="en">
+    <html lang="en" data-theme="dark">
       <body>
         <BudgetNavigation budgets={budgets} loggedIn={session !== null} />
         <main className="container mx-auto p-2">{children}</main>
