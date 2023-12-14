@@ -168,7 +168,7 @@ export const CategoryPieChart = ({ categories, month }: Props) => {
         type: "pie" as const,
         label: getCategoryAmountTypeLabel(categoryAmountType),
         data: filteredCategories.map((category) =>
-          ynabAbsoluteNumber(category.activity)
+          ynabAbsoluteNumber(category[categoryAmountType])
         ),
         borderColor: "rgb(255, 99, 132)",
         backgroundColor: filteredCategories.map((category) =>
