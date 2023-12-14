@@ -9,12 +9,20 @@ import {
   InteractionItem,
 } from "chart.js";
 import { Pie, getElementAtEvent } from "react-chartjs-2";
+import ChartDataLabels from "chartjs-plugin-datalabels";
 
-ChartJS.register(ArcElement, Tooltip, Legend);
+const MIN_PERCENTAGE_TO_DISPLAY = 4;
+
+ChartJS.register(ArcElement, Tooltip, Legend, ChartDataLabels);
 
 import { Category } from "@/app/api/budget.server";
-import { isInflowCategory, ynabAbsoluteNumber } from "@/app/utils/ynab";
-import { isOnMobileDevice } from "./util";
+import {
+  isInflowCategory,
+  ynabAbsoluteNumber,
+  ynabNumber,
+} from "@/app/utils/ynab";
+import { isOnMobileDevice, valueToPercentageOfTotal } from "./util";
+import { compose, filter } from "ramda";
 
 type Props = {
   categories: Category[];
@@ -98,12 +106,13 @@ const nameToUniqueColor = (name: string): string => {
 };
 
 type CategoryAmountType = "activity" | "balance" | "budgeted";
-type CategoryAmountTypeWithLabel = {
+type CategoryAmountTypeWithProps = {
   type: CategoryAmountType;
   label: string;
+  negative?: boolean; // if true positive values will be filtered out
 };
-const amountTypes: CategoryAmountTypeWithLabel[] = [
-  { type: "activity", label: "Spent" },
+const amountTypes: CategoryAmountTypeWithProps[] = [
+  { type: "activity", label: "Spent", negative: true },
   { type: "balance", label: "Available" },
   { type: "budgeted", label: "Budgeted" },
 ];
@@ -111,6 +120,18 @@ const amountTypes: CategoryAmountTypeWithLabel[] = [
 const nonInflowCategoryWithUsage =
   (categoryAmountType: CategoryAmountType) => (category: Category) =>
     !isInflowCategory(category) && category[categoryAmountType] !== 0;
+
+const extraAmountFitler =
+  (categoryAmountType: CategoryAmountType) => (category: Category) => {
+    const categoryWithProps = amountTypes.find(
+      (amountType) => amountType.type === categoryAmountType
+    );
+    if (!categoryWithProps) return true;
+    if (categoryWithProps.negative) {
+      return category[categoryAmountType] < 0;
+    }
+    return true;
+  };
 
 const notExcludedCategory =
   (excludedCategories: string[]) => (category: Category) =>
@@ -126,12 +147,20 @@ export const CategoryPieChart = ({ categories, month }: Props) => {
   const getCategoryAmountTypeLabel = (type: CategoryAmountType) =>
     amountTypes.find((amountType) => amountType.type === type)?.label || "";
 
-  const categoriesWithUsage = categories.filter(
-    nonInflowCategoryWithUsage(categoryAmountType)
-  );
+  const categoriesWithUsage: Category[] = compose(
+    filter(nonInflowCategoryWithUsage(categoryAmountType)),
+    filter(extraAmountFitler(categoryAmountType))
+  )(categories);
+
   const filteredCategories = categoriesWithUsage.filter(
     notExcludedCategory(excludedCategories)
   );
+  const totalAmount = filteredCategories.reduce(
+    (total, category) =>
+      total + ynabAbsoluteNumber(category[categoryAmountType]),
+    0
+  );
+
   const data = {
     labels: filteredCategories.map((category) => category.categoryName),
     datasets: [
@@ -145,6 +174,22 @@ export const CategoryPieChart = ({ categories, month }: Props) => {
         backgroundColor: filteredCategories.map((category) =>
           nameToUniqueColor(category.categoryName)
         ),
+        datalabels: {
+          //black
+          color: "#000000",
+          formatter: (value: string, context: any) => {
+            const percentage = valueToPercentageOfTotal(value, totalAmount);
+            if (percentage < MIN_PERCENTAGE_TO_DISPLAY) {
+              return "";
+            }
+            return (
+              `${
+                context.chart.data.labels[context.dataIndex]
+              } ${valueToPercentageOfTotal(value, totalAmount)}%` || value
+            );
+            // This will display the label of each pie slice inside the slice
+          },
+        },
       },
     ],
   };

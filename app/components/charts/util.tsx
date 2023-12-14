@@ -75,3 +75,11 @@ export const isOnMobileDevice = () =>
         navigator.userAgent
       )
     : false;
+
+export const valueToPercentageOfTotal = (
+  value: string,
+  total: number
+): number => {
+  const numValue = parseFloat(value);
+  return Math.round((numValue / total) * 100);
+};
