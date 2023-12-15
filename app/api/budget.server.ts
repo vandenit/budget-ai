@@ -5,6 +5,7 @@ import * as ynab from "ynab";
 
 import { getServerSession } from "next-auth";
 import { authOptions } from "./auth/[...nextauth]/route";
+import { isInflowCategory } from "../utils/ynab";
 
 // todo : doesn't seem to be taken into account
 export const revalidate = 3600; // revalidate the data at most every hour
@@ -15,7 +16,7 @@ export type Budget = {
 };
 
 export type MonthTotal = {
-  totalActivity: number;
+  totalSpent: number;
   totalBudgeted: number;
   totalBalance: number;
 };
@@ -96,18 +97,20 @@ export const calculateCurrentMontPercentage = () => {
 };
 
 const withoutInflowCategoryFilter = (category: Category) =>
-  !category.categoryName.startsWith("Inflow");
+  !isInflowCategory(category);
 
 export const calculateTotals = (categories: Array<Category>): MonthTotal => {
   return categories.filter(withoutInflowCategoryFilter).reduce(
     (acc: MonthTotal, category: Category) => {
-      acc.totalActivity += category.activity;
+      if (category.activity < 0) {
+        acc.totalSpent += category.activity;
+      }
       acc.totalBudgeted += category.budgeted;
       acc.totalBalance += category.balance;
       return acc;
     },
     {
-      totalActivity: 0,
+      totalSpent: 0,
       totalBudgeted: 0,
       totalBalance: 0,
     }

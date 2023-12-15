@@ -17,9 +17,9 @@ ChartJS.register(ArcElement, Tooltip, Legend, ChartDataLabels);
 
 import { Category } from "@/app/api/budget.server";
 import {
+  formatYnabAmount,
   isInflowCategory,
   ynabAbsoluteNumber,
-  ynabNumber,
 } from "@/app/utils/ynab";
 import { isOnMobileDevice, valueToPercentageOfTotal } from "./util";
 import { compose, filter } from "ramda";
@@ -155,10 +155,11 @@ export const CategoryPieChart = ({ categories, month }: Props) => {
   const filteredCategories = categoriesWithUsage.filter(
     notExcludedCategory(excludedCategories)
   );
-  const totalAmount = filteredCategories.reduce(
-    (total, category) =>
-      total + ynabAbsoluteNumber(category[categoryAmountType]),
-    0
+  const totalAmount = ynabAbsoluteNumber(
+    filteredCategories.reduce(
+      (total, category) => total + category[categoryAmountType],
+      0
+    )
   );
 
   const data = {
@@ -245,6 +246,7 @@ export const CategoryPieChart = ({ categories, month }: Props) => {
         categories={categoriesWithUsage}
         excludedCategories={excludedCategories}
         onToggleCategory={toggleCategory}
+        amountType={categoryAmountType}
       />
       <Pie data={data} onClick={onClick} ref={chartRef} options={options} />
     </>
@@ -280,14 +282,20 @@ const CategoryPieChartLegend = ({
   categories,
   excludedCategories,
   onToggleCategory,
+  amountType,
 }: {
   categories: Category[];
   excludedCategories: string[];
   onToggleCategory: (categoryName: string) => void;
+  amountType: CategoryAmountType;
 }) => (
   <div className="flex flex-wrap m-2">
     {categories.map((category) => (
-      <div className="flex items-center mx-2" key={category.categoryId}>
+      <div
+        className="flex items-center mx-2 tooltip"
+        data-tip={formatYnabAmount(category[amountType])}
+        key={category.categoryId}
+      >
         <label className="cursor-pointer">
           <input
             type="checkbox"

@@ -96,7 +96,7 @@ const ExpenseCategoryCard = ({
               <Progress
                 percentage={calculatePercentage(
                   category.activity,
-                  monthTotal.totalActivity
+                  monthTotal.totalSpent
                 )}
               />
             </td>

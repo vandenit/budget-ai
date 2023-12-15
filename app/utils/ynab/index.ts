@@ -1,8 +1,7 @@
 import { Category, MonthTotal } from "@/app/api/budget.server";
-import { c } from "vitest/dist/reporters-5f784f42.js";
 
 export const isInflowCategory = (category: Category) => {
-  return category.categoryName.toLocaleLowerCase().includes("inflow");
+  return category.categoryName.startsWith("Inflow");
 };
 
 export const formatAmount = (amount: number, absolute: boolean = false) => {
@@ -36,7 +35,7 @@ export const formatPercentage = (percentage: number) =>
   percentage.toFixed(2) + "%";
 
 export const totalPercentageSpent = (total: MonthTotal) => {
-  const absAmount = ynabAbsoluteNumber(total.totalActivity);
+  const absAmount = ynabAbsoluteNumber(total.totalSpent);
   const absBudget = ynabAbsoluteNumber(total.totalBudgeted);
   if (absBudget === 0) {
     return 100;

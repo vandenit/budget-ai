@@ -62,14 +62,14 @@ const TotalTable = ({
     <table className="table">
       <thead>
         <tr>
-          <th>Total activity</th>
+          <th>Total spent</th>
           <th>Total available</th>
           <th>Total budgeted</th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td>{formatYnabAmount(monthTotal.totalActivity, true)}</td>
+          <td>{formatYnabAmount(monthTotal.totalSpent, true)}</td>
           <td>{formatYnabAmount(monthTotal.totalBalance)}</td>
           <td>{formatYnabAmount(monthTotal.totalBudgeted)}</td>
         </tr>
