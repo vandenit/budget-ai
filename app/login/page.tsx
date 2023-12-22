@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { SignIn } from "../components/login";
 import { authOptions } from "../api/auth/[...nextauth]/route";
 import { getCachedBudgets } from "../api/budget.server";
+import BudgetPage from "../components/budget-page";
 
 async function LoginPage() {
   const session = await getServerSession(authOptions);

@@ -5,6 +5,7 @@ import Loading from "../Loading";
 import {
   calculateCurrentMontPercentage,
   calculateTotals,
+  getBudget,
   getCategories,
   getMonthSummaries,
 } from "@/app/api/budget.server";
@@ -16,6 +17,7 @@ import {
   forecastSpendingWithES,
 } from "@/app/api/es-forcasting.server";
 import { getAIAnalysis } from "@/app/api/ai.server";
+import { savePreferredBudget } from "@/app/api/user/user.server";
 
 export default function BudgetPage({ budgetId }: { budgetId: string }) {
   return (
@@ -28,6 +30,8 @@ export default function BudgetPage({ budgetId }: { budgetId: string }) {
 }
 
 async function BudgetInfo({ budgetId }: { budgetId: string }) {
+  savePreferredBudget(budgetId);
+  const budget = await getBudget(budgetId);
   const monthPercentage = calculateCurrentMontPercentage();
   const monthSummaries = await getMonthSummaries(budgetId);
   // const aiResponse = await getAIAnalysis(monthSummaries);
@@ -42,10 +46,7 @@ async function BudgetInfo({ budgetId }: { budgetId: string }) {
   }
   return (
     <>
-      <h1>Month overview</h1>
-      <div className="chat chat-start">
-        <div className="chat-bubble">{aiResponse.response}</div>
-      </div>
+      <h1 className="text-center">{budget.name}</h1>
       <div className="mb-4 -mx-2">
         <CurrentMonth
           budgetId={budgetId}

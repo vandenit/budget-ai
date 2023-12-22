@@ -1,11 +1,8 @@
 import { cache } from "react";
 import moment from "moment";
-import "server-only";
-import * as ynab from "ynab";
-
-import { getServerSession } from "next-auth";
-import { authOptions } from "./auth/[...nextauth]/route";
+import * as ynabApi from "./ynab-api";
 import { isInflowCategory } from "../utils/ynab";
+import { BudgetDetail } from "ynab";
 
 // todo : doesn't seem to be taken into account
 export const revalidate = 3600; // revalidate the data at most every hour
@@ -64,22 +61,20 @@ export type MonthSummary = {
   overallTransactions: Array<Transaction>;
 };
 
-const getToken = async () => {
-  const session = await getServerSession(authOptions);
-  if (session) {
-    return (session as any).token;
+export async function getBudget(id: string): Promise<Budget> {
+  try {
+    const budget = await ynabApi.getBudget(id);
+    return budget;
+  } catch (exception) {
+    console.warn(exception);
+    return { id: "", name: "" };
   }
-};
+}
 
 async function getBudgets(): Promise<Array<Budget>> {
-  const token = await getToken();
-  if (!token) {
-    return [];
-  }
-  const api = new ynab.api(token || "");
   try {
-    const budgets = await api.budgets.getBudgets();
-    return budgets.data.budgets.map((budget: ynab.BudgetDetail) => ({
+    const budgets = await ynabApi.getBudgets();
+    return budgets.map((budget) => ({
       id: budget.id,
       name: budget.name,
     }));
@@ -137,29 +132,16 @@ export async function getFilteredTransactions(
   });
 }
 export async function getTransactions(id: string): Promise<Array<Transaction>> {
-  const token = await getToken();
-  if (!token) {
-    return [];
-  }
-  const api = new ynab.api(token || "");
-  try {
-    const { data } = await api.transactions.getTransactions(id);
-
-    return sortMostRecentFirst(data.transactions).map(
-      (transaction: ynab.TransactionDetail) => ({
-        id: transaction.id,
-        accountName: transaction.account_name,
-        payeeName: transaction.payee_name || "",
-        amount: transaction.amount,
-        date: transaction.date,
-        categoryId: transaction.category_id,
-        categoryName: transaction.category_name || "Uncategorized",
-      })
-    );
-  } catch (exception) {
-    console.warn(exception);
-    return [];
-  }
+  const transactions = await ynabApi.getTransactions(id);
+  return transactions.map((transaction) => ({
+    id: transaction.id,
+    accountName: transaction.account_name,
+    payeeName: transaction.payee_name || "",
+    amount: transaction.amount,
+    date: transaction.date,
+    categoryId: transaction.category_id,
+    categoryName: transaction.category_name || "Uncategorized",
+  }));
 }
 
 export async function getMonthSummaries(
@@ -212,43 +194,18 @@ export const monthSummaryReducer = (
       overallTransactions: [transaction],
     });
   }
-
   return acc;
 };
 
-const sortMostRecentFirst = (
-  transactions: Array<ynab.TransactionDetail>
-): Array<ynab.TransactionDetail> =>
-  transactions.sort((a, b) => {
-    return new Date(b.date).getTime() - new Date(a.date).getTime();
-  });
-
 export async function getCategories(id: string): Promise<Array<Category>> {
-  const token = await getToken();
-  if (!token) {
-    return [];
-  }
-  const api = new ynab.api(token || "");
-  try {
-    const { data } = await api.categories.getCategories(id);
-    const categories = data.category_groups.reduce(
-      (acc: Array<ynab.Category>, group: ynab.CategoryGroupWithCategories) => {
-        return acc.concat(group.categories);
-      },
-      []
-    );
-
-    return categories.map((category: ynab.Category) => ({
-      categoryName: category.name,
-      categoryId: category.id,
-      balance: category.balance,
-      budgeted: category.budgeted,
-      activity: category.activity,
-      targetAmount: category.goal_target || 0,
-      budgetId: id,
-    }));
-  } catch (exception) {
-    console.warn(exception);
-    return [];
-  }
+  const categories = await ynabApi.getCategories(id);
+  return categories.map((category) => ({
+    categoryName: category.name,
+    categoryId: category.id,
+    balance: category.balance,
+    budgeted: category.budgeted,
+    activity: category.activity,
+    targetAmount: category.goal_target || 0,
+    budgetId: id,
+  }));
 }
