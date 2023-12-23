@@ -43,7 +43,7 @@ const CurrentMonth = ({
       <h2 className="card-title">
         <Link
           className="link"
-          href={`${budgetId}/transactions?month=${monthSummary.month}`}
+          href={`/budgets/${budgetId}/transactions?month=${monthSummary.month}`}
         >
           {monthSummary.month}
         </Link>
