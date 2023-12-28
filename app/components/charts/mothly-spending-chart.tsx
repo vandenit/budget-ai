@@ -58,6 +58,11 @@ export const MonthlySpendingChart = ({
         data: spendingData.map((data) => data.spent),
         borderColor: "rgb(255, 99, 132)",
         backgroundColor: "rgba(255, 99, 132, 0.5)",
+        datalabels: {
+          formatter: (value: string, context: any) => {
+            return "";
+          },
+        },
       },
     ],
   };

@@ -45,6 +45,7 @@ export type Transaction = {
   categoryName: string;
   categoryId: string | undefined | null;
   payeeName: string;
+  memo: string;
 };
 
 export type CategoryUsage = {
@@ -141,6 +142,7 @@ export async function getTransactions(id: string): Promise<Array<Transaction>> {
     date: transaction.date,
     categoryId: transaction.category_id,
     categoryName: transaction.category_name || "Uncategorized",
+    memo: transaction.memo || "",
   }));
 }
 

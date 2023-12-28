@@ -68,18 +68,21 @@ async function TransactionsInfo({
         <table className="table">
           <thead>
             <tr>
+              <th>Date</th>
               <th>Amount</th>
               <th>Payee</th>
-              <th>Date</th>
+              <th>Memo</th>
               <th>Category Name</th>
             </tr>
           </thead>
           <tbody>
             {transactions.map((transaction) => (
               <tr key={transaction.id}>
+                <td>{transaction.date}</td>
+
                 <td>{formatYnabAmount(transaction.amount)}</td>
                 <td>{transaction.payeeName}</td>
-                <td>{transaction.date}</td>
+                <td>{transaction.memo}</td>
                 <td>{transaction.categoryName}</td>
               </tr>
             ))}
