@@ -33,7 +33,7 @@ const CategoryCard: React.FC<StatusIndicatorProps> = ({
           <h2 className="card-title">
             <Link
               className="link"
-              href={`${budgetId}/transactions?month=${currentMonthLbl}&categoryId=${category.categoryId}`}
+              href={`/budgets/${budgetId}/transactions?month=${currentMonthLbl}&categoryId=${category.categoryId}`}
             >
               {category.categoryName}
             </Link>{" "}

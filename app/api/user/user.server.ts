@@ -25,6 +25,7 @@ export const createOrUpdateUser = async (token?: string) => {
 };
 
 export const getUserByAuthId = async (authId: string) => {
+  await connectDb();
   return User.findOne({ authId });
 };
 
