@@ -1,4 +1,4 @@
-import { Category, MonthTotal, Transaction } from "@/app/api/budget.server";
+import { Category, MonthTotal } from "@/app/api/budget.server";
 import { MonthlyForcast } from "@/app/api/es-forcasting.server";
 import { percentageToStatusClass } from "@/app/utils/styling";
 import {

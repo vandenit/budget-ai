@@ -1,6 +1,6 @@
 import { compose } from "ramda";
-import { Transaction } from "@/app/api/budget.server";
 import { ynabAbsoluteNumber, ynabNumber } from "@/app/utils/ynab";
+import { Transaction } from "@/app/api/transaction/transaction.server";
 
 export type MonthlySpendingData = {
   dayOfMonth: string;

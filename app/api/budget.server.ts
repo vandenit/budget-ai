@@ -3,6 +3,11 @@ import moment from "moment";
 import * as ynabApi from "./ynab-api";
 import { isInflowCategory } from "../utils/ynab";
 import { BudgetDetail } from "ynab";
+import {
+  Transaction,
+  findTransactions,
+} from "./transaction/transaction.server";
+import { T } from "types-ramda";
 
 // todo : doesn't seem to be taken into account
 export const revalidate = 3600; // revalidate the data at most every hour
@@ -36,16 +41,6 @@ export const emptyCategory: Category = {
   activity: 0,
   targetAmount: 0,
   budgetId: "",
-};
-export type Transaction = {
-  id: string;
-  accountName: string;
-  amount: number;
-  date: string;
-  categoryName: string;
-  categoryId: string | undefined | null;
-  payeeName: string;
-  memo: string;
 };
 
 export type CategoryUsage = {
@@ -115,41 +110,36 @@ export const calculateTotals = (categories: Array<Category>): MonthTotal => {
 
 export const getCachedBudgets = cache(getBudgets);
 
-export async function getFilteredTransactions(
+const getFilteredTransactionsInternal = async (
   budgetId: string,
-  categoryId: string | null | undefined,
   month: string | null | undefined,
   dayOfMonth: string | null | undefined
-): Promise<Array<Transaction>> {
-  const transactions = await getTransactions(budgetId);
+): Promise<Array<Transaction>> => {
+  console.log("getFilteredTransactionsInternal", budgetId, month, dayOfMonth);
+  const transactions = await getTransactions(budgetId, month || "");
   return transactions.filter((transaction) => {
     const transactionMonth = transaction.date.substring(0, 7);
     const transactionDayOfMonth = transaction.date.substring(8, 10);
     return (
       (!month || transactionMonth === month) &&
-      (!dayOfMonth || Number(transactionDayOfMonth) === Number(dayOfMonth)) &&
-      (!categoryId || transaction.categoryId === categoryId)
+      (!dayOfMonth || Number(transactionDayOfMonth) === Number(dayOfMonth))
     );
   });
-}
-export async function getTransactions(id: string): Promise<Array<Transaction>> {
-  const transactions = await ynabApi.getTransactions(id);
-  return transactions.map((transaction) => ({
-    id: transaction.id,
-    accountName: transaction.account_name,
-    payeeName: transaction.payee_name || "",
-    amount: transaction.amount,
-    date: transaction.date,
-    categoryId: transaction.category_id,
-    categoryName: transaction.category_name || "Uncategorized",
-    memo: transaction.memo || "",
-  }));
+};
+
+export const getFilteredTransactions = cache(getFilteredTransactionsInternal);
+
+export async function getTransactions(
+  id: string,
+  month: string | null | undefined
+): Promise<Array<Transaction>> {
+  return await findTransactions(id, month || "");
 }
 
 export async function getMonthSummaries(
   id: string
 ): Promise<Array<MonthSummary>> {
-  const transactions = await getTransactions(id);
+  const transactions = await getTransactions(id, null);
 
   return transactions.reduce(monthSummaryReducer, []);
 }
@@ -211,3 +201,16 @@ export async function getCategories(id: string): Promise<Array<Category>> {
     budgetId: id,
   }));
 }
+
+// return all categories that have transactions
+export const getCategoriesContainingTransactions = async (
+  budgetId: string,
+  transactions: Transaction[]
+) => {
+  const categories = (await getCategories(budgetId)).filter((category) =>
+    transactions.find(
+      (transaction) => transaction.categoryId === category.categoryId
+    )
+  );
+  return categories;
+};

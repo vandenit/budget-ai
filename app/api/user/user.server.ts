@@ -53,6 +53,14 @@ export const savePreferredBudget = async (
 };
 
 export const getLoggedInUserPreferredBudgetId = async () => {
+  const user = await getLoggedInUser();
+  if (!user) {
+    return;
+  }
+  return user?.settings?.preferredBudgetId || "";
+};
+
+export const getLoggedInUser = async () => {
   await connectDb();
   const authId = await getLoggedInUserAuthId();
   if (!authId) {
@@ -62,5 +70,5 @@ export const getLoggedInUserPreferredBudgetId = async () => {
   if (!user) {
     return;
   }
-  return user?.settings?.preferredBudgetId || "";
+  return user;
 };

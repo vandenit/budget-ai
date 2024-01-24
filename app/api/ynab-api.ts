@@ -43,22 +43,32 @@ export const getBudgets = async (): Promise<ynab.BudgetDetail[]> => {
 };
 
 const sortMostRecentFirst = (
-  transactions: Array<ynab.TransactionDetail>
-): Array<ynab.TransactionDetail> =>
-  transactions.sort((a, b) => {
-    return new Date(b.date).getTime() - new Date(a.date).getTime();
-  });
+  data: ynab.TransactionsResponseData
+): ynab.TransactionsResponseData => {
+  return {
+    ...data,
+    transactions: data.transactions.sort((a, b) => {
+      return a.date > b.date ? -1 : 1;
+    }),
+  };
+};
 
 export const getTransactions = async (
-  id: string
-): Promise<ynab.TransactionDetail[]> => {
+  id: string,
+  lastKnowledgeOfServer: number
+): Promise<ynab.TransactionsResponseData> => {
   try {
     const api = await getApi();
-    const { data } = await api.transactions.getTransactions(id);
-    return sortMostRecentFirst(data.transactions);
+    const { data } = await api.transactions.getTransactions(
+      id,
+      undefined,
+      undefined,
+      lastKnowledgeOfServer
+    );
+    return sortMostRecentFirst(data);
   } catch (exception) {
     console.warn(exception);
-    return [];
+    return { transactions: [], server_knowledge: 0 };
   }
 };
 

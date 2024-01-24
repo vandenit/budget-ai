@@ -11,7 +11,6 @@ import {
 } from "@/app/api/budget.server";
 import MonthSummaryBlock from "./month-summary-block";
 import CurrentMonth from "./current-month";
-import { c } from "vitest/dist/reporters-5f784f42.js";
 import {
   categoriesToCategoryData,
   forecastSpendingWithES,
@@ -42,7 +41,7 @@ async function BudgetInfo({ budgetId }: { budgetId: string }) {
   const forecast = forecastSpendingWithES(categoryData);
   console.log(JSON.stringify(forecast));
   if (monthSummaries.length === 0) {
-    redirect("/login");
+    return <></>;
   }
   return (
     <>

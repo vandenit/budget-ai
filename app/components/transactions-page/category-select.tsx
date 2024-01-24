@@ -1,36 +1,55 @@
-import { getCategories } from "@/app/api/budget.server";
+"use client";
+import { Category } from "@/app/api/budget.server";
 import Link from "next/link";
-import { redirect } from "next/navigation";
+import { ChangeEvent, ChangeEventHandler } from "react";
+import { useSearchParams, usePathname, useRouter } from "next/navigation";
+import { on } from "events";
 
 async function CategorySelect({
   budgetId,
   categoryId,
   month,
+  categories,
+  onChange,
 }: {
   budgetId: string;
   categoryId: string | undefined;
   month?: string | undefined;
+  categories: Category[];
+  //category onChange
+  onChange: (value: string) => void;
 }) {
-  const categories = await getCategories(budgetId);
-  if (categories.length === 0) {
-    redirect("/login");
-  }
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const { replace } = useRouter();
+
+  const navigateToCategory = (event: ChangeEvent<HTMLSelectElement>) => {
+    const newCategoryId = event.target.value;
+    console.log("navigateToCategory:??" + newCategoryId);
+    const params = new URLSearchParams(searchParams);
+    if (newCategoryId) {
+      params.set("categoryId", newCategoryId);
+    } else {
+      params.delete("categoryId");
+    }
+    replace(`${pathname}?${params.toString()}`);
+    onChange(newCategoryId);
+  };
+
   return (
-    <details className="dropdown">
-      <summary className="m-1 btn">Select category</summary>
-      <ul className="p-2 shadow menu dropdown-content z-[1] bg-base-100 rounded-box w-52">
-        {categories.map((category) => (
-          <li key={category.categoryId} value={category.categoryId}>
-            <Link
-              className={categoryId === category.categoryId ? "active" : ""}
-              href={`transactions?categoryId=${category.categoryId}&month=${month}`}
-            >
-              {category.categoryName}
-            </Link>
-          </li>
-        ))}
-      </ul>
-    </details>
+    <select
+      className="select select-bordered w-full max-w-xs"
+      value={categoryId}
+      onChange={navigateToCategory}
+    >
+      {" "}
+      <option>Select category</option>
+      {categories.map((category) => (
+        <option key={category.categoryId} value={category.categoryId}>
+          {category.categoryName}
+        </option>
+      ))}
+    </select>
   );
 }
 

@@ -1,5 +1,5 @@
 import { av, c } from "vitest/dist/reporters-5f784f42.js";
-import { Category, MonthSummary, Transaction } from "./budget.server";
+import { Category, MonthSummary } from "./budget.server";
 import { ynabAbsoluteNumber } from "../utils/ynab";
 
 type CategoryData = {
