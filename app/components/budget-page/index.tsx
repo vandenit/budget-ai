@@ -43,19 +43,22 @@ async function BudgetInfo({ budgetId }: { budgetId: string }) {
   if (monthSummaries.length === 0) {
     return <></>;
   }
+  const currentMonth = monthSummaries.find((month) => month.isCurrentMonth);
   return (
     <>
       <h1 className="text-center">{budget.name}</h1>
-      <div className="mb-4 -mx-2">
-        <CurrentMonth
-          budgetId={budgetId}
-          monthSummary={monthSummaries[0]}
-          categories={categories}
-          monthPercentage={monthPercentage}
-          monthTotal={monthTotal}
-          forecast={forecast}
-        />
-      </div>
+      {currentMonth && (
+        <div className="mb-4 -mx-2">
+          <CurrentMonth
+            budgetId={budgetId}
+            monthSummary={currentMonth}
+            categories={categories}
+            monthPercentage={monthPercentage}
+            monthTotal={monthTotal}
+            forecast={forecast}
+          />
+        </div>
+      )}
       <div className="flex flex-wrap mb-4 -mx-2">
         {monthSummaries
           .filter((month) => !month.isCurrentMonth)

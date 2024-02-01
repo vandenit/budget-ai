@@ -118,12 +118,8 @@ const getFilteredTransactionsInternal = async (
   console.log("getFilteredTransactionsInternal", budgetId, month, dayOfMonth);
   const transactions = await getTransactions(budgetId, month || "");
   return transactions.filter((transaction) => {
-    const transactionMonth = transaction.date.substring(0, 7);
     const transactionDayOfMonth = transaction.date.substring(8, 10);
-    return (
-      (!month || transactionMonth === month) &&
-      (!dayOfMonth || Number(transactionDayOfMonth) === Number(dayOfMonth))
-    );
+    return !dayOfMonth || Number(transactionDayOfMonth) === Number(dayOfMonth);
   });
 };
 
@@ -153,7 +149,6 @@ export const monthSummaryReducer = (
   const monthSummary = acc.find(
     (summary: MonthSummary) => summary.month === month
   );
-
   if (monthSummary) {
     const categoryUsage = monthSummary.categoryUsage.find(
       (usage: CategoryUsage) => usage.category === transaction.categoryName
