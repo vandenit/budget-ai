@@ -53,16 +53,25 @@ const sortMostRecentFirst = (
   };
 };
 
-export const getTransactions = async (
-  id: string,
-  lastKnowledgeOfServer: number
-): Promise<ynab.TransactionsResponseData> => {
+type GetTransactionsInput = {
+  budgetId: string;
+  sinceDate?: string;
+  type?: ynab.GetTransactionsTypeEnum;
+  lastKnowledgeOfServer?: number;
+};
+
+const getTransactionsInternal = async ({
+  budgetId,
+  sinceDate,
+  type,
+  lastKnowledgeOfServer,
+}: GetTransactionsInput): Promise<ynab.TransactionsResponseData> => {
   try {
     const api = await getApi();
     const { data } = await api.transactions.getTransactions(
-      id,
-      undefined,
-      undefined,
+      budgetId,
+      sinceDate,
+      type,
       lastKnowledgeOfServer
     );
     return sortMostRecentFirst(data);
@@ -70,6 +79,21 @@ export const getTransactions = async (
     console.warn(exception);
     return { transactions: [], server_knowledge: 0 };
   }
+};
+
+export const getTransactions = async (
+  budgetId: string,
+  lastKnowledgeOfServer: number
+): Promise<ynab.TransactionsResponseData> => {
+  const api = await getApi();
+  return getTransactionsInternal({ budgetId, lastKnowledgeOfServer });
+};
+
+export const getUncategorizedOrUnApprovedTransactions = async (
+  budgetId: string
+): Promise<ynab.TransactionsResponseData> => {
+  const api = await getApi();
+  return getTransactionsInternal({ budgetId, type: "uncategorized" });
 };
 
 export async function getCategories(id: string): Promise<Array<ynab.Category>> {

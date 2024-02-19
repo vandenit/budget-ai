@@ -32,9 +32,7 @@ const TransactionContent = ({
     <>
       <h1>Transactions</h1>
       <CategorySelect
-        budgetId={budgetId}
         categoryId={usedCategoryId}
-        month={month}
         categories={categories}
         onChange={setNewCategoryId}
       />

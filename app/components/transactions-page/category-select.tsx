@@ -6,15 +6,11 @@ import { useSearchParams, usePathname, useRouter } from "next/navigation";
 import { on } from "events";
 
 async function CategorySelect({
-  budgetId,
   categoryId,
-  month,
   categories,
   onChange,
 }: {
-  budgetId: string;
   categoryId: string | undefined;
-  month?: string | undefined;
   categories: Category[];
   //category onChange
   onChange: (value: string) => void;

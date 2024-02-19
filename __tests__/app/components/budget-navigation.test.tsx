@@ -1,6 +1,6 @@
 import { expect, test } from "vitest";
 import { render, screen } from "@testing-library/react";
-import BudgetNavigation from "../../app/components/budget-navigation";
+import BudgetNavigation from "../../../app/components/budget-navigation";
 
 const mockBudgets = [
   { id: "1", name: "Budget 1" },
