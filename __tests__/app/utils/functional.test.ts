@@ -1,5 +1,5 @@
 import { expect, test } from "vitest";
-import { pipeP, composeP } from "../../../../app/utils/functional";
+import { pipeP, composeP } from "../../../app/utils/functional";
 
 test("pipeP executes async functions in sequence", async () => {
   const addOne = (x: number) => Promise.resolve(x + 1);

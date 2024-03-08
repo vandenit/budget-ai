@@ -78,7 +78,7 @@ const MonthSummaryBlock = ({ month, categories, budgetId }: Props) => {
             </tr>
           </thead>
           <tbody>
-            {month.categoryUsage.sort(sortByCategoryAmount).map((category) => (
+            {month.categoryUsages.sort(sortByCategoryAmount).map((category) => (
               <tr key={category.category}>
                 <td>
                   <Link

@@ -8,6 +8,7 @@ import {
   findTransactions,
 } from "./transaction/transaction.server";
 import { T } from "types-ramda";
+import { monthSummaryReducer } from './utils/month.summary.reducer';
 
 // todo : doesn't seem to be taken into account
 export const revalidate = 3600; // revalidate the data at most every hour
@@ -53,7 +54,7 @@ export type CategoryUsage = {
 export type MonthSummary = {
   month: string;
   isCurrentMonth: boolean;
-  categoryUsage: Array<CategoryUsage>;
+  categoryUsages: Array<CategoryUsage>;
   overallTransactions: Array<Transaction>;
 };
 
@@ -140,50 +141,6 @@ export async function getMonthSummaries(
   return transactions.reduce(monthSummaryReducer, []);
 }
 
-export const monthSummaryReducer = (
-  acc: Array<MonthSummary>,
-  transaction: Transaction
-) => {
-  const month = transaction.date.substring(0, 7);
-  const currentMonth = new Date().toISOString().substring(0, 7);
-  const monthSummary = acc.find(
-    (summary: MonthSummary) => summary.month === month
-  );
-  if (monthSummary) {
-    const categoryUsage = monthSummary.categoryUsage.find(
-      (usage: CategoryUsage) => usage.category === transaction.categoryName
-    );
-
-    if (categoryUsage) {
-      categoryUsage.amount += transaction.amount;
-      categoryUsage.transactions.push(transaction);
-    } else {
-      monthSummary.categoryUsage.push({
-        category: transaction.categoryName,
-        amount: transaction.amount,
-        categoryId: transaction.categoryId,
-        transactions: [transaction],
-      });
-    }
-    monthSummary.overallTransactions.push(transaction);
-  } else {
-    acc.push({
-      month,
-      isCurrentMonth: month === currentMonth,
-      categoryUsage: [
-        {
-          category: transaction.categoryName,
-          amount: transaction.amount,
-          categoryId: transaction.categoryId,
-          transactions: [transaction],
-        },
-      ],
-      overallTransactions: [transaction],
-    });
-  }
-  return acc;
-};
-
 export async function getCategories(id: string): Promise<Array<Category>> {
   const categories = await ynabApi.getCategories(id);
   return categories.map((category) => ({
@@ -195,8 +152,8 @@ export async function getCategories(id: string): Promise<Array<Category>> {
     targetAmount: category.goal_target || 0,
     budgetId: id,
   }));
-}
-
+};
+  
 // return all categories that have transactions
 export const getCategoriesContainingTransactions = async (
   budgetId: string,

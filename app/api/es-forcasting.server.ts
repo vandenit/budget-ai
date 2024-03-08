@@ -40,7 +40,7 @@ const monthSummariesToMonthlySpendingForCategory = (
   categoryId: string
 ): MonthlySpending[] => {
   return monthSummaries.map((summary) => {
-    const categoryUsage = summary.categoryUsage.find(
+    const categoryUsage = summary.categoryUsages.find(
       (usage) => usage.categoryId === categoryId
     );
     return {
@@ -111,7 +111,7 @@ const collectTransactionsForCategory = (
   categoryId: string
 ): TransactionData[] => {
   return monthSummaries.reduce((acc, summary) => {
-    const categoryUsage = summary.categoryUsage.find(
+    const categoryUsage = summary.categoryUsages.find(
       (usage) => usage.categoryId === categoryId
     );
     if (categoryUsage) {

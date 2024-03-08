@@ -160,7 +160,9 @@ export const findTransactions = async (
     date: dateFilter,
   };
   console.log("filter?" + JSON.stringify(filter));
-  const localTransactions = await LocalTransaction.find(filter);
+  const localTransactions = await LocalTransaction.find(filter).sort({
+    date: -1,
+  });
   insertOrUpdateMissingTransactions(budgetId, ynabTransactions.transactions);
   return mergeTransactions(ynabTransactions.transactions, localTransactions);
 };

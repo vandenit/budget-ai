@@ -2,7 +2,6 @@ import { Category, MonthSummary, MonthTotal } from "@/app/api/budget.server";
 import { formatYnabAmount, percentageSpent } from "@/app/utils/ynab";
 import Link from "next/link";
 import CategoryCard from "./category-card";
-import { percentageToStatusClass } from "@/app/utils/styling";
 import MonthTotalOverview from "./month-total-overview";
 import HiddenProgressBars from "./hidden-progress-bars";
 import { MonthlyForcast } from "@/app/api/es-forcasting.server";
