@@ -3,6 +3,7 @@ import { Suspense, useState } from "react";
 import Loading from "../Loading";
 import {
   getCategoriesContainingTransactions,
+  getCategoriesFromTransactions,
   getFilteredTransactions,
 } from "@/app/api/budget.server";
 import TransactionContent from "./transaction-content";
@@ -48,7 +49,7 @@ async function TransactionsInfo({
     month,
     dayOfMonth
   );
-  const categories = await getCategoriesContainingTransactions(
+  const categories = await getCategoriesFromTransactions(
     budgetId,
     transactions
   );

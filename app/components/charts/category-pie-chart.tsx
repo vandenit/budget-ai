@@ -27,6 +27,7 @@ import { compose, filter } from "ramda";
 type Props = {
   categories: Category[];
   month: string;
+  selectedAmountTypes?: CategoryAmountType[];
 };
 
 const options = {
@@ -137,7 +138,7 @@ const notExcludedCategory =
   (excludedCategories: string[]) => (category: Category) =>
     !excludedCategories.includes(category.categoryName);
 
-export const CategoryPieChart = ({ categories, month }: Props) => {
+export const CategoryPieChart = ({ categories, month, selectedAmountTypes}: Props) => {
   // category amount type state to be used by toggle
   const [categoryAmountType, setCategoryAmountType] =
     useState<CategoryAmountType>("activity");
@@ -241,6 +242,7 @@ export const CategoryPieChart = ({ categories, month }: Props) => {
       <AmountTypeToggle
         current={categoryAmountType}
         onChange={setCategoryAmountType}
+        selectedAmountTypes={selectedAmountTypes}
       />
       <CategoryPieChartLegend
         categories={categoriesWithUsage}
@@ -256,16 +258,20 @@ export const CategoryPieChart = ({ categories, month }: Props) => {
 const AmountTypeToggle = ({
   current,
   onChange,
+  selectedAmountTypes
 }: {
   current: CategoryAmountType;
   onChange: (type: CategoryAmountType) => void;
+  selectedAmountTypes?: CategoryAmountType[];
 }) => {
+  const partOfSelectedAmountsFilter = (type: CategoryAmountTypeWithProps) =>
+    selectedAmountTypes ? selectedAmountTypes.includes(type.type) : true;
   const isActive = (type: CategoryAmountType) =>
     current === type ? "tab-active" : "";
   return (
     // daisyui boxed tab
     <div className="tabs tabs-boxed">
-      {amountTypes.map((type) => (
+      {amountTypes.filter(partOfSelectedAmountsFilter).map((type) => (
         <button
           key={type.type}
           className={`tab ${isActive(type.type)}`}

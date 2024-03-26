@@ -3,6 +3,7 @@ import { monthSummaryReducer } from "../../../../app/api/utils/month.summary.red
 import { Transaction } from "@/app/api/transaction/transaction.server";
 import { MonthSummary } from "@/app/api/budget.server";
 
+
 describe("monthSummaryReducer", () => {
     const createTestTransaction = (date: string, categoryName: string, categoryId: string): Transaction => (
         {
@@ -25,7 +26,7 @@ describe("monthSummaryReducer", () => {
                 isCurrentMonth: false,
                 categoryUsages: [
                     {
-                        category: "Groceries",
+                        categoryName: "Groceries",
                         amount: 100,
                         categoryId: "123",
                         transactions: [transaction],
@@ -44,7 +45,7 @@ describe("monthSummaryReducer", () => {
                 isCurrentMonth: true,
                 categoryUsages: [
                     {
-                        category: "Groceries",
+                        categoryName: "Groceries",
                         amount: 100,
                         categoryId: "123",
                         transactions: [transaction],
@@ -64,7 +65,7 @@ describe("monthSummaryReducer", () => {
                 isCurrentMonth: true,
                 categoryUsages: [
                     {
-                        category: "Groceries",
+                        categoryName: "Groceries",
                         amount: 100,
                         categoryId: "123",
                         transactions: [transaction],
@@ -83,7 +84,7 @@ describe("monthSummaryReducer", () => {
                     isCurrentMonth: true,
                     categoryUsages: [
                         {
-                            category: "Groceries",
+                            categoryName: "Groceries",
                             amount: 200,
                             categoryId: "123",
                             transactions: [transaction, newTransaction],
@@ -102,7 +103,7 @@ describe("monthSummaryReducer", () => {
                     isCurrentMonth: true,
                     categoryUsages: [
                         {
-                            category: "Groceries",
+                            categoryName: "Groceries",
                             amount: 100,
                             categoryId: "123",
                             transactions: [transaction],
@@ -115,7 +116,7 @@ describe("monthSummaryReducer", () => {
                     isCurrentMonth: false,
                     categoryUsages: [
                         {
-                            category: "Groceries",
+                            categoryName: "Groceries",
                             amount: 100,
                             categoryId: "123",
                             transactions: [newTransaction],

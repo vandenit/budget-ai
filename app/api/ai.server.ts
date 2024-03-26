@@ -20,7 +20,7 @@ const stripTransactionsOnAllLevels = (monthSummary: Array<MonthSummary>) => {
       isCurrentMonth: month.isCurrentMonth,
       categoryUsage: month.categoryUsages.map((categoryUsage) => {
         return {
-          category: categoryUsage.category,
+          category: categoryUsage.categoryName,
           categoryId: categoryUsage.categoryId,
           amount: categoryUsage.amount,
         };

@@ -39,7 +39,7 @@ async function CategorySelect({
       onChange={navigateToCategory}
     >
       {" "}
-      <option>Select category</option>
+      <option value={""}>Select category</option>
       {categories.map((category) => (
         <option key={category.categoryId} value={category.categoryId}>
           {category.categoryName}

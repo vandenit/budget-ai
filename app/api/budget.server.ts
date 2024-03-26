@@ -1,3 +1,4 @@
+import "server-only";
 import { cache } from "react";
 import moment from "moment";
 import * as ynabApi from "./ynab-api";
@@ -8,7 +9,10 @@ import {
   findTransactions,
 } from "./transaction/transaction.server";
 import { T } from "types-ramda";
-import { monthSummaryReducer } from './utils/month.summary.reducer';
+import { monthSummaryReducer } from "./utils/month.summary.reducer";
+import { categoryUsageReducer } from "./utils/category.usage.reducer";
+import { c } from "vitest/dist/reporters-5f784f42.js";
+import { categoryUsageMapper } from "./utils/category-usage.mapper";
 
 // todo : doesn't seem to be taken into account
 export const revalidate = 3600; // revalidate the data at most every hour
@@ -45,7 +49,7 @@ export const emptyCategory: Category = {
 };
 
 export type CategoryUsage = {
-  category: string;
+  categoryName: string;
   categoryId: string | undefined | null;
   amount: number;
   transactions: Array<Transaction>;
@@ -80,6 +84,9 @@ async function getBudgets(): Promise<Array<Budget>> {
     return [];
   }
 }
+
+const categorySorter = (a: Category, b: Category): number =>
+  a.categoryName.localeCompare(b.categoryName);
 
 export const calculateCurrentMontPercentage = () => {
   const now = moment();
@@ -143,17 +150,19 @@ export async function getMonthSummaries(
 
 export async function getCategories(id: string): Promise<Array<Category>> {
   const categories = await ynabApi.getCategories(id);
-  return categories.map((category) => ({
-    categoryName: category.name,
-    categoryId: category.id,
-    balance: category.balance,
-    budgeted: category.budgeted,
-    activity: category.activity,
-    targetAmount: category.goal_target || 0,
-    budgetId: id,
-  }));
-};
-  
+  return categories
+    .map((category) => ({
+      categoryName: category.name,
+      categoryId: category.id,
+      balance: category.balance,
+      budgeted: category.budgeted,
+      activity: category.activity,
+      targetAmount: category.goal_target || 0,
+      budgetId: id,
+    }))
+    .sort(categorySorter);
+}
+
 // return all categories that have transactions
 export const getCategoriesContainingTransactions = async (
   budgetId: string,
@@ -166,3 +175,12 @@ export const getCategoriesContainingTransactions = async (
   );
   return categories;
 };
+
+export const getCategoriesFromTransactions = (
+  budgetId: string,
+  transactions: Transaction[]
+): Category[] =>
+  transactions
+    .reduce(categoryUsageReducer, [])
+    .map(categoryUsageMapper(budgetId))
+    .sort(categorySorter);

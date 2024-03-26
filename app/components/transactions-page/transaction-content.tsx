@@ -6,6 +6,7 @@ import CategorySelect from "./category-select";
 import { Category } from "@/app/api/budget.server";
 import { formatYnabAmount } from "@/app/utils/ynab";
 import { Transaction } from "@/app/api/transaction/transaction.server";
+import { CategoryPieChart } from "../charts/category-pie-chart";
 
 const TransactionContent = ({
   budgetId,
@@ -30,13 +31,23 @@ const TransactionContent = ({
 
   return (
     <>
-      <h1>Transactions</h1>
+      <h1 className="m-2">Transactions {month}</h1>
       <CategorySelect
         categoryId={usedCategoryId}
         categories={categories}
         onChange={setNewCategoryId}
       />
       <>
+        {!categoryId && (
+          <div className="m-5 w-3/4 text-center">
+            <CategoryPieChart
+              month={month || ""}
+              categories={categories}
+              selectedAmountTypes={["activity"]}
+            />
+          </div>
+        )}
+
         <MonthlySpendingChart
           spendingData={getMonthlySpendingData(filteredTransactions)}
           categoryId={categoryId || ""}

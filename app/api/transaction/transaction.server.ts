@@ -164,5 +164,7 @@ export const findTransactions = async (
     date: -1,
   });
   insertOrUpdateMissingTransactions(budgetId, ynabTransactions.transactions);
-  return mergeTransactions(ynabTransactions.transactions, localTransactions);
+  return mergeTransactions(ynabTransactions.transactions.filter(
+    ynabTransaction => ynabTransaction.date.startsWith(month || "")
+  ), localTransactions);
 };
