@@ -1,5 +1,8 @@
 import NextAuth, { NextAuthOptions } from "next-auth";
-import { createOrUpdateUser } from "../../user/user.server";
+import {
+  createOrUpdateUser,
+  connectUserWithYnab,
+} from "../../user/user.server";
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -29,18 +32,17 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, account }) {
       // Persist the OAuth access_token to the token right after signin
-      if (account) {
-        token.accessToken = account.access_token;
-        createOrUpdateUser(account.access_token);
+      if (account && account.refresh_token) {
+        await connectUserWithYnab({
+          accessToken: account.access_token || "",
+          refreshToken: account.refresh_token || "",
+        });
       }
       return token;
     },
-    async session({ session, token, user }) {
+    async session({ session }) {
       // Send properties to the client, like an access_token from a provider.
-      return {
-        ...session,
-        token: token.accessToken,
-      };
+      return session;
     },
   },
 };

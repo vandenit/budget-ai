@@ -1,18 +1,60 @@
 import { getServerSession } from "next-auth";
-import { authOptions } from "./auth/[...nextauth]/route";
 import "server-only";
 import * as ynab from "ynab";
-import { get } from "http";
+import { getLoggedInUser, connectUserWithYnab } from "./user/user.server";
 
-const getToken = async () => {
-  const session = await getServerSession(authOptions);
-  if (session) {
-    return (session as any).token;
+const refreshAccessToken = async (refreshToken: string) => {
+  // refresh using native fetch
+  const clientId = process.env.YNAB_CLIENT_ID;
+  const clientSecret = process.env.YNAB_CLIENT_SECRET;
+  const response = await fetch(
+    `https://app.ynab.com/oauth/token?client_id=${clientId}&client_secret=${clientSecret}&grant_type=refresh_token&refresh_token=${refreshToken}`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+  return response.json();
+};
+
+const refreshUserToken = async () => {
+  const user = await getLoggedInUser();
+  if (!user) {
+    throw new Error("Not logged in");
+  }
+  const refreshToken = user.ynabConnection.refreshToken;
+  if (!refreshToken) {
+    throw new Error("No token found");
+  }
+  try {
+    const refreshedToken = await refreshAccessToken(refreshToken);
+    console.log("refreshed token:" + JSON.stringify(refreshedToken));
+    await connectUserWithYnab({
+      accessToken: refreshedToken.access_token,
+      refreshToken: refreshedToken.refresh_token,
+    });
+  } catch (exception) {
+    throw new Error("Failed to refresh token");
+  }
+};
+
+export const isYnabTokenExpired = async () => {
+  try {
+    await refreshUserToken();
+    return false;
+  } catch (exception) {
+    return true;
   }
 };
 
 const getApi = async (t?: string) => {
-  const token = t || (await getToken());
+  const user = await getLoggedInUser();
+  if (!user) {
+    throw new Error("Not logged in");
+  }
+  const token = user.ynabConnection.accessToken;
   if (!token) {
     throw new Error("No token found");
   }
@@ -112,15 +154,3 @@ export async function getCategories(id: string): Promise<Array<ynab.Category>> {
     return [];
   }
 }
-
-export const getLoggedInUserAuthId = async (
-  token?: string
-): Promise<string> => {
-  try {
-    const api = await getApi(token);
-    const { data } = await api.user.getUser();
-    return data?.user?.id || "";
-  } catch (exception) {
-    return "";
-  }
-};

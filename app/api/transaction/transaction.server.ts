@@ -4,6 +4,7 @@ import connectDb from "../db";
 import { getLoggedInUser, getUserByAuthId } from "../user/user.server";
 import { UserTransaction, LocalTransaction } from "./transaction.schema";
 import { TransactionDetail, TransactionResponseData } from "ynab";
+import mongoose from "mongoose";
 
 export type Transaction = {
   id: string;
@@ -17,7 +18,7 @@ export type Transaction = {
 };
 
 const createOrUpdateUserTransaction = async (
-  userId: string,
+  userId: mongoose.Schema.Types.ObjectId,
   budgetId: string,
   lastKnowledgeOfServer: number
 ) => {
@@ -164,7 +165,10 @@ export const findTransactions = async (
     date: -1,
   });
   insertOrUpdateMissingTransactions(budgetId, ynabTransactions.transactions);
-  return mergeTransactions(ynabTransactions.transactions.filter(
-    ynabTransaction => ynabTransaction.date.startsWith(month || "")
-  ), localTransactions);
+  return mergeTransactions(
+    ynabTransactions.transactions.filter((ynabTransaction) =>
+      ynabTransaction.date.startsWith(month || "")
+    ),
+    localTransactions
+  );
 };
