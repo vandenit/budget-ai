@@ -1,6 +1,12 @@
 /* global use, db */
 use("budgetDG");
 
+db.getCollection("users").find();
+db.getCollection("users").drop();
+
+
+db.getCollection("users").remove({});
+
 db.getCollection("localtransactions").find({ date: { $exists: true } });
 db.getCollection("localtransactions").count({
   budgetId: "7812a588-8c0d-40fe-b6d9-6da6d7025056",
@@ -24,6 +30,7 @@ db.getCollection("localtransactions").find({
   date: { $exists: true },
 });
 
+db.getCollection("usertransactions").remove({});
 db.getCollection("usertransactions").find({
   budgetId: "b84f2a66-8d15-42ba-ae09-9163e01125b9",
 });

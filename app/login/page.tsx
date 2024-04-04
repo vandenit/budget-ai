@@ -1,6 +1,6 @@
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
-import { SignIn } from "../components/login";
+import { SignIn, SignOut } from "../components/login";
 import { authOptions } from "../api/auth/[...nextauth]/route";
 import { getCachedBudgets } from "../api/budget.server";
 import BudgetPage from "../components/budget-page";

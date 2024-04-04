@@ -3,6 +3,11 @@ const { Schema, model } = mongoose;
 
 const userSchema = new Schema({
   authId: { type: String, index: true },
+  name: String,
+  ynabConnection: {
+    accessToken: String,
+    refreshToken: String,
+  },
   createdAt: Date,
   updatedAt: Date,
   settings: {
