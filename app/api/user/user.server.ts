@@ -3,19 +3,34 @@ import User from "./user.schema";
 import connectDb from "../db";
 import { getSession } from "@auth0/nextjs-auth0";
 import mongoose from "mongoose";
+import { c } from "vitest/dist/reporters-5f784f42.js";
+
+const MAX_SYNC_USERS = 100;
+const SYNC_INTERVAL_MINUTES = 3;
 
 type YnabConnection = {
   accessToken: string;
   refreshToken: string;
 };
 
-type User = {
+type ServerKnowledge = {
+  transactions: number;
+  categories: number;
+};
+
+type YnabUserData = {
+  connection: YnabConnection;
+  serverKnowledge?: ServerKnowledge;
+};
+
+export type UserType = {
   _id: mongoose.Schema.Types.ObjectId;
   authId: string;
   name: string;
   createdAt: Date;
   updatedAt: Date;
-  ynabConnection: YnabConnection;
+  syncDate?: Date;
+  ynab?: YnabUserData;
   settings: {
     preferredBudgetId: string;
   };
@@ -54,19 +69,22 @@ export const createOrUpdateUser = async ({
   return newUser;
 };
 
-export const connectUserWithYnab = async (ynabConnection: YnabConnection) => {
+export const connectUserWithYnab = async (connection: YnabConnection) => {
   await connectDb();
-  console.log(`connecting user with ynab: ${JSON.stringify(ynabConnection)}`);
+  console.log(`connecting user with ynab: ${JSON.stringify(connection)}`);
   const authId = await getLoggedInUserAuthId();
   if (!authId) {
     return;
   }
-  await User.updateOne({ authId }, { ynabConnection, updatedAt: new Date() });
+  await User.updateOne(
+    { authId },
+    { ynab: { connection }, updatedAt: new Date() }
+  );
 };
 
 export const getUserByAuthId = async (
   authId: string
-): Promise<User | null | undefined> => {
+): Promise<UserType | null | undefined> => {
   await connectDb();
   return User.findOne({ authId });
 };
@@ -104,4 +122,28 @@ export const getLoggedInUser = async () => {
     return;
   }
   return user;
+};
+
+const xMinutesAgo = () => {
+  const date = new Date();
+  date.setMinutes(date.getMinutes() - SYNC_INTERVAL_MINUTES);
+  return date;
+};
+
+export const findNonSyncedUsers = async (): Promise<UserType[]> => {
+  connectDb();
+  // find last MAX_SYNC_USERS users with no sync date or sync date older than 5 minutes
+  return User.find({
+    $or: [
+      { syncDate: { $exists: false } },
+      { syncDate: { $lt: xMinutesAgo() } },
+    ],
+  })
+    .sort({ updatedAt: -1 })
+    .limit(MAX_SYNC_USERS);
+};
+
+export const updateSyncDate = async (user: UserType, date: Date) => {
+  connectDb();
+  User.updateOne({ _id: user._id }, { syncDate: date }).exec();
 };

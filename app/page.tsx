@@ -8,7 +8,7 @@ import {
 } from "./api/user/user.server";
 import { useUser } from "@auth0/nextjs-auth0/client";
 import { getSession } from "@auth0/nextjs-auth0";
-import { isYnabTokenExpired } from "./api/ynab-api";
+import { isYnabTokenExpired } from "./api/ynab/ynab-api";
 
 export default async function Home() {
   const session = await getSession();

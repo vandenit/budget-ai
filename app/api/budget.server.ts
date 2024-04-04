@@ -1,7 +1,7 @@
 import "server-only";
 import { cache } from "react";
 import moment from "moment";
-import * as ynabApi from "./ynab-api";
+import * as ynabApi from "./ynab/ynab-api";
 import { isInflowCategory } from "../utils/ynab";
 import { BudgetDetail } from "ynab";
 import {

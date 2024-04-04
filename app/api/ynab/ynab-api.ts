@@ -1,7 +1,11 @@
 import { getServerSession } from "next-auth";
 import "server-only";
 import * as ynab from "ynab";
-import { getLoggedInUser, connectUserWithYnab } from "./user/user.server";
+import {
+  getLoggedInUser,
+  connectUserWithYnab,
+  UserType,
+} from "../user/user.server";
 
 const refreshAccessToken = async (refreshToken: string) => {
   // refresh using native fetch
@@ -19,12 +23,8 @@ const refreshAccessToken = async (refreshToken: string) => {
   return response.json();
 };
 
-const refreshUserToken = async () => {
-  const user = await getLoggedInUser();
-  if (!user) {
-    throw new Error("Not logged in");
-  }
-  const refreshToken = user.ynabConnection.refreshToken;
+export const refreshUserToken = async (user: UserType) => {
+  const refreshToken = user.ynab?.connection?.refreshToken;
   if (!refreshToken) {
     throw new Error("No token found");
   }
@@ -40,21 +40,29 @@ const refreshUserToken = async () => {
   }
 };
 
+const refreshLoggedInUserToken = async () => {
+  const user = await getLoggedInUser();
+  if (!user) {
+    throw new Error("Not logged in");
+  }
+  await refreshUserToken(user);
+};
+
 export const isYnabTokenExpired = async () => {
   try {
-    await refreshUserToken();
+    await refreshLoggedInUserToken();
     return false;
   } catch (exception) {
     return true;
   }
 };
 
-const getApi = async (t?: string) => {
-  const user = await getLoggedInUser();
+const getApi = async (userInput?: UserType) => {
+  const user = userInput || (await getLoggedInUser());
   if (!user) {
-    throw new Error("Not logged in");
+    throw new Error("No user given or logged in");
   }
-  const token = user.ynabConnection.accessToken;
+  const token = user?.ynab?.connection.accessToken;
   if (!token) {
     throw new Error("No token found");
   }
@@ -73,9 +81,11 @@ export const getBudget = async (id: string): Promise<ynab.BudgetDetail> => {
   }
 };
 
-export const getBudgets = async (): Promise<ynab.BudgetDetail[]> => {
+export const getBudgets = async (
+  user?: UserType
+): Promise<ynab.BudgetDetail[]> => {
   try {
-    const api = await getApi();
+    const api = await getApi(user);
     const budgets = await api.budgets.getBudgets();
     return budgets.data.budgets;
   } catch (exception) {

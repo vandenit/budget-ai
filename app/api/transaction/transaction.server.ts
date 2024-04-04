@@ -1,5 +1,5 @@
 import { connect } from "http2";
-import * as ynabApi from "../ynab-api";
+import * as ynabApi from "../ynab/ynab-api";
 import connectDb from "../db";
 import { getLoggedInUser, getUserByAuthId } from "../user/user.server";
 import { UserTransaction, LocalTransaction } from "./transaction.schema";
