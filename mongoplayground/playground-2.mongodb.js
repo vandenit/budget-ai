@@ -3,7 +3,14 @@ use("budgetDG");
 
 db.getCollection("users").find();
 db.getCollection("users").drop();
+db.getCollection("localbudgets").findOne({ _id: ObjectId('660fcee01a3ec002591955e1') });
+db.getCollection("localbudgets").find();
+db.getCollection("localcategories").find({ budgetId: ObjectId('660fcee01a3ec002591955e1') });
+db.getCollection("localcategories").remove({});
 
+db.getCollection("localbudgets").remove({});
+
+db.getCollection("localbudgets").drop({});
 
 db.getCollection("users").remove({});
 

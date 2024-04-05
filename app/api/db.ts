@@ -1,8 +1,8 @@
 import mongoose from "mongoose";
 
 async function connectDb() {
-  console.log("connectDb");
   if (mongoose.connection.readyState >= 1) {
+    console.log("connectDb");
     return;
   }
 

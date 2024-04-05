@@ -3,26 +3,26 @@ import { useState } from "react";
 import { MonthlySpendingChart } from "../charts/mothly-spending-chart";
 import { getMonthlySpendingData } from "../charts/util";
 import CategorySelect from "./category-select";
-import { Category } from "@/app/api/budget.server";
-import { formatYnabAmount } from "@/app/utils/ynab";
-import { Transaction } from "@/app/api/transaction/transaction.server";
 import { CategoryPieChart } from "../charts/category-pie-chart";
+import { Category } from "@/app/api/category/category.utils";
+import { Transaction } from "@/app/api/transaction/transaction.utils";
+import { formatAmount } from "@/app/utils/amounts";
 
 const TransactionContent = ({
-  budgetId,
-  categoryId,
+  budgetUuid,
+  categoryUuid,
   categories,
   transactions,
   month,
 }: {
-  budgetId: string;
-  categoryId?: string;
+  budgetUuid: string;
+  categoryUuid?: string;
   month?: string;
   categories: Category[];
   transactions: Transaction[];
 }) => {
-  const [newCategoryId, setNewCategoryId] = useState(categoryId);
-  const usedCategoryId = newCategoryId || categoryId;
+  const [newCategoryId, setNewCategoryId] = useState(categoryUuid);
+  const usedCategoryId = newCategoryId || categoryUuid;
 
   const categoryFilter = (transaction: Transaction) =>
     usedCategoryId === undefined || transaction.categoryId === usedCategoryId;
@@ -33,26 +33,27 @@ const TransactionContent = ({
     <>
       <h1 className="m-2">Transactions {month}</h1>
       <CategorySelect
-        categoryId={usedCategoryId}
+        categoryUuid={usedCategoryId}
         categories={categories}
         onChange={setNewCategoryId}
       />
       <>
-        {!categoryId && (
+        {!categoryUuid && (
           <div className="m-5 w-3/4 text-center">
             <CategoryPieChart
               month={month || ""}
               categories={categories}
               selectedAmountTypes={["activity"]}
+              budgetUuid={budgetUuid}
             />
           </div>
         )}
 
         <MonthlySpendingChart
           spendingData={getMonthlySpendingData(filteredTransactions)}
-          categoryId={categoryId || ""}
+          categoryUuid={categoryUuid || ""}
           month={month || ""}
-          budgetId={budgetId}
+          budgetUuid={budgetUuid}
         />
         <table className="table">
           <thead>
@@ -66,10 +67,10 @@ const TransactionContent = ({
           </thead>
           <tbody>
             {filteredTransactions.map((transaction) => (
-              <tr key={transaction.id}>
+              <tr key={transaction.uuid}>
                 <td>{transaction.date}</td>
 
-                <td>{formatYnabAmount(transaction.amount)}</td>
+                <td>{formatAmount(transaction.amount)}</td>
                 <td>{transaction.payeeName}</td>
                 <td>{transaction.memo}</td>
                 <td>{transaction.categoryName}</td>

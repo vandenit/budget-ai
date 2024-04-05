@@ -1,14 +1,14 @@
 import Image from "next/image";
 import { redirect } from "next/navigation";
-import { getCachedBudgets } from "./api/budget.server";
+import { getCachedBudgets } from "./api/main.budget.server";
 import BudgetPage from "./components/budget-page";
 import {
   getLoggedInUser,
-  getLoggedInUserPreferredBudgetId,
+  getLoggedInUserPreferredBudgetId as getLoggedInUserPreferredBudgetUuid,
 } from "./api/user/user.server";
 import { useUser } from "@auth0/nextjs-auth0/client";
 import { getSession } from "@auth0/nextjs-auth0";
-import { isYnabTokenExpired } from "./api/ynab-api";
+import { isYnabTokenExpired } from "./api/ynab/ynab-api";
 
 export default async function Home() {
   const session = await getSession();
@@ -23,7 +23,10 @@ export default async function Home() {
   if (budgets.length === 0) {
     //   redirect("/login");
   }
-  const preferredBudget = await getLoggedInUserPreferredBudgetId();
-
-  return <BudgetPage budgetId={preferredBudget || budgets[0]?.id} />;
+  const preferredBudget = await getLoggedInUserPreferredBudgetUuid();
+  const budgetUuid = preferredBudget || budgets[0]?.uuid;
+  if (!budgetUuid) {
+    return <div>No budgets found</div>;
+  }
+  return <BudgetPage budgetUuid={budgetUuid} />;
 }

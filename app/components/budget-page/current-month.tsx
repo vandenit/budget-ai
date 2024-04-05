@@ -1,13 +1,14 @@
-import { Category, MonthSummary, MonthTotal } from "@/app/api/budget.server";
-import { formatYnabAmount, percentageSpent } from "@/app/utils/ynab";
 import Link from "next/link";
 import CategoryCard from "./category-card";
 import MonthTotalOverview from "./month-total-overview";
 import HiddenProgressBars from "./hidden-progress-bars";
 import { MonthlyForcast } from "@/app/api/es-forcasting.server";
+import { Category } from "@/app/api/category/category.utils";
+import { MonthSummary, MonthTotal } from "@/app/main.budget.utils";
+import { percentageSpent } from "@/app/utils/amounts";
 
 type Props = {
-  budgetId: string;
+  budgetUuid: string;
   categories: Category[];
   monthSummary: MonthSummary;
   monthPercentage: number;
@@ -16,10 +17,10 @@ type Props = {
 };
 
 const sortByCategoryUsageWithInflowNameFirst = (a: Category, b: Category) => {
-  if (a.categoryName.toLowerCase().includes("inflow")) {
+  if (a.name.toLowerCase().includes("inflow")) {
     return -1;
   }
-  if (b.categoryName.toLowerCase().includes("inflow")) {
+  if (b.name.toLowerCase().includes("inflow")) {
     return 1;
   }
   return percentageSpent(a) - percentageSpent(b);
@@ -31,7 +32,7 @@ const withBudgetFilter = (category: Category) => {
 
 const CurrentMonth = ({
   categories,
-  budgetId,
+  budgetUuid,
   monthSummary,
   monthPercentage,
   monthTotal,
@@ -42,7 +43,7 @@ const CurrentMonth = ({
       <h2 className="card-title">
         <Link
           className="link"
-          href={`/budgets/${budgetId}/transactions?month=${monthSummary.month}`}
+          href={`/budgets/${budgetUuid}/transactions?month=${monthSummary.month}`}
         >
           {monthSummary.month}
         </Link>
@@ -54,6 +55,7 @@ const CurrentMonth = ({
         monthPercentage={monthPercentage}
         forecast={forecast}
         categories={categories}
+        budgetUuid={budgetUuid}
       />
       <div className="flex flex-wrap mb-2 -mx-2">
         {categories
@@ -61,8 +63,8 @@ const CurrentMonth = ({
           .sort(sortByCategoryUsageWithInflowNameFirst)
           .map((category) => (
             <CategoryCard
-              key={category.categoryId}
-              budgetId={budgetId}
+              key={category.uuid}
+              budgetUuid={budgetUuid}
               currentMonthLbl={monthSummary.month}
               category={category}
               monthTotal={monthTotal}

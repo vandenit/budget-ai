@@ -3,8 +3,8 @@ import { render, screen } from "@testing-library/react";
 import BudgetNavigation from "../../../app/components/budget-navigation";
 
 const mockBudgets = [
-  { id: "1", name: "Budget 1" },
-  { id: "2", name: "Budget 2" },
+  { uuid: "1", name: "Budget 1" },
+  { uuid: "2", name: "Budget 2" },
 ];
 
 test("BudgetNavigation renders correctly when logged in", () => {
