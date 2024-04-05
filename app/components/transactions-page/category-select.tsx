@@ -1,16 +1,15 @@
 "use client";
-import { Category } from "@/app/api/budget.server";
 import Link from "next/link";
 import { ChangeEvent, ChangeEventHandler } from "react";
 import { useSearchParams, usePathname, useRouter } from "next/navigation";
-import { on } from "events";
+import { Category } from "@/app/api/category/category.utils";
 
-async function CategorySelect({
-  categoryId,
+function CategorySelect({
+  categoryUuid,
   categories,
   onChange,
 }: {
-  categoryId: string | undefined;
+  categoryUuid: string | undefined;
   categories: Category[];
   //category onChange
   onChange: (value: string) => void;
@@ -21,12 +20,11 @@ async function CategorySelect({
 
   const navigateToCategory = (event: ChangeEvent<HTMLSelectElement>) => {
     const newCategoryId = event.target.value;
-    console.log("navigateToCategory:??" + newCategoryId);
     const params = new URLSearchParams(searchParams);
     if (newCategoryId) {
-      params.set("categoryId", newCategoryId);
+      params.set("categoryUuid", newCategoryId);
     } else {
-      params.delete("categoryId");
+      params.delete("categoryUuid");
     }
     replace(`${pathname}?${params.toString()}`);
     onChange(newCategoryId);
@@ -35,14 +33,14 @@ async function CategorySelect({
   return (
     <select
       className="select select-bordered w-full max-w-xs"
-      value={categoryId}
+      value={categoryUuid}
       onChange={navigateToCategory}
     >
       {" "}
       <option value={""}>Select category</option>
       {categories.map((category) => (
-        <option key={category.categoryId} value={category.categoryId}>
-          {category.categoryName}
+        <option key={category.uuid} value={category.uuid}>
+          {category.name}
         </option>
       ))}
     </select>

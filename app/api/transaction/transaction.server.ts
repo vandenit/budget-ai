@@ -1,21 +1,12 @@
+import "server-only";
 import { connect } from "http2";
-import * as ynabApi from "../ynab-api";
+import * as ynabApi from "../ynab/ynab-api";
 import connectDb from "../db";
 import { getLoggedInUser, getUserByAuthId } from "../user/user.server";
 import { UserTransaction, LocalTransaction } from "./transaction.schema";
 import { TransactionDetail, TransactionResponseData } from "ynab";
 import mongoose from "mongoose";
-
-export type Transaction = {
-  id: string;
-  accountName: string;
-  amount: number;
-  date: string;
-  categoryName: string;
-  categoryId: string | undefined | null;
-  payeeName: string;
-  memo: string;
-};
+import { Transaction } from "./transaction.utils";
 
 const createOrUpdateUserTransaction = async (
   userId: mongoose.Schema.Types.ObjectId,

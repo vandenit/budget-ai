@@ -1,6 +1,6 @@
-import { av, c } from "vitest/dist/reporters-5f784f42.js";
-import { Category, MonthSummary } from "./budget.server";
-import { ynabAbsoluteNumber } from "../utils/ynab";
+import { MonthSummary } from "../main.budget.utils";
+import { absoluteD1000Number } from "../utils/amounts";
+import { Category } from "./category/category.utils";
 
 type CategoryData = {
   id: string;
@@ -37,11 +37,11 @@ export type MonthlyForcast = {
 
 const monthSummariesToMonthlySpendingForCategory = (
   monthSummaries: MonthSummary[],
-  categoryId: string
+  categoryUuid: string
 ): MonthlySpending[] => {
   return monthSummaries.map((summary) => {
     const categoryUsage = summary.categoryUsages.find(
-      (usage) => usage.categoryId === categoryId
+      (usage) => usage.uuid === categoryUuid
     );
     return {
       month: new Date(summary.month),
@@ -54,7 +54,7 @@ const calculateHistoricalAverage = (
   spendingData: MonthlySpending[]
 ): number => {
   const totalSpending = spendingData.reduce(
-    (acc, data) => acc + ynabAbsoluteNumber(data.amount),
+    (acc, data) => acc + absoluteD1000Number(data.amount),
     0
   );
   return totalSpending / spendingData.length;
@@ -68,17 +68,17 @@ export const categoriesToCategoryData = (
     .map((category) => {
       const spendingData = monthSummariesToMonthlySpendingForCategory(
         monthSummaries,
-        category.categoryId
+        category.uuid
       );
       return {
-        id: category.categoryId,
-        name: category.categoryName,
-        budgeted: ynabAbsoluteNumber(category.budgeted),
-        spent: ynabAbsoluteNumber(category.activity),
-        balance: ynabAbsoluteNumber(category.balance),
+        id: category.uuid,
+        name: category.name,
+        budgeted: absoluteD1000Number(category.budgeted),
+        spent: absoluteD1000Number(category.activity),
+        balance: absoluteD1000Number(category.balance),
         typicalSpendingPattern: calculateTypicalSpendingPatternForCategory(
           monthSummaries,
-          category.categoryId
+          category.uuid
         ),
         historicalAverage: calculateHistoricalAverage(spendingData),
       };
@@ -108,11 +108,11 @@ const calculateTypicalSpendingPatternForCategory = (
 
 const collectTransactionsForCategory = (
   monthSummaries: MonthSummary[],
-  categoryId: string
+  categoryUuid: string
 ): TransactionData[] => {
   return monthSummaries.reduce((acc, summary) => {
     const categoryUsage = summary.categoryUsages.find(
-      (usage) => usage.categoryId === categoryId
+      (usage) => usage.uuid === categoryUuid
     );
     if (categoryUsage) {
       acc = acc.concat(
@@ -142,9 +142,9 @@ const calculateTypicalSpendingPatternForMultipleMonths = (
     const dayOfTransaction = transaction.date.getDate();
     const normalizedDateValue = dayOfTransaction / daysInThatMonth;
     totalWeightedSum +=
-      ynabAbsoluteNumber(transaction.amount) * normalizedDateValue;
+      absoluteD1000Number(transaction.amount) * normalizedDateValue;
 
-    totalSpending += ynabAbsoluteNumber(transaction.amount);
+    totalSpending += absoluteD1000Number(transaction.amount);
   });
   return totalWeightedSum / totalSpending;
 };

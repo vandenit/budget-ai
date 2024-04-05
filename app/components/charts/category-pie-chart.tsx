@@ -15,18 +15,15 @@ const MIN_PERCENTAGE_TO_DISPLAY = 4;
 
 ChartJS.register(ArcElement, Tooltip, Legend, ChartDataLabels);
 
-import { Category } from "@/app/api/budget.server";
-import {
-  formatYnabAmount,
-  isInflowCategory,
-  ynabAbsoluteNumber,
-} from "@/app/utils/ynab";
 import { isOnMobileDevice, valueToPercentageOfTotal } from "./util";
 import { compose, filter } from "ramda";
+import { Category, isInflowCategory } from "@/app/api/category/category.utils";
+import { absoluteD1000Number, formatAmount } from "@/app/utils/amounts";
 
 type Props = {
   categories: Category[];
   month: string;
+  budgetUuid: string;
   selectedAmountTypes?: CategoryAmountType[];
 };
 
@@ -136,9 +133,14 @@ const extraAmountFitler =
 
 const notExcludedCategory =
   (excludedCategories: string[]) => (category: Category) =>
-    !excludedCategories.includes(category.categoryName);
+    !excludedCategories.includes(category.name);
 
-export const CategoryPieChart = ({ categories, month, selectedAmountTypes}: Props) => {
+export const CategoryPieChart = ({
+  categories,
+  month,
+  budgetUuid,
+  selectedAmountTypes,
+}: Props) => {
   // category amount type state to be used by toggle
   const [categoryAmountType, setCategoryAmountType] =
     useState<CategoryAmountType>("activity");
@@ -156,7 +158,7 @@ export const CategoryPieChart = ({ categories, month, selectedAmountTypes}: Prop
   const filteredCategories = categoriesWithUsage.filter(
     notExcludedCategory(excludedCategories)
   );
-  const totalAmount = ynabAbsoluteNumber(
+  const totalAmount = absoluteD1000Number(
     filteredCategories.reduce(
       (total, category) => total + category[categoryAmountType],
       0
@@ -164,17 +166,17 @@ export const CategoryPieChart = ({ categories, month, selectedAmountTypes}: Prop
   );
 
   const data = {
-    labels: filteredCategories.map((category) => category.categoryName),
+    labels: filteredCategories.map((category) => category.name),
     datasets: [
       {
         type: "pie" as const,
         label: getCategoryAmountTypeLabel(categoryAmountType),
         data: filteredCategories.map((category) =>
-          ynabAbsoluteNumber(category[categoryAmountType])
+          absoluteD1000Number(category[categoryAmountType])
         ),
         borderColor: "rgb(255, 99, 132)",
         backgroundColor: filteredCategories.map((category) =>
-          nameToUniqueColor(category.categoryName)
+          nameToUniqueColor(category.name)
         ),
         datalabels: {
           //black
@@ -219,12 +221,12 @@ export const CategoryPieChart = ({ categories, month, selectedAmountTypes}: Prop
     // navigate to category with router
     // todo should be parent component that handles this
     const category = categories.find(
-      (category) => category.categoryName === categoryName
+      (category) => category.name === categoryName
     );
     if (!category) return;
 
     router.push(
-      `/budgets/${category.budgetId}/transactions?month=${month}&categoryId=${category.categoryId}`
+      `/budgets/${budgetUuid}/transactions?month=${month}&categoryUuid=${category.uuid}`
     );
   };
 
@@ -258,7 +260,7 @@ export const CategoryPieChart = ({ categories, month, selectedAmountTypes}: Prop
 const AmountTypeToggle = ({
   current,
   onChange,
-  selectedAmountTypes
+  selectedAmountTypes,
 }: {
   current: CategoryAmountType;
   onChange: (type: CategoryAmountType) => void;
@@ -299,22 +301,22 @@ const CategoryPieChartLegend = ({
     {categories.map((category) => (
       <div
         className="flex items-center mx-2 tooltip"
-        data-tip={formatYnabAmount(category[amountType])}
-        key={category.categoryId}
+        data-tip={formatAmount(category[amountType])}
+        key={category.uuid}
       >
         <label className="cursor-pointer">
           <input
             type="checkbox"
-            checked={!excludedCategories.includes(category.categoryName)}
-            onChange={() => onToggleCategory(category.categoryName)}
+            checked={!excludedCategories.includes(category.name)}
+            onChange={() => onToggleCategory(category.name)}
           />
           <span
             className="ml-2"
             style={{
-              color: nameToUniqueColor(category.categoryName),
+              color: nameToUniqueColor(category.name),
             }}
           >
-            {category.categoryName}
+            {category.name}
           </span>
         </label>
       </div>

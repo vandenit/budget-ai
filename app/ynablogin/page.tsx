@@ -2,7 +2,7 @@ import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { SignIn, SignOut, YnabSignIn } from "../components/login";
 import { authOptions } from "../api/auth/[...nextauth]/route";
-import { getCachedBudgets } from "../api/budget.server";
+import { getCachedBudgets } from "../api/main.budget.server";
 import BudgetPage from "../components/budget-page";
 
 const YnabLoginPage = () => (

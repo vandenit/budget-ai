@@ -1,25 +1,26 @@
-import { Category, MonthTotal } from "@/app/api/budget.server";
 import { percentageToStatusClass } from "@/app/utils/styling";
-import {
-  calculatePercentage,
-  formatPercentage,
-  formatYnabAmount,
-  isInflowCategory,
-  percentageSpent,
-} from "@/app/utils/ynab";
+
 import Link from "next/link";
 import Progress from "../progress";
+import { Category, isInflowCategory } from "@/app/api/category/category.utils";
+import { MonthTotal } from "@/app/main.budget.utils";
+import {
+  calculatePercentage,
+  formatAmount,
+  formatPercentage,
+  percentageSpent,
+} from "@/app/utils/amounts";
 
 interface StatusIndicatorProps {
   category: Category;
-  budgetId: string;
+  budgetUuid: string;
   currentMonthLbl: string;
   monthTotal: MonthTotal;
 }
 
 const CategoryCard: React.FC<StatusIndicatorProps> = ({
   category,
-  budgetId,
+  budgetUuid,
   currentMonthLbl,
   monthTotal,
 }) => {
@@ -33,9 +34,9 @@ const CategoryCard: React.FC<StatusIndicatorProps> = ({
           <h2 className="card-title">
             <Link
               className="link"
-              href={`/budgets/${budgetId}/transactions?month=${currentMonthLbl}&categoryId=${category.categoryId}`}
+              href={`/budgets/${budgetUuid}/transactions?month=${currentMonthLbl}&categoryUuid=${category.uuid}`}
             >
-              {category.categoryName}
+              {category.name}
             </Link>{" "}
           </h2>
           {!isInflowCategory(category) && (
@@ -57,8 +58,8 @@ const ExpenseCategoryCard = ({
   category: Category;
   monthTotal: MonthTotal;
 }) => {
-  const budget = formatYnabAmount(category.budgeted);
-  const spent = formatYnabAmount(category.activity, true);
+  const budget = formatAmount(category.budgeted);
+  const spent = formatAmount(category.activity, true);
   const percentage = percentageSpent(category);
   const statusClass = percentageToStatusClass(percentage);
   return (
@@ -67,7 +68,7 @@ const ExpenseCategoryCard = ({
         <tbody>
           <tr>
             <td>Available</td>
-            <td>{formatYnabAmount(category.balance)}</td>
+            <td>{formatAmount(category.balance)}</td>
             <td>
               <Progress
                 percentage={calculatePercentage(
@@ -121,7 +122,7 @@ const InflowCategoryCard = ({ category }: { category: Category }) => (
       <tbody>
         <tr>
           <td>Activity</td>
-          <td>{formatYnabAmount(category.activity)}</td>
+          <td>{formatAmount(category.activity)}</td>
           <td></td>
         </tr>
       </tbody>

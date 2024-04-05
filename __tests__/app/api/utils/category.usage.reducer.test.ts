@@ -1,6 +1,6 @@
-import { Transaction } from "@/app/api/transaction/transaction.server";
 import { describe, expect, it } from "vitest";
 import { categoryUsageReducer } from "../../../../app/api/utils/category.usage.reducer";
+import { Transaction } from "@/app/api/transaction/transaction.utils";
 
 describe("categoryUsageReducer", () => {
   it("should return an array with a single category usage when given a single transaction", () => {
@@ -17,9 +17,9 @@ describe("categoryUsageReducer", () => {
     const result = categoryUsageReducer([], transaction);
     expect(result).toEqual([
       {
-        categoryName: "Groceries",
+        name: "Groceries",
         amount: 100,
-        categoryId: "123",
+        uuid: "123",
         transactions: [transaction],
       },
     ]);
@@ -38,9 +38,9 @@ describe("categoryUsageReducer", () => {
     const result = categoryUsageReducer(
       [
         {
-          categoryName: "Groceries",
+          name: "Groceries",
           amount: 100,
-          categoryId: "123",
+          uuid: "123",
           transactions: [transaction],
         },
       ],
@@ -48,9 +48,9 @@ describe("categoryUsageReducer", () => {
     );
     expect(result).toEqual([
       {
-        categoryName: "Groceries",
+        name: "Groceries",
         amount: 200,
-        categoryId: "123",
+        uuid: "123",
         transactions: [transaction, transaction],
       },
     ]);
@@ -70,9 +70,9 @@ describe("categoryUsageReducer", () => {
     const result = categoryUsageReducer(
       [
         {
-          categoryName: "Rent",
+          name: "Rent",
           amount: 100,
-          categoryId: "123",
+          uuid: "123",
           transactions: [transaction],
         },
       ],
@@ -80,15 +80,15 @@ describe("categoryUsageReducer", () => {
     );
     expect(result).toEqual([
       {
-        categoryName: "Rent",
+        name: "Rent",
         amount: 100,
-        categoryId: "123",
+        uuid: "123",
         transactions: [transaction],
       },
       {
-        categoryName: "Groceries",
+        name: "Groceries",
         amount: 100,
-        categoryId: "123",
+        uuid: "123",
         transactions: [transaction],
       },
     ]);
@@ -119,15 +119,15 @@ describe("categoryUsageReducer", () => {
     const result = transactions.reduce(categoryUsageReducer, []);
     expect(result).toEqual([
       {
-        categoryName: "Groceries",
+        name: "Groceries",
         amount: 100,
-        categoryId: "123",
+        uuid: "123",
         transactions: [transactions[0]],
       },
       {
-        categoryName: "Rent",
+        name: "Rent",
         amount: 100,
-        categoryId: "123",
+        uuid: "123",
         transactions: [transactions[1]],
       },
     ]);

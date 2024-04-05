@@ -1,82 +1,40 @@
 import "server-only";
 import { cache } from "react";
 import moment from "moment";
-import * as ynabApi from "./ynab-api";
-import { isInflowCategory } from "../utils/ynab";
-import { BudgetDetail } from "ynab";
-import {
-  Transaction,
-  findTransactions,
-} from "./transaction/transaction.server";
+import * as budgetServer from "./budget/budget.server";
+import { findTransactions } from "./transaction/transaction.server";
 import { T } from "types-ramda";
 import { monthSummaryReducer } from "./utils/month.summary.reducer";
 import { categoryUsageReducer } from "./utils/category.usage.reducer";
-import { c } from "vitest/dist/reporters-5f784f42.js";
 import { categoryUsageMapper } from "./utils/category-usage.mapper";
+import { Budget } from "./budget/budget.utils";
+import {
+  categorySorter,
+  withoutInflowCategoryFilter,
+} from "./category/category.utils";
+import { Transaction } from "./transaction/transaction.utils";
+import { Category } from "./category/category.utils";
+import { MonthSummary, MonthTotal } from "../main.budget.utils";
+import { getCategories } from "./category/category.server";
 
 // todo : doesn't seem to be taken into account
 export const revalidate = 3600; // revalidate the data at most every hour
 
-export type Budget = {
-  id: string;
-  name: string;
-};
-
-export type MonthTotal = {
-  totalSpent: number;
-  totalBudgeted: number;
-  totalBalance: number;
-};
-
-export type Category = {
-  categoryName: string;
-  categoryId: string;
-  balance: number;
-  budgeted: number;
-  activity: number;
-  targetAmount: number;
-  budgetId: string;
-};
-
-export const emptyCategory: Category = {
-  categoryName: "",
-  categoryId: "",
-  balance: 0,
-  budgeted: 0,
-  activity: 0,
-  targetAmount: 0,
-  budgetId: "",
-};
-
-export type CategoryUsage = {
-  categoryName: string;
-  categoryId: string | undefined | null;
-  amount: number;
-  transactions: Array<Transaction>;
-};
-
-export type MonthSummary = {
-  month: string;
-  isCurrentMonth: boolean;
-  categoryUsages: Array<CategoryUsage>;
-  overallTransactions: Array<Transaction>;
-};
-
-export async function getBudget(id: string): Promise<Budget> {
+export async function getBudget(uuid: string): Promise<Budget> {
   try {
-    const budget = await ynabApi.getBudget(id);
-    return budget;
+    const budget = await budgetServer.getBudget(uuid);
+    return budget || { uuid: "", name: "" };
   } catch (exception) {
     console.warn(exception);
-    return { id: "", name: "" };
+    return { uuid: "", name: "" };
   }
 }
 
-async function getBudgets(): Promise<Array<Budget>> {
+export async function getBudgets(): Promise<Array<Budget>> {
   try {
-    const budgets = await ynabApi.getBudgets();
+    const budgets = await budgetServer.findBudgets();
     return budgets.map((budget) => ({
-      id: budget.id,
+      uuid: budget.uuid,
       name: budget.name,
     }));
   } catch (exception) {
@@ -85,18 +43,12 @@ async function getBudgets(): Promise<Array<Budget>> {
   }
 }
 
-const categorySorter = (a: Category, b: Category): number =>
-  a.categoryName.localeCompare(b.categoryName);
-
 export const calculateCurrentMontPercentage = () => {
   const now = moment();
   const daysInMonth = now.daysInMonth();
   const currentDay = now.date();
   return (currentDay / daysInMonth) * 100;
 };
-
-const withoutInflowCategoryFilter = (category: Category) =>
-  !isInflowCategory(category);
 
 export const calculateTotals = (categories: Array<Category>): MonthTotal => {
   return categories.filter(withoutInflowCategoryFilter).reduce(
@@ -148,39 +100,27 @@ export async function getMonthSummaries(
   return transactions.reduce(monthSummaryReducer, []);
 }
 
-export async function getCategories(id: string): Promise<Array<Category>> {
-  const categories = await ynabApi.getCategories(id);
-  return categories
-    .map((category) => ({
-      categoryName: category.name,
-      categoryId: category.id,
-      balance: category.balance,
-      budgeted: category.budgeted,
-      activity: category.activity,
-      targetAmount: category.goal_target || 0,
-      budgetId: id,
-    }))
-    .sort(categorySorter);
-}
-
 // return all categories that have transactions
 export const getCategoriesContainingTransactions = async (
   budgetId: string,
   transactions: Transaction[]
 ) => {
   const categories = (await getCategories(budgetId)).filter((category) =>
-    transactions.find(
-      (transaction) => transaction.categoryId === category.categoryId
-    )
+    transactions.find((transaction) => transaction.categoryId === category.uuid)
   );
   return categories;
 };
 
-export const getCategoriesFromTransactions = (
-  budgetId: string,
+export const getCategoriesFromTransactions = async (
+  budgetUuid: string,
   transactions: Transaction[]
-): Category[] =>
-  transactions
+): Promise<Category[]> => {
+  const budget = await getBudget(budgetUuid);
+  if (!budget) {
+    return [];
+  }
+  return transactions
     .reduce(categoryUsageReducer, [])
-    .map(categoryUsageMapper(budgetId))
+    .map(categoryUsageMapper(budget._id || ""))
     .sort(categorySorter);
+};

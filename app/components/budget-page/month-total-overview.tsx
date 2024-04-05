@@ -1,15 +1,18 @@
-import { Category, MonthTotal } from "@/app/api/budget.server";
 import { MonthlyForcast } from "@/app/api/es-forcasting.server";
 import { percentageToStatusClass } from "@/app/utils/styling";
-import {
-  formatAmount,
-  formatYnabAmount,
-  totalPercentageSpent,
-} from "@/app/utils/ynab";
+
 import { format } from "path";
 import { CategoryPieChart } from "../charts/category-pie-chart";
+import { MonthTotal } from "@/app/main.budget.utils";
+import { Category } from "@/app/api/category/category.utils";
+import {
+  formatAmount,
+  formatBasicAmount,
+  totalPercentageSpent,
+} from "@/app/utils/amounts";
 
 type Props = {
+  budgetUuid: string;
   month: string;
   monthTotal: MonthTotal;
   monthPercentage: number;
@@ -17,6 +20,7 @@ type Props = {
   categories: Category[];
 };
 const MonthTotalOverview = ({
+  budgetUuid,
   month,
   monthTotal,
   monthPercentage,
@@ -39,7 +43,11 @@ const MonthTotalOverview = ({
             />
           </div>
           <div className="w-full md:w-1/2 lg:w-1/2">
-            <CategoryPieChart month={month} categories={categories} />
+            <CategoryPieChart
+              month={month}
+              categories={categories}
+              budgetUuid={budgetUuid}
+            />
           </div>
         </div>
       </div>
@@ -69,9 +77,9 @@ const TotalTable = ({
       </thead>
       <tbody>
         <tr>
-          <td>{formatYnabAmount(monthTotal.totalSpent, true)}</td>
-          <td>{formatYnabAmount(monthTotal.totalBalance)}</td>
-          <td>{formatYnabAmount(monthTotal.totalBudgeted)}</td>
+          <td>{formatAmount(monthTotal.totalSpent, true)}</td>
+          <td>{formatAmount(monthTotal.totalBalance)}</td>
+          <td>{formatAmount(monthTotal.totalBudgeted)}</td>
         </tr>
         <tr>
           <td>Month Progress</td>
@@ -99,19 +107,25 @@ const TotalTable = ({
         </tr>
         <tr>
           <td>Forecasted Remaining amount</td>
-          <td colSpan={2}>{formatAmount(forecast.predictedRemainingAmount)}</td>
+          <td colSpan={2}>
+            {formatBasicAmount(forecast.predictedRemainingAmount)}
+          </td>
         </tr>
         <tr>
           <td>Forecasted Daily amount</td>
-          <td colSpan={2}>{formatAmount(forecast.predictedRemainingPerDay)}</td>
+          <td colSpan={2}>
+            {formatBasicAmount(forecast.predictedRemainingPerDay)}
+          </td>
         </tr>
         <tr>
           <td>Actual Remaing per day amount</td>
-          <td colSpan={2}>{formatAmount(forecast.actualRemainingPerDay)}</td>
+          <td colSpan={2}>
+            {formatBasicAmount(forecast.actualRemainingPerDay)}
+          </td>
         </tr>
         <tr>
           <td>Extra suggested</td>
-          <td colSpan={2}>{formatAmount(forecast.extraAmountNeeded)}</td>
+          <td colSpan={2}>{formatBasicAmount(forecast.extraAmountNeeded)}</td>
         </tr>
       </tbody>
     </table>
