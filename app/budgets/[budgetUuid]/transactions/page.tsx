@@ -4,15 +4,15 @@ async function TransactionsRoute({
   params,
   searchParams,
 }: {
-  params: { budgetId: string };
+  params: { budgetUuid: string };
   searchParams: { [key: string]: string | undefined };
 }) {
-  const { budgetId } = params;
-  const { categoryId, month, dayOfMonth } = searchParams;
+  const { budgetUuid } = params;
+  const { categoryUuid, month, dayOfMonth } = searchParams;
   return (
     <TransactionsPage
-      budgetId={budgetId}
-      categoryId={categoryId}
+      budgetUuid={budgetUuid}
+      categoryUuid={categoryUuid}
       month={month}
       dayOfMonth={dayOfMonth}
     />

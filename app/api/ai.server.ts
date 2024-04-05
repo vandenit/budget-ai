@@ -1,5 +1,7 @@
+import "server-only";
+
 import OpenAI from "openai";
-import { MonthSummary } from "./budget.server";
+import { MonthSummary } from "../main.budget.utils";
 
 export type AIFinancialAnalysis = {
   response: string;
@@ -20,8 +22,8 @@ const stripTransactionsOnAllLevels = (monthSummary: Array<MonthSummary>) => {
       isCurrentMonth: month.isCurrentMonth,
       categoryUsage: month.categoryUsages.map((categoryUsage) => {
         return {
-          category: categoryUsage.categoryName,
-          categoryId: categoryUsage.categoryId,
+          category: categoryUsage.name,
+          categoryId: categoryUsage.uuid,
           amount: categoryUsage.amount,
         };
       }),

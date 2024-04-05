@@ -18,7 +18,7 @@ const userSchema = new Schema({
   createdAt: Date,
   updatedAt: Date,
   settings: {
-    preferredBudgetId: String,
+    preferredBudgetUuid: String,
   },
   syncDate: Date,
 });

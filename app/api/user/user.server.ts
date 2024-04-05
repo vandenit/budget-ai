@@ -1,3 +1,4 @@
+import "server-only";
 import { connect } from "http2";
 import User from "./user.schema";
 import connectDb from "../db";
@@ -6,7 +7,7 @@ import mongoose from "mongoose";
 import { c } from "vitest/dist/reporters-5f784f42.js";
 
 const MAX_SYNC_USERS = 100;
-const SYNC_INTERVAL_MINUTES = 3;
+const SYNC_INTERVAL_MINUTES = 0;
 
 type YnabConnection = {
   accessToken: string;
@@ -32,7 +33,7 @@ export type UserType = {
   syncDate?: Date;
   ynab?: YnabUserData;
   settings: {
-    preferredBudgetId: string;
+    preferredBudgetUuid: string;
   };
 };
 
@@ -89,10 +90,10 @@ export const getUserByAuthId = async (
   return User.findOne({ authId });
 };
 
-export const savePreferredBudget = async (budgetId: string) => {
+export const savePreferredBudget = async (budgetUuid: string) => {
   await connectDb();
   const authId = await getLoggedInUserAuthId();
-  console.log(`saving preferred budget ${budgetId} for ${authId}`);
+  console.log(`saving preferred budget ${budgetUuid} for ${authId}`);
   if (!authId) {
     return;
   }
@@ -100,7 +101,10 @@ export const savePreferredBudget = async (budgetId: string) => {
   if (!user) {
     throw new Error("User not found");
   }
-  await User.updateOne({ authId }, { "settings.preferredBudgetId": budgetId });
+  await User.updateOne(
+    { authId },
+    { "settings.preferredBudgetUuid": budgetUuid }
+  );
 };
 
 export const getLoggedInUserPreferredBudgetId = async () => {
@@ -108,7 +112,7 @@ export const getLoggedInUserPreferredBudgetId = async () => {
   if (!user) {
     return;
   }
-  return user?.settings?.preferredBudgetId || "";
+  return user?.settings?.preferredBudgetUuid || "";
 };
 
 export const getLoggedInUser = async () => {

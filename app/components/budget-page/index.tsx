@@ -6,9 +6,8 @@ import {
   calculateCurrentMontPercentage,
   calculateTotals,
   getBudget,
-  getCategories,
   getMonthSummaries,
-} from "@/app/api/budget.server";
+} from "@/app/api/main.budget.server";
 import MonthSummaryBlock from "./month-summary-block";
 import CurrentMonth from "./current-month";
 import {
@@ -17,29 +16,29 @@ import {
 } from "@/app/api/es-forcasting.server";
 import { getAIAnalysis } from "@/app/api/ai.server";
 import { savePreferredBudget } from "@/app/api/user/user.server";
+import { getCategories } from "@/app/api/category/category.server";
 
-export default function BudgetPage({ budgetId }: { budgetId: string }) {
+export default function BudgetPage({ budgetUuid }: { budgetUuid: string }) {
   return (
     <>
       <Suspense fallback={<Loading />}>
-        <BudgetInfo budgetId={budgetId} />
+        <BudgetInfo budgetUuid={budgetUuid} />
       </Suspense>
     </>
   );
 }
 
-async function BudgetInfo({ budgetId }: { budgetId: string }) {
-  savePreferredBudget(budgetId);
-  const budget = await getBudget(budgetId);
+async function BudgetInfo({ budgetUuid: budgetUuid }: { budgetUuid: string }) {
+  savePreferredBudget(budgetUuid);
+  const budget = await getBudget(budgetUuid);
   const monthPercentage = calculateCurrentMontPercentage();
-  const monthSummaries = await getMonthSummaries(budgetId);
+  const monthSummaries = await getMonthSummaries(budgetUuid);
   // const aiResponse = await getAIAnalysis(monthSummaries);
   const aiResponse = { response: "AI response" };
-  const categories = await getCategories(budgetId);
+  const categories = await getCategories(budgetUuid);
   const monthTotal = calculateTotals(categories);
   const categoryData = categoriesToCategoryData(categories, monthSummaries);
   const forecast = forecastSpendingWithES(categoryData);
-  console.log(JSON.stringify(forecast));
   if (monthSummaries.length === 0) {
     return <></>;
   }
@@ -50,7 +49,7 @@ async function BudgetInfo({ budgetId }: { budgetId: string }) {
       {currentMonth && (
         <div className="mb-4 -mx-2">
           <CurrentMonth
-            budgetId={budgetId}
+            budgetUuid={budgetUuid}
             monthSummary={currentMonth}
             categories={categories}
             monthPercentage={monthPercentage}
@@ -64,7 +63,7 @@ async function BudgetInfo({ budgetId }: { budgetId: string }) {
           .filter((month) => !month.isCurrentMonth)
           .map((month) => (
             <MonthSummaryBlock
-              budgetId={budgetId}
+              budgetUuid={budgetUuid}
               month={month}
               categories={categories}
               key={month.month}

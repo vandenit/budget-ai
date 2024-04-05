@@ -2,7 +2,7 @@ import "./globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import BudgetNavigation from "./components/budget-navigation";
-import { getCachedBudgets } from "./api/budget.server";
+import { getCachedBudgets } from "./api/main.budget.server";
 import { UserProvider } from "@auth0/nextjs-auth0/client";
 import { getSession } from "@auth0/nextjs-auth0";
 

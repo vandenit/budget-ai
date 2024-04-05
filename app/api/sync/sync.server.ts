@@ -1,9 +1,10 @@
+import "server-only";
 import {
   UserType,
   findNonSyncedUsers,
   updateSyncDate,
 } from "../user/user.server";
-import { syncYnabUser } from "../ynab";
+import { syncYnabUser } from "../ynab/ynab.server";
 
 export const syncBudgetData = async (): Promise<number> => {
   const users = await findNonSyncedUsers();

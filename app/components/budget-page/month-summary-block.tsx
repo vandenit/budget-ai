@@ -1,21 +1,17 @@
-import {
-  Category,
-  CategoryUsage,
-  MonthSummary,
-  emptyCategory,
-} from "@/app/api/budget.server";
-import {
-  formatPercentage,
-  formatYnabAmount,
-  isInflowCategory,
-  ynabAbsoluteNumber,
-} from "@/app/utils/ynab";
 import Link from "next/link";
 import CategoryCard from "./category-card";
 import { get } from "http";
+import {
+  Category,
+  CategoryUsage,
+  emptyCategory,
+  isInflowCategory,
+} from "@/app/api/category/category.utils";
+import { formatAmount } from "@/app/utils/amounts";
+import { MonthSummary } from "@/app/main.budget.utils";
 
 type Props = {
-  budgetId: string;
+  budgetUuid: string;
   month: MonthSummary;
   categories: Category[];
 };
@@ -24,16 +20,16 @@ const sortByCategoryAmount = (a: CategoryUsage, b: CategoryUsage) => {
   return a.amount - b.amount;
 };
 
-const MonthSummaryBlock = ({ month, categories, budgetId }: Props) => {
+const MonthSummaryBlock = ({ month, categories, budgetUuid }: Props) => {
   const getCategory = (categoryName: string): Category => {
     return (
-      categories.find((category) => category.categoryName === categoryName) ||
+      categories.find((category) => category.name === categoryName) ||
       emptyCategory
     );
   };
 
   const getPercentageOverTarget = (category: CategoryUsage) => {
-    const targetAmount = getCategory(category.categoryName).targetAmount;
+    const targetAmount = getCategory(category.name).targetAmount;
     if (targetAmount === 0) {
       // no target set return 125 to show as error
       return 125;
@@ -41,13 +37,13 @@ const MonthSummaryBlock = ({ month, categories, budgetId }: Props) => {
     // return absolute percentage over target
     return Math.abs(
       Math.round(
-        (category.amount / getCategory(category.categoryName).targetAmount) * 100
+        (category.amount / getCategory(category.name).targetAmount) * 100
       )
     );
   };
 
   const getStatusClassByOverTargetSeverity = (category: CategoryUsage) => {
-    if (isInflowCategory(getCategory(category.categoryName))) {
+    if (isInflowCategory(getCategory(category.name))) {
       return "info";
     }
     const percentage = getPercentageOverTarget(category);
@@ -65,7 +61,7 @@ const MonthSummaryBlock = ({ month, categories, budgetId }: Props) => {
       <div className="card-body">
         <Link
           className="link"
-          href={`/budgets/${budgetId}/transactions?month=${month.month}`}
+          href={`/budgets/${budgetUuid}/transactions?month=${month.month}`}
         >
           <h2 className="card-title">{month.month}</h2>
         </Link>
@@ -78,30 +74,33 @@ const MonthSummaryBlock = ({ month, categories, budgetId }: Props) => {
             </tr>
           </thead>
           <tbody>
-            {month.categoryUsages.sort(sortByCategoryAmount).map((categoryUsage) => (
-              <tr key={categoryUsage.categoryName}>
-                <td>
-                  <Link
-                    className="link"
-                    href={`${budgetId}/transactions?month=${month.month}&categoryId=${categoryUsage.categoryId}`}
-                  >
-                    <p>{categoryUsage.categoryName}</p>
-                  </Link>
-                </td>
-                <td>
-                  <p
-                    className={`badge badge-${getStatusClassByOverTargetSeverity(
-                      categoryUsage
-                    )} badge-outline`}
-                  >
-                    {formatYnabAmount(categoryUsage.amount, true)}&nbsp;/&nbsp;
-                    {formatYnabAmount(
-                      getCategory(categoryUsage.categoryName).targetAmount
-                    )}
-                  </p>
-                </td>
-              </tr>
-            ))}
+            {month.categoryUsages
+              .sort(sortByCategoryAmount)
+              .map((categoryUsage) => (
+                <tr key={categoryUsage.name}>
+                  <td>
+                    <Link
+                      className="link"
+                      href={`/budgets/${budgetUuid}/transactions?month=${month.month}&categoryUuid=${categoryUsage.uuid}`}
+                    >
+                      <p>{categoryUsage.name}</p>
+                    </Link>
+                  </td>
+                  <td>
+                    <p
+                      className={`badge badge-${getStatusClassByOverTargetSeverity(
+                        categoryUsage
+                      )} badge-outline`}
+                    >
+                      {formatAmount(categoryUsage.amount, true)}
+                      &nbsp;/&nbsp;
+                      {formatAmount(
+                        getCategory(categoryUsage.name).targetAmount
+                      )}
+                    </p>
+                  </td>
+                </tr>
+              ))}
           </tbody>
         </table>
       </div>

@@ -3,6 +3,7 @@ import {
   createOrUpdateUser,
   connectUserWithYnab,
 } from "../../user/user.server";
+import { syncUser } from "../../sync/sync.server";
 
 export const authOptions: NextAuthOptions = {
   providers: [

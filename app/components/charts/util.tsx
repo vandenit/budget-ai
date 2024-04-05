@@ -1,6 +1,6 @@
 import { compose } from "ramda";
-import { ynabAbsoluteNumber, ynabNumber } from "@/app/utils/ynab";
-import { Transaction } from "@/app/api/transaction/transaction.server";
+import { Transaction } from "@/app/api/transaction/transaction.utils";
+import { numberD1000 } from "@/app/utils/amounts";
 
 export type MonthlySpendingData = {
   dayOfMonth: string;
@@ -44,7 +44,7 @@ const transactionsToMonthlySpendingData = (
       };
     }
     const spent = transactions.reduce(
-      (acc, transaction) => acc + ynabNumber(transaction.amount),
+      (acc, transaction) => acc + numberD1000(transaction.amount),
       0
     );
     return {

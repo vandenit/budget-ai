@@ -148,10 +148,13 @@ export const getUncategorizedOrUnApprovedTransactions = async (
   return getTransactionsInternal({ budgetId, type: "uncategorized" });
 };
 
-export async function getCategories(id: string): Promise<Array<ynab.Category>> {
+export async function getCategories(
+  budgetId: string,
+  user?: UserType
+): Promise<Array<ynab.Category>> {
   try {
-    const api = await getApi();
-    const { data } = await api.categories.getCategories(id);
+    const api = await getApi(user);
+    const { data } = await api.categories.getCategories(budgetId);
     const categories = data.category_groups.reduce(
       (acc: Array<ynab.Category>, group: ynab.CategoryGroupWithCategories) => {
         return acc.concat(group.categories);

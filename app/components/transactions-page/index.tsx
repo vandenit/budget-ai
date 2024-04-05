@@ -5,17 +5,17 @@ import {
   getCategoriesContainingTransactions,
   getCategoriesFromTransactions,
   getFilteredTransactions,
-} from "@/app/api/budget.server";
+} from "@/app/api/main.budget.server";
 import TransactionContent from "./transaction-content";
 
 export default function TransactionsPage({
-  budgetId,
-  categoryId,
+  budgetUuid,
+  categoryUuid,
   month,
   dayOfMonth,
 }: {
-  budgetId: string;
-  categoryId: string | undefined;
+  budgetUuid: string;
+  categoryUuid: string | undefined;
   month: string | undefined;
   dayOfMonth: string | undefined;
 }) {
@@ -23,8 +23,8 @@ export default function TransactionsPage({
     <>
       <Suspense fallback={<Loading />}>
         <TransactionsInfo
-          budgetId={budgetId}
-          categoryId={categoryId}
+          budgetUuid={budgetUuid}
+          categoryUuid={categoryUuid}
           month={month}
           dayOfMonth={dayOfMonth}
         />
@@ -34,29 +34,29 @@ export default function TransactionsPage({
 }
 
 async function TransactionsInfo({
-  budgetId,
-  categoryId,
+  budgetUuid,
+  categoryUuid,
   month,
   dayOfMonth,
 }: {
-  budgetId: string;
-  categoryId?: string;
+  budgetUuid: string;
+  categoryUuid?: string;
   month?: string;
   dayOfMonth?: string;
 }) {
   const transactions = await getFilteredTransactions(
-    budgetId,
+    budgetUuid,
     month,
     dayOfMonth
   );
   const categories = await getCategoriesFromTransactions(
-    budgetId,
+    budgetUuid,
     transactions
   );
   return (
     <TransactionContent
-      budgetId={budgetId}
-      categoryId={categoryId}
+      budgetUuid={budgetUuid}
+      categoryUuid={categoryUuid}
       month={month}
       categories={categories}
       transactions={transactions}

@@ -36,16 +36,16 @@ export const options = {
 
 type Props = {
   spendingData: MonthlySpendingData[];
-  categoryId: string;
+  categoryUuid: string;
   month: string;
-  budgetId: string;
+  budgetUuid: string;
 };
 
 export const MonthlySpendingChart = ({
   spendingData,
   month,
-  categoryId,
-  budgetId,
+  categoryUuid,
+  budgetUuid,
 }: Props) => {
   const router = useRouter();
 
@@ -88,7 +88,7 @@ export const MonthlySpendingChart = ({
     const dayOfMonth = labels[index];
     // todo: should parent be client component that handles this?
     router.push(
-      `/budgets/${budgetId}/transactions?month=${month}&dayOfMonth=${dayOfMonth}&categoryId=${categoryId}`
+      `/budgets/${budgetUuid}/transactions?month=${month}&dayOfMonth=${dayOfMonth}&categoryUuid=${categoryUuid}`
     );
   };
 
