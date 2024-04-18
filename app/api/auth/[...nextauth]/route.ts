@@ -38,7 +38,7 @@ export const authOptions: NextAuthOptions = {
           accessToken: account.access_token || "",
           refreshToken: account.refresh_token || "",
         });
-        await syncLoggedInUser();
+        //syncLoggedInUser();
       }
       return token;
     },

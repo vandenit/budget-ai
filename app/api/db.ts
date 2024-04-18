@@ -2,10 +2,9 @@ import mongoose from "mongoose";
 
 async function connectDb() {
   if (mongoose.connection.readyState >= 1) {
-    console.log("connectDb");
     return;
   }
-
+  console.log("connectDb");
   return mongoose.connect(process.env.MONGODB_URI || "");
 }
 

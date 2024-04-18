@@ -11,16 +11,21 @@ const refreshAccessToken = async (refreshToken: string) => {
   // refresh using native fetch
   const clientId = process.env.YNAB_CLIENT_ID;
   const clientSecret = process.env.YNAB_CLIENT_SECRET;
-  const response = await fetch(
-    `https://app.ynab.com/oauth/token?client_id=${clientId}&client_secret=${clientSecret}&grant_type=refresh_token&refresh_token=${refreshToken}`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }
-  );
-  return response.json();
+  try {
+    const response = await fetch(
+      `https://app.ynab.com/oauth/token?client_id=${clientId}&client_secret=${clientSecret}&grant_type=refresh_token&refresh_token=${refreshToken}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return response.json();
+  } catch (exception) {
+    console.error("error during refresh access token: " + exception);
+    throw new Error("Failed to refresh token");
+  }
 };
 
 export const refreshUserToken = async (user: UserType) => {
@@ -39,7 +44,7 @@ export const refreshUserToken = async (user: UserType) => {
       user
     );
   } catch (exception) {
-    throw new Error("Failed to refresh token");
+    throw new Error("Failed to refresh token:");
   }
 };
 

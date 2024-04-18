@@ -56,6 +56,7 @@ const insertOrUpdateMissingTransaction = async (
       budgetId: budgetId,
       ...newData,
     });
+    console.log("save transaction:" + ynabTransaction.id);
     await newLocalTransaction.save();
   } else if (localTransaction) {
     if (ynabTransaction.deleted) {
@@ -69,14 +70,18 @@ const insertOrUpdateMissingTransaction = async (
   }
 };
 
+const transactionToInsertOrUpdatePromise =
+  (budgetId: string) => (transaction: ynab.TransactionDetail) =>
+    insertOrUpdateMissingTransaction(transaction, budgetId);
+
 const insertOrUpdateMissingTransactions = async (
   budgetId: string,
   transactions: ynab.TransactionDetail[]
 ) => {
   console.log(`insert or update ${transactions.length} number of transactions`);
-  transactions.forEach(async (transaction) => {
-    await insertOrUpdateMissingTransaction(transaction, budgetId);
-  });
+
+  const promiseMapper = transactionToInsertOrUpdatePromise(budgetId);
+  await Promise.all(transactions.map(promiseMapper));
 };
 
 const updateUserServerKnowledge = async ({
@@ -238,10 +243,13 @@ const mapCategory = (
   _id,
 });
 
+const toSyncPromise = (user: UserType) => (budget: Budget) =>
+  syncTransactions(user, budget);
+
 const syncAllTransactions = async (user: UserType) => {
   console.log("syncing all transactions for user:" + user.authId);
   const localBudgets = await findBudgets(user);
-  const promises = localBudgets.map((budget) => syncTransactions(user, budget));
+  const promises = localBudgets.map(toSyncPromise(user));
   await Promise.all(promises);
 };
 
