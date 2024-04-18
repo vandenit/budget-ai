@@ -9,11 +9,6 @@ const userSchema = new Schema({
       accessToken: String,
       refreshToken: String,
     },
-    serverKnowledge: {
-      transactions: Number,
-      budgets: Number,
-      categories: Number,
-    },
   },
   createdAt: Date,
   updatedAt: Date,

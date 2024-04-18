@@ -3,7 +3,7 @@ import {
   createOrUpdateUser,
   connectUserWithYnab,
 } from "../../user/user.server";
-import { syncUser } from "../../sync/sync.server";
+import { syncLoggedInUser, syncUser } from "../../sync/sync.server";
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -38,6 +38,7 @@ export const authOptions: NextAuthOptions = {
           accessToken: account.access_token || "",
           refreshToken: account.refresh_token || "",
         });
+        await syncLoggedInUser();
       }
       return token;
     },

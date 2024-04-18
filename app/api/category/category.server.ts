@@ -6,6 +6,7 @@ import { Budget } from "../budget/budget.utils";
 import mongoose from "mongoose";
 import { Category } from "./category.utils";
 import { getBudget } from "../main.budget.server";
+import connectDb from "../db";
 
 export const getCategories = async (
   budgetUuid: string
@@ -26,6 +27,11 @@ export const getCategory = async (uuid: string): Promise<Category | null> => {
   return mapLocalCategory(localCategory);
 };
 
+export const deleteCategory = async (uuid: string) => {
+  connectDb();
+  await LocalCategory.deleteOne({ uuid }).exec();
+};
+
 const mapLocalCategory = (localCategory: LocalCategoryType): Category => ({
   _id: `${localCategory._id}`,
   name: localCategory.name,
@@ -38,7 +44,7 @@ const mapLocalCategory = (localCategory: LocalCategoryType): Category => ({
 });
 
 export const saveNewCategory = async (category: Category) => {
-  console.log("saving new category:" + JSON.stringify(category));
+  connectDb();
   const localCategory = new LocalCategory({
     uuid: category.uuid,
     name: category.name,
@@ -52,7 +58,7 @@ export const saveNewCategory = async (category: Category) => {
 };
 
 export const updateCategory = async (category: Category) => {
-  console.log("updateCategory category:" + JSON.stringify(category));
+  connectDb();
   await LocalCategory.updateOne(
     { _id: category._id },
     {
@@ -62,5 +68,5 @@ export const updateCategory = async (category: Category) => {
       activity: category.activity,
       targetAmount: category.targetAmount,
     }
-  );
+  ).exec();
 };

@@ -17,6 +17,7 @@ import {
 import { getAIAnalysis } from "@/app/api/ai.server";
 import { savePreferredBudget } from "@/app/api/user/user.server";
 import { getCategories } from "@/app/api/category/category.server";
+import YnabLoginPage from "../ynab-login-page";
 
 export default function BudgetPage({ budgetUuid }: { budgetUuid: string }) {
   return (
@@ -31,6 +32,9 @@ export default function BudgetPage({ budgetUuid }: { budgetUuid: string }) {
 async function BudgetInfo({ budgetUuid: budgetUuid }: { budgetUuid: string }) {
   savePreferredBudget(budgetUuid);
   const budget = await getBudget(budgetUuid);
+  if (!budget) {
+    return <YnabLoginPage />;
+  }
   const monthPercentage = calculateCurrentMontPercentage();
   const monthSummaries = await getMonthSummaries(budgetUuid);
   // const aiResponse = await getAIAnalysis(monthSummaries);
@@ -40,7 +44,7 @@ async function BudgetInfo({ budgetUuid: budgetUuid }: { budgetUuid: string }) {
   const categoryData = categoriesToCategoryData(categories, monthSummaries);
   const forecast = forecastSpendingWithES(categoryData);
   if (monthSummaries.length === 0) {
-    return <></>;
+    return <YnabLoginPage />;
   }
   const currentMonth = monthSummaries.find((month) => month.isCurrentMonth);
   return (

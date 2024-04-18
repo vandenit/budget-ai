@@ -16,17 +16,25 @@ import { Transaction } from "./transaction/transaction.utils";
 import { Category } from "./category/category.utils";
 import { MonthSummary, MonthTotal } from "../main.budget.utils";
 import { getCategories } from "./category/category.server";
+import { UserType, getLoggedInUser } from "./user/user.server";
 
 // todo : doesn't seem to be taken into account
 export const revalidate = 3600; // revalidate the data at most every hour
 
-export async function getBudget(uuid: string): Promise<Budget> {
+export async function getBudget(
+  uuid: string,
+  user?: UserType
+): Promise<Budget | null> {
   try {
-    const budget = await budgetServer.getBudget(uuid);
-    return budget || { uuid: "", name: "" };
+    const finalUser = user || (await getLoggedInUser());
+    if (!finalUser) {
+      return null;
+    }
+    const budget = await budgetServer.getBudget(uuid, finalUser);
+    return budget;
   } catch (exception) {
     console.warn(exception);
-    return { uuid: "", name: "" };
+    return null;
   }
 }
 
@@ -86,10 +94,10 @@ const getFilteredTransactionsInternal = async (
 export const getFilteredTransactions = cache(getFilteredTransactionsInternal);
 
 export async function getTransactions(
-  id: string,
+  budgetUuid: string,
   month: string | null | undefined
 ): Promise<Array<Transaction>> {
-  return await findTransactions(id, month || "");
+  return await findTransactions(budgetUuid, month || "");
 }
 
 export async function getMonthSummaries(
@@ -102,10 +110,10 @@ export async function getMonthSummaries(
 
 // return all categories that have transactions
 export const getCategoriesContainingTransactions = async (
-  budgetId: string,
+  budgetUuid: string,
   transactions: Transaction[]
 ) => {
-  const categories = (await getCategories(budgetId)).filter((category) =>
+  const categories = (await getCategories(budgetUuid)).filter((category) =>
     transactions.find((transaction) => transaction.categoryId === category.uuid)
   );
   return categories;

@@ -16,16 +16,31 @@ export const findBudgets = async (userInput?: UserType): Promise<Budget[]> => {
   }));
 };
 
-export const getBudget = async (uuid: string): Promise<Budget | null> => {
+const mapLocalBudget = (localBudget: any): Budget => ({
+  _id: localBudget._id,
+  uuid: localBudget.uuid,
+  name: localBudget.name,
+});
+
+export const getBudgetWithoutUserCheck = async (
+  uuid: string
+): Promise<Budget | null> => {
   const localBudget = await LocalBudget.findOne({ uuid });
   if (!localBudget) {
     return null;
   }
-  return {
-    _id: localBudget._id,
-    uuid: localBudget.uuid,
-    name: localBudget.name,
-  };
+  return mapLocalBudget(localBudget);
+};
+
+export const getBudget = async (
+  uuid: string,
+  user: UserType
+): Promise<Budget | null> => {
+  const localBudget = await LocalBudget.findOne({ uuid, users: user._id });
+  if (!localBudget) {
+    return null;
+  }
+  return mapLocalBudget(localBudget);
 };
 
 export const saveNewBudget = async (

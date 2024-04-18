@@ -31,10 +31,13 @@ export const refreshUserToken = async (user: UserType) => {
   try {
     const refreshedToken = await refreshAccessToken(refreshToken);
     console.log("refreshed token:" + JSON.stringify(refreshedToken));
-    await connectUserWithYnab({
-      accessToken: refreshedToken.access_token,
-      refreshToken: refreshedToken.refresh_token,
-    });
+    await connectUserWithYnab(
+      {
+        accessToken: refreshedToken.access_token,
+        refreshToken: refreshedToken.refresh_token,
+      },
+      user
+    );
   } catch (exception) {
     throw new Error("Failed to refresh token");
   }
@@ -110,6 +113,7 @@ type GetTransactionsInput = {
   sinceDate?: string;
   type?: ynab.GetTransactionsTypeEnum;
   lastKnowledgeOfServer?: number;
+  user?: UserType;
 };
 
 const getTransactionsInternal = async ({
@@ -117,28 +121,24 @@ const getTransactionsInternal = async ({
   sinceDate,
   type,
   lastKnowledgeOfServer,
+  user,
 }: GetTransactionsInput): Promise<ynab.TransactionsResponseData> => {
-  try {
-    const api = await getApi();
-    const { data } = await api.transactions.getTransactions(
-      budgetId,
-      sinceDate,
-      type,
-      lastKnowledgeOfServer
-    );
-    return sortMostRecentFirst(data);
-  } catch (exception) {
-    console.warn(exception);
-    return { transactions: [], server_knowledge: 0 };
-  }
+  const api = await getApi(user);
+  const { data } = await api.transactions.getTransactions(
+    budgetId,
+    sinceDate,
+    type,
+    lastKnowledgeOfServer
+  );
+  return sortMostRecentFirst(data);
 };
 
 export const getTransactions = async (
   budgetId: string,
-  lastKnowledgeOfServer: number
+  lastKnowledgeOfServer: number,
+  user?: UserType
 ): Promise<ynab.TransactionsResponseData> => {
-  const api = await getApi();
-  return getTransactionsInternal({ budgetId, lastKnowledgeOfServer });
+  return getTransactionsInternal({ budgetId, lastKnowledgeOfServer, user });
 };
 
 export const getUncategorizedOrUnApprovedTransactions = async (
@@ -148,22 +148,25 @@ export const getUncategorizedOrUnApprovedTransactions = async (
   return getTransactionsInternal({ budgetId, type: "uncategorized" });
 };
 
+type CategoriesWithKnowledge = {
+  knowledge: number;
+  categories: Array<ynab.Category>;
+};
 export async function getCategories(
   budgetId: string,
+  knowledge: number,
   user?: UserType
-): Promise<Array<ynab.Category>> {
-  try {
-    const api = await getApi(user);
-    const { data } = await api.categories.getCategories(budgetId);
-    const categories = data.category_groups.reduce(
-      (acc: Array<ynab.Category>, group: ynab.CategoryGroupWithCategories) => {
-        return acc.concat(group.categories);
-      },
-      []
-    );
-    return categories;
-  } catch (exception) {
-    console.warn(exception);
-    return [];
-  }
+): Promise<CategoriesWithKnowledge> {
+  const api = await getApi(user);
+  const { data } = await api.categories.getCategories(budgetId, knowledge);
+  const categories = data.category_groups.reduce(
+    (acc: Array<ynab.Category>, group: ynab.CategoryGroupWithCategories) => {
+      return acc.concat(group.categories);
+    },
+    []
+  );
+  return {
+    knowledge: data.server_knowledge,
+    categories,
+  };
 }

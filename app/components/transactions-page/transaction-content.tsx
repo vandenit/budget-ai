@@ -67,7 +67,7 @@ const TransactionContent = ({
           </thead>
           <tbody>
             {filteredTransactions.map((transaction) => (
-              <tr key={transaction.id}>
+              <tr key={transaction.uuid}>
                 <td>{transaction.date}</td>
 
                 <td>{formatAmount(transaction.amount)}</td>

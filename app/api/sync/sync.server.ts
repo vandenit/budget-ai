@@ -2,6 +2,7 @@ import "server-only";
 import {
   UserType,
   findNonSyncedUsers,
+  getLoggedInUser,
   updateSyncDate,
 } from "../user/user.server";
 import { syncYnabUser } from "../ynab/ynab.server";
@@ -13,10 +14,18 @@ export const syncBudgetData = async (): Promise<number> => {
   return users.length;
 };
 
+export const syncLoggedInUser = async (): Promise<void> => {
+  const user = await getLoggedInUser();
+  if (!user) {
+    return;
+  }
+  await syncUser(user);
+};
+
 export const syncUser = async (user: UserType) => {
   try {
     if (user.ynab?.connection) {
-      syncYnabUser(user);
+      await syncYnabUser(user);
     }
     await updateSyncDate(user, new Date());
   } catch (exception) {

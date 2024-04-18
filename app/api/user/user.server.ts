@@ -1,10 +1,8 @@
 import "server-only";
-import { connect } from "http2";
 import User from "./user.schema";
 import connectDb from "../db";
 import { getSession } from "@auth0/nextjs-auth0";
 import mongoose from "mongoose";
-import { c } from "vitest/dist/reporters-5f784f42.js";
 
 const MAX_SYNC_USERS = 100;
 const SYNC_INTERVAL_MINUTES = 0;
@@ -14,14 +12,8 @@ type YnabConnection = {
   refreshToken: string;
 };
 
-type ServerKnowledge = {
-  transactions: number;
-  categories: number;
-};
-
 type YnabUserData = {
   connection: YnabConnection;
-  serverKnowledge?: ServerKnowledge;
 };
 
 export type UserType = {
@@ -70,10 +62,33 @@ export const createOrUpdateUser = async ({
   return newUser;
 };
 
-export const connectUserWithYnab = async (connection: YnabConnection) => {
+export const updateUserServerKnowledge = async ({
+  user,
+  budgetUuid,
+  systemType,
+  type,
+  knowledge,
+}: {
+  user: UserType;
+  budgetUuid: string;
+  systemType: "ynab";
+  type: "transactions" | "categories";
+  knowledge: number;
+}) => {
+  await connectDb();
+  const key = `${systemType}.serverKnowledge.${budgetUuid}.${type}`;
+  console.log("update knownloedge:" + `${key}` + ",with: " + knowledge);
+  await User.updateOne({ _id: user._id }, { [key]: knowledge });
+};
+
+export const connectUserWithYnab = async (
+  connection: YnabConnection,
+  user?: UserType
+) => {
   await connectDb();
   console.log(`connecting user with ynab: ${JSON.stringify(connection)}`);
-  const authId = await getLoggedInUserAuthId();
+  const finalUser = user || (await getLoggedInUser());
+  const authId = finalUser?.authId;
   if (!authId) {
     return;
   }
