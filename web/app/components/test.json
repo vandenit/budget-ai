@@ -1,0 +1,194 @@
+[
+  {
+    "id": "22df281d-f45a-447d-b9d7-35f6123f744d",
+    "name": "Inflow: Ready to Assign",
+    "budgeted": 0,
+    "spent": 2280,
+    "typicalSpendingPattern": 0.5309924852436106,
+    "historicalAverage": 3074.98
+  },
+  {
+    "id": "969dda7e-74fe-40e0-a01f-f97a79210c15",
+    "name": "Uncategorized",
+    "budgeted": 0,
+    "spent": 0,
+    "typicalSpendingPattern": null,
+    "historicalAverage": 0
+  },
+  {
+    "id": "cb846c66-9fcd-472c-b3bd-6d306ebf0cfc",
+    "name": "Afbetaling Lening Trouw",
+    "budgeted": 217.41,
+    "spent": 217.41,
+    "typicalSpendingPattern": 0.5809044283934949,
+    "historicalAverage": 155.57857142857142
+  },
+  {
+    "id": "d700053d-aa75-4061-9379-5ae2caaa52cb",
+    "name": "Sparen",
+    "budgeted": 0,
+    "spent": 0,
+    "typicalSpendingPattern": 0.9252862969436939,
+    "historicalAverage": 230.57142857142858
+  },
+  {
+    "id": "9bf3341b-32d0-4179-a3be-b99a7ffa37f3",
+    "name": "Verzekeringen",
+    "budgeted": 48.84,
+    "spent": 48.84,
+    "typicalSpendingPattern": 0.4400264892567589,
+    "historicalAverage": 65.85285714285713
+  },
+  {
+    "id": "037c9731-39f6-4db9-8f11-247928bb5341",
+    "name": "Gemeenschappelijke",
+    "budgeted": 1200,
+    "spent": 1200,
+    "typicalSpendingPattern": 0.5204704072099796,
+    "historicalAverage": 832.8571428571429
+  },
+  {
+    "id": "b71018af-8119-415f-8d81-b141b8b82e12",
+    "name": "Transport",
+    "budgeted": 10.4,
+    "spent": 10.4,
+    "typicalSpendingPattern": 0.4396925335751609,
+    "historicalAverage": 17.785714285714285
+  },
+  {
+    "id": "d98d482b-8d6c-4a02-bfbc-76b845b7df3d",
+    "name": "Onverwacht",
+    "budgeted": 43.18,
+    "spent": 51.75,
+    "typicalSpendingPattern": 0.40447869264108827,
+    "historicalAverage": 612.2571428571429
+  },
+  {
+    "id": "55c7c711-ac1e-497a-bf8b-4c6ac79c0d67",
+    "name": "Koffie En Drank",
+    "budgeted": 178.5,
+    "spent": 121.09,
+    "typicalSpendingPattern": 0.5386365637662556,
+    "historicalAverage": 199.21428571428575
+  },
+  {
+    "id": "05c3789e-3d79-47db-8d9f-adaddad80ea8",
+    "name": "Gift",
+    "budgeted": 335.25,
+    "spent": 335.25,
+    "typicalSpendingPattern": 0.46390470996460925,
+    "historicalAverage": 148.8014285714286
+  },
+  {
+    "id": "522557a9-1120-430a-906f-8b0a0b2da816",
+    "name": "Winkelen",
+    "budgeted": 13.98,
+    "spent": 0,
+    "typicalSpendingPattern": 0.4655263529489522,
+    "historicalAverage": 132.93428571428572
+  },
+  {
+    "id": "01e3a4fb-9869-4657-b242-75195155bb78",
+    "name": "Groceries",
+    "budgeted": 18.44,
+    "spent": 18.44,
+    "typicalSpendingPattern": 0.602936865181242,
+    "historicalAverage": 69.77857142857142
+  },
+  {
+    "id": "b2a0b2f6-1261-4794-9d47-5859a082cf33",
+    "name": "Familie",
+    "budgeted": 0,
+    "spent": 0,
+    "typicalSpendingPattern": 0.7141235509127788,
+    "historicalAverage": 92.38428571428572
+  },
+  {
+    "id": "277fd09e-b129-4b77-b163-6dde30f8f829",
+    "name": "Eating Out",
+    "budgeted": 66.6,
+    "spent": 66.6,
+    "typicalSpendingPattern": 0.5464726406135576,
+    "historicalAverage": 153.52428571428572
+  },
+  {
+    "id": "f0aa268e-f2e9-49d9-b99d-d91c73c60027",
+    "name": "Medisch",
+    "budgeted": 37.93,
+    "spent": 37.93,
+    "typicalSpendingPattern": 0.6903893250751303,
+    "historicalAverage": 66.12
+  },
+  {
+    "id": "8b5d1949-f24b-4958-9aaf-0a948aff5b4c",
+    "name": "Home",
+    "budgeted": 65.23,
+    "spent": 65.23,
+    "typicalSpendingPattern": 0.334635183906178,
+    "historicalAverage": 18.14857142857143
+  },
+  {
+    "id": "5988b235-2b42-4ee6-8fe7-441376d8cd61",
+    "name": "Auto Maintenance",
+    "budgeted": 0,
+    "spent": 0,
+    "typicalSpendingPattern": null,
+    "historicalAverage": 0
+  },
+  {
+    "id": "f34e17be-77e7-440a-93d5-7dbe33d96fdb",
+    "name": "YNAB Subscription",
+    "budgeted": 0,
+    "spent": 0,
+    "typicalSpendingPattern": null,
+    "historicalAverage": 0
+  },
+  {
+    "id": "60e68f33-8c01-483a-ad4d-7e2828c73e38",
+    "name": "terugbetaling rekeningcourrrant",
+    "budgeted": 0,
+    "spent": 0,
+    "typicalSpendingPattern": null,
+    "historicalAverage": 0
+  },
+  {
+    "id": "a45c2ddc-12e4-48d9-8af5-e148d81baefd",
+    "name": "Vacation",
+    "budgeted": 0,
+    "spent": 0,
+    "typicalSpendingPattern": 0.3178651286324109,
+    "historicalAverage": 123.78
+  },
+  {
+    "id": "4bdb9cad-5b2b-4620-951c-a0ed62f54cd5",
+    "name": "Home Improvement",
+    "budgeted": 0,
+    "spent": 0,
+    "typicalSpendingPattern": 0.5666666666666667,
+    "historicalAverage": 17.142857142857142
+  },
+  {
+    "id": "724d9d36-3dd9-4fc8-99c5-3c8aa7234705",
+    "name": "Hobbies",
+    "budgeted": 0,
+    "spent": 0,
+    "typicalSpendingPattern": null,
+    "historicalAverage": 0
+  },
+  {
+    "id": "6adf9656-d9b3-4b8e-bcea-1f39c61aa05c",
+    "name": "Entertainment",
+    "budgeted": 13.49,
+    "spent": 13.49,
+    "typicalSpendingPattern": 0.8571545930187991,
+    "historicalAverage": 114.82714285714285
+  },
+  {
+    "id": "377cce50-ed9a-4a73-937a-40b1a8fb860a",
+    "name": "Health & Wellness",
+    "budgeted": 45,
+    "spent": 45,
+    "typicalSpendingPattern": 0.5422842197035745,
+    "historicalAverage": 13.214285714285714
+  }
+]
