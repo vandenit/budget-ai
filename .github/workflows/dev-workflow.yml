@@ -12,6 +12,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+      - name: List files in the web directory
+        run: ls -alh ./web
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v1
@@ -33,11 +35,15 @@ jobs:
           token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
 
       - name: Save Digital Ocean kubeconfig
-        run: doctl kubernetes cluster kubeconfig save your-cluster-name
+        run: doctl kubernetes cluster kubeconfig save k8s-1-vandenit-ams3-dev
+
+      - name: Deploy config to Kubernetes
+        run: |
+          kubectl apply -f ./kube/config/dev
 
       - name: Deploy to Kubernetes
         run: |
           kubectl apply -f ./kube/dev
 
       - name: Verify deployment
-        run: kubectl rollout status deployment/budget-ai-app
+        run: kubectl rollout status deployment/budget-ai-app -n dev
