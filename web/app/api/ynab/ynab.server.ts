@@ -7,7 +7,7 @@ import {
   saveNewBudget,
   updateBudget,
 } from "../budget/budget.server";
-import { UserType } from "../user/user.server";
+import { UserType, clearYnabConnection } from "../user/user.server";
 import * as ynabApi from "./ynab-api"; // Import the missing ynapApi module
 import {
   deleteCategory,
@@ -255,7 +255,11 @@ const syncAllTransactions = async (user: UserType) => {
 
 export const syncYnabUser = async (user: UserType) => {
   console.log(`syncing Ynab data for user with id: ${user.authId}`);
-  await ynabApi.refreshUserToken(user);
+  try {
+    await ynabApi.refreshUserToken(user);
+  } catch (e) {
+    await clearYnabConnection(user);
+  }
   await syncBudgets(user);
   await syncCategories(user);
   await syncAllTransactions(user);

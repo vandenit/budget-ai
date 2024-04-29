@@ -166,3 +166,8 @@ export const updateSyncDate = async (user: UserType, date: Date) => {
   connectDb();
   User.updateOne({ _id: user._id }, { syncDate: date }).exec();
 };
+
+export const clearYnabConnection = async (user: UserType) => {
+  connectDb();
+  await User.updateOne({ _id: user._id }, { ynab: undefined });
+};
