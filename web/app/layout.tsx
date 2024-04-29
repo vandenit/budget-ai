@@ -20,7 +20,7 @@ export default async function RootLayout({
 }) {
   const session = await getSession();
   const isLoggedIn: boolean = !!session?.user;
-  const budgets = session ? await getCachedBudgets() : [];
+  const budgets = session && isLoggedIn ? await getCachedBudgets() : [];
   return (
     <UserProvider>
       <html lang="en" data-theme="dark">
