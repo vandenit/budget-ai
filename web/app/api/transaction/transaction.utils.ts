@@ -8,3 +8,7 @@ export type Transaction = {
   payeeName: string;
   memo: string;
 };
+
+export interface GroupedTransactions {
+  [key: string]: Transaction[];
+}

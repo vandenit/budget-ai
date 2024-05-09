@@ -1,8 +1,8 @@
 import "server-only";
 import User from "./user.schema";
 import connectDb from "../db";
-import { getSession } from "@auth0/nextjs-auth0";
 import mongoose from "mongoose";
+import { getSession } from "@auth0/nextjs-auth0";
 
 const MAX_SYNC_USERS = 100;
 const SYNC_INTERVAL_MINUTES = 0;
@@ -32,6 +32,7 @@ export type UserType = {
 const getLoggedInUserAuthId = async (): Promise<string> => {
   try {
     const session = await getSession();
+    console.log("session:" + JSON.stringify(session));
     return session?.user?.sub || "";
   } catch (exception) {
     return "";

@@ -1,14 +1,11 @@
-import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { SignIn, SignOut } from "../components/login";
-import { authOptions } from "../api/auth/[...nextauth]/route";
-import { getCachedBudgets } from "../api/main.budget.server";
-import BudgetPage from "../components/budget-page";
+import { getSession } from "@auth0/nextjs-auth0";
 
 async function LoginPage() {
-  const session = await getServerSession(authOptions);
-  const budgets = await getCachedBudgets();
-  if (session && budgets.length) {
+  const session = await getSession();
+  const isLoggedIn: boolean = !!session?.user;
+  if (isLoggedIn) {
     redirect("/");
   }
   return (
