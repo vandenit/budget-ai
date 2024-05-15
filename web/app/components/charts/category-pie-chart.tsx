@@ -16,7 +16,7 @@ const MIN_PERCENTAGE_TO_DISPLAY = 4;
 ChartJS.register(ArcElement, Tooltip, Legend, ChartDataLabels);
 
 import { isOnMobileDevice, valueToPercentageOfTotal } from "./util";
-import { compose, filter } from "ramda";
+import { filter, pipe } from "ramda";
 import { Category, isInflowCategory } from "@/app/api/category/category.utils";
 import { absoluteD1000Number, formatAmount } from "@/app/utils/amounts";
 
@@ -150,10 +150,14 @@ export const CategoryPieChart = ({
   const getCategoryAmountTypeLabel = (type: CategoryAmountType) =>
     amountTypes.find((amountType) => amountType.type === type)?.label || "";
 
-  const categoriesWithUsage: Category[] = compose(
+  const sortyByName = (a: Category, b: Category) =>
+    a.name.localeCompare(b.name);
+
+  // todo: put sort in pipe
+  const categoriesWithUsage: Category[] = pipe(
     filter(nonInflowCategoryWithUsage(categoryAmountType)),
     filter(extraAmountFitler(categoryAmountType))
-  )(categories);
+  )(categories).sort(sortyByName);
 
   const filteredCategories = categoriesWithUsage.filter(
     notExcludedCategory(excludedCategories)

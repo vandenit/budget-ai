@@ -213,11 +213,13 @@ const syncYnabCategories = async (user: UserType, budget: Budget) => {
     syncYnabCategory(ynabCategory, budget)
   );
   await Promise.all(promises);
+  // for now set knowledge to 0 to have the latest categories all the time (keeps
+  // we noticed otherwise that properties as activity, balance are not updated correctly)
   await updateUserServerKnowledge({
     user,
     budget,
     type: "categories",
-    knowledge: ynabCategoriesData.knowledge,
+    knowledge: 0,
   });
 };
 
