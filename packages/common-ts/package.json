@@ -1,0 +1,15 @@
+{
+    "name": "common-ts",
+    "version": "1.0.0",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "scripts": {
+        "build": "rimraf dist && rollup --config"
+    },
+    "devDependencies": {
+        "rollup": "^2.60.2",
+        "rollup-plugin-typescript2": "^0.31.1",
+        "typescript": "^5.4.5",
+        "rimraf": "^3.0.2"
+    }
+}
