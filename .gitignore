@@ -9,8 +9,8 @@
 /coverage
 
 # next.js
-/.next/
-/out/
+.next/
+out/
 
 # production
 /build
@@ -37,3 +37,5 @@ next-env.d.ts
 .dev-secrets.env
 test.yml
 .kubectl-dev.md
+docker-commands.md
+.next
