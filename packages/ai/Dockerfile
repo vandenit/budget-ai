@@ -1,21 +1,25 @@
-FROM python:3.8-slim
+# syntax=docker/dockerfile:experimental
+FROM eclipse-temurin:17-jdk-alpine as build
+WORKDIR /workspace/app
 
-WORKDIR /app
+COPY packages/ai/mvnw .
+COPY packages/ai/.mvn .mvn
+COPY packages/ai/pom.xml .
+COPY packages/ai/src src
 
-# Copy the requirements.txt file from the root context
-COPY packages/ai/requirements.txt .
+RUN --mount=type=cache,target=/root/.m2 ./mvnw install -DskipTests
+RUN mkdir -p target/dependency && (cd target/dependency; jar -xf ../*.jar)
 
-# Install dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+FROM eclipse-temurin:17-jdk-alpine
+VOLUME /tmp
+ARG DEPENDENCY=/workspace/app/target/dependency
+COPY --from=build ${DEPENDENCY}/BOOT-INF/lib /app/lib
+COPY --from=build ${DEPENDENCY}/META-INF /app/META-INF
+COPY --from=build ${DEPENDENCY}/BOOT-INF/classes /app
 
-# Copy the app directory from the root context
-COPY packages/ai/app ./app
 
-# Set the working directory to the app directory
-WORKDIR /app/app
+# Debugging: Check the classpath
+# RUN java -cp "/app:/app/lib/*" org.budgetai.ai.Application
 
-# Debugging: List the contents of the app directory
-RUN ls -la
-
-# Set the command to run the application
-CMD ["fastapi", "run", "app/app/main.py", "--proxy-headers", "--port", "5000"]
+ENTRYPOINT ["java","-cp","/app:/app/lib/*","org.budgetai.ai.Application"]
+#ENTRYPOINT ["sh", "-c", "echo 'Starting application...'; echo 'Ls app:'; ls -la /app; echo 'ls app/lib:'; ls -la /app/lib"]
