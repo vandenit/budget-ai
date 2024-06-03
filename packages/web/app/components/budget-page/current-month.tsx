@@ -2,10 +2,7 @@ import Link from "next/link";
 import CategoryCard from "./category-card";
 import MonthTotalOverview from "./month-total-overview";
 import HiddenProgressBars from "./hidden-progress-bars";
-import { MonthlyForcast } from "@/app/api/es-forcasting.server";
-import { Category } from "@/app/api/category/category.utils";
-import { MonthSummary, MonthTotal } from "@/app/main.budget.utils";
-import { percentageSpent } from "@/app/utils/amounts";
+import { Category, MonthlyForcast, MonthSummary, MonthTotal, percentageSpent } from "common-ts";
 
 type Props = {
   budgetUuid: string;

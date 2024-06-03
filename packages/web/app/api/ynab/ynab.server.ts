@@ -15,7 +15,7 @@ import {
   saveNewCategory,
   updateCategory,
 } from "../category/category.server";
-import { Budget } from "../budget/budget.utils";
+import { Budget } from "common-ts/src/budget/budget.utils";
 import { LocalTransaction } from "../transaction/transaction.schema";
 import YnabBudget from "./ynab.schema";
 import { ObjectId } from "mongodb";

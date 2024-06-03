@@ -1,5 +1,5 @@
-import { CategoryUsage } from "./api/category/category.utils";
-import { Transaction } from "./api/transaction/transaction.utils";
+import { CategoryUsage } from "./category";
+import { Transaction } from "./transaction/transaction.utils";
 
 export type MonthTotal = {
   totalSpent: number;

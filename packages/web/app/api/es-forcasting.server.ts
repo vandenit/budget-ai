@@ -1,39 +1,12 @@
-import { MonthSummary } from "../main.budget.utils";
-import { absoluteD1000Number } from "../utils/amounts";
-import { Category } from "./category/category.utils";
-
-type CategoryData = {
-  id: string;
-  name: string;
-  budgeted: number;
-  balance: number;
-  spent: number;
-  typicalSpendingPattern: number; // A weight from 0 (start of month) to 1 (end of month)
-  historicalAverage: number;
-};
-
-type TransactionData = {
-  date: Date;
-  amount: number;
-  categoryId: string;
-  categoryName: string;
-};
-
-type MonthlySpending = {
-  month: Date;
-  amount: number;
-};
-
-export type MonthlyForcast = {
-  totalSpentSoFar: number;
-  predictedSpendingEndOfMonth: number;
-  predictedRemainingPerDay: number;
-  actualRemainingPerDay: number;
-  predictedRemainingAmount: number;
-  remainingDays: number;
-  available: number;
-  extraAmountNeeded: number;
-};
+import {
+  CategoryData,
+  MonthSummary,
+  MonthlySpending,
+  MonthlyForcast,
+  Category,
+  absoluteD1000Number,
+  TransactionData,
+} from "common-ts";
 
 const monthSummariesToMonthlySpendingForCategory = (
   monthSummaries: MonthSummary[],

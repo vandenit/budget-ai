@@ -17,8 +17,8 @@ ChartJS.register(ArcElement, Tooltip, Legend, ChartDataLabels);
 
 import { isOnMobileDevice, valueToPercentageOfTotal } from "./util";
 import { filter, pipe } from "ramda";
-import { Category, isInflowCategory } from "@/app/api/category/category.utils";
-import { absoluteD1000Number, formatAmount } from "@/app/utils/amounts";
+import { Category, isInflowCategory } from "common-ts";
+import { absoluteD1000Number, formatAmount } from "common-ts";
 
 type Props = {
   categories: Category[];

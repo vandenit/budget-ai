@@ -7,17 +7,15 @@ import {
   calculateTotals,
   getBudget,
   getMonthSummaries,
-} from "@/app/api/main.budget.server";
+} from "../../api/main.budget.server";
 import MonthSummaryBlock from "./month-summary-block";
 import CurrentMonth from "./current-month";
-import {
-  categoriesToCategoryData,
-  forecastSpendingWithES,
-} from "@/app/api/es-forcasting.server";
-import { getAIAnalysis } from "@/app/api/ai.server";
-import { savePreferredBudget } from "@/app/api/user/user.server";
-import { getCategories } from "@/app/api/category/category.server";
+
+import { getAIAnalysis } from "../../api/ai.server";
+import { savePreferredBudget } from "../../api/user/user.server";
+import { getCategories } from "../../api/category/category.server";
 import YnabLoginPage from "../ynab-login-page";
+import { categoriesToCategoryData, forecastSpendingWithES } from "../../api/es-forcasting.server";
 
 export default function BudgetPage({ budgetUuid }: { budgetUuid: string }) {
   return (

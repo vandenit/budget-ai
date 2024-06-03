@@ -1,7 +1,7 @@
 import "server-only";
 
 import OpenAI from "openai";
-import { MonthSummary } from "../main.budget.utils";
+import { MonthSummary } from "common-ts";
 
 export type AIFinancialAnalysis = {
   response: string;

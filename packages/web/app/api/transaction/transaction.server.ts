@@ -4,7 +4,7 @@ import connectDb from "../db";
 import { getLoggedInUser, getUserByAuthId } from "../user/user.server";
 import { LocalTransaction } from "./transaction.schema";
 import mongoose from "mongoose";
-import { Transaction } from "./transaction.utils";
+import { Transaction } from "common-ts";
 import { getBudget } from "../main.budget.server";
 
 export const findTransactions = async (

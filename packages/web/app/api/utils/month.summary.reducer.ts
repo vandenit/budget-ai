@@ -1,6 +1,5 @@
-import { MonthSummary } from "@/app/main.budget.utils";
+import { MonthSummary, Transaction } from "common-ts";
 import { categoryUsageReducer } from "./category.usage.reducer";
-import { Transaction } from "../transaction/transaction.utils";
 
 export const monthSummaryReducer = (
   monthSummaries: Array<MonthSummary>,

@@ -5,9 +5,6 @@ services:
       dockerfile: packages/api/Dockerfile
     ports:
       - "4000:4000"
-    volumes:
-      - .:/app
-      - /app/node_modules
     environment:
       NODE_ENV: development
 
@@ -17,9 +14,6 @@ services:
       dockerfile: packages/web/Dockerfile
     ports:
       - "3000:3000"
-    volumes:
-      - .:/app
-      - /app/node_modules
     env_file:
       - ./packages/web/.env
     environment:

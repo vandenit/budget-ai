@@ -4,7 +4,10 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "npm run build --workspaces",
-    "start": "npm run start --workspaces"
+    "prebuild": "npm run build --workspace common-ts",
+    "build": "npm run build:web && npm run build:api",
+    "build:web": "npm run build --workspace web",
+    "build:api": "npm run build --workspace api",
+    "postbuild": "echo Build completed successfully!"
   }
 }

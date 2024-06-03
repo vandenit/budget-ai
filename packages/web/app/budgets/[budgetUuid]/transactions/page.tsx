@@ -1,4 +1,4 @@
-import TransactionsPage from "@/app/components/transactions-page";
+import TransactionsPage from "../../../components/transactions-page";
 
 async function TransactionsRoute({
   params,

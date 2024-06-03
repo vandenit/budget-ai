@@ -1,4 +1,4 @@
-import { Category, CategoryUsage } from "../category/category.utils";
+import { Category, CategoryUsage } from "common-ts";
 
 export const categoryUsageMapper =
   (budgetId: string) =>

@@ -1,15 +1,15 @@
-import { percentageToStatusClass } from "@/app/utils/styling";
-
 import Link from "next/link";
 import Progress from "../progress";
-import { Category, isInflowCategory } from "@/app/api/category/category.utils";
-import { MonthTotal } from "@/app/main.budget.utils";
 import {
+  Category,
   calculatePercentage,
   formatAmount,
   formatPercentage,
+  MonthTotal,
   percentageSpent,
-} from "@/app/utils/amounts";
+  isInflowCategory
+} from "common-ts";
+import { percentageToStatusClass } from "../../utils";
 
 interface StatusIndicatorProps {
   category: Category;

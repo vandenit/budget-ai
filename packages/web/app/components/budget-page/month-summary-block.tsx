@@ -2,14 +2,11 @@ import Link from "next/link";
 import CategoryCard from "./category-card";
 import { get } from "http";
 import {
-  Category,
+  MonthSummary, formatAmount, Category,
   CategoryUsage,
   emptyCategory,
   isInflowCategory,
-} from "@/app/api/category/category.utils";
-import { formatAmount } from "@/app/utils/amounts";
-import { MonthSummary } from "@/app/main.budget.utils";
-
+} from "common-ts";
 type Props = {
   budgetUuid: string;
   month: MonthSummary;

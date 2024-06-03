@@ -2,7 +2,7 @@ import moment from "moment";
 import {
   GroupedTransactions,
   Transaction,
-} from "@/app/api/transaction/transaction.utils";
+} from "common-ts";
 
 export const formatDate = (dateString: string): string => {
   return moment(dateString).format("dddd, MMMM Do YYYY");

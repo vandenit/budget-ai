@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { ChangeEvent, ChangeEventHandler } from "react";
 import { useSearchParams, usePathname, useRouter } from "next/navigation";
-import { Category } from "@/app/api/category/category.utils";
+import { Category } from "common-ts";
 
 function CategorySelect({
   categoryUuid,

@@ -1,6 +1,5 @@
 import { compose } from "ramda";
-import { Transaction } from "@/app/api/transaction/transaction.utils";
-import { numberD1000 } from "@/app/utils/amounts";
+import { Transaction, numberD1000 } from "common-ts";
 
 export type MonthlySpendingData = {
   dayOfMonth: string;

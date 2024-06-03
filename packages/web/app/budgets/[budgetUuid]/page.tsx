@@ -1,4 +1,4 @@
-import BudgetPage from "@/app/components/budget-page";
+import BudgetPage from "../../components/budget-page";
 
 async function BudgetRoute({ params }: { params: { budgetUuid: string } }) {
   const { budgetUuid } = params;

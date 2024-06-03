@@ -1,7 +1,7 @@
 import "server-only";
 import { UserType, getLoggedInUser } from "../user/user.server";
 import { LocalBudget } from "./budget.schema";
-import { Budget } from "./budget.utils";
+import { Budget } from "common-ts";
 
 export const findBudgets = async (userInput?: UserType): Promise<Budget[]> => {
   const user = userInput || (await getLoggedInUser());

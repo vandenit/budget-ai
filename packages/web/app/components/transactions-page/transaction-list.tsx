@@ -1,7 +1,6 @@
-import { Transaction } from "@/app/api/transaction/transaction.utils";
 import { calculateTotals, formatDate, groupByDate } from "./utils";
 import { useState } from "react";
-import { formatAmount } from "@/app/utils/amounts";
+import { formatAmount, Transaction } from "common-ts";
 import { FaArrowDown, FaArrowUp } from "react-icons/fa";
 
 export const TransactionList = ({

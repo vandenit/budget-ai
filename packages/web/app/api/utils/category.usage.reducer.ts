@@ -1,5 +1,4 @@
-import { CategoryUsage } from "../category/category.utils";
-import { Transaction } from "../transaction/transaction.utils";
+import { CategoryUsage, Transaction } from "common-ts";
 
 export const categoryUsageReducer = (
   categoryUsages: CategoryUsage[],

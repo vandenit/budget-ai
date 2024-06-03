@@ -1,4 +1,4 @@
-import { percentageToStatusClass } from "../utils/styling";
+import { percentageToStatusClass } from "../utils";
 
 type Props = {
   percentage: number;

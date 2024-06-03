@@ -1,5 +1,5 @@
-import { Category } from "@/app/api/category/category.utils";
-import { MonthTotal } from "@/app/main.budget.utils";
+import { MonthTotal } from "../budget";
+import { Category } from "../category/category.utils";
 
 export const formatBasicAmount = (
   amount: number,

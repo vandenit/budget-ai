@@ -6,21 +6,21 @@ WORKDIR /app
 # Copy the root package.json, package-lock.json
 COPY ../../package.json ../../package-lock.json ./
 
-# Install dependencies and bootstrap with npm workspaces
-RUN npm install
-
 # Copy only the web package to the container
 COPY ../../packages/web ./packages/web
 COPY ../../packages/common-ts ./packages/common-ts
 
-# Set the working directory to the web package
-WORKDIR /app/packages/web
+# Copy the root tsconfig.json
+COPY ../../tsconfig.json ./
 
-# Install dependencies for the web package (if not already installed by npm workspaces)
+# Install dependencies and bootstrap with npm workspaces
 RUN npm install
 
 # Build the web package
-RUN npm run build
+RUN npm run build:web
+
+# Set the working directory to the web package
+WORKDIR /app/packages/web
 
 # Expose the port
 EXPOSE 3000

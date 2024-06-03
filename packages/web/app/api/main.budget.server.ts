@@ -7,14 +7,15 @@ import { T } from "types-ramda";
 import { monthSummaryReducer } from "./utils/month.summary.reducer";
 import { categoryUsageReducer } from "./utils/category.usage.reducer";
 import { categoryUsageMapper } from "./utils/category-usage.mapper";
-import { Budget } from "./budget/budget.utils";
 import {
+  Budget,
+  Transaction,
   categorySorter,
   withoutInflowCategoryFilter,
-} from "./category/category.utils";
-import { Transaction } from "./transaction/transaction.utils";
-import { Category } from "./category/category.utils";
-import { MonthSummary, MonthTotal } from "../main.budget.utils";
+  Category,
+  MonthSummary,
+  MonthTotal,
+} from "common-ts";
 import { getCategories } from "./category/category.server";
 import { UserType, getLoggedInUser } from "./user/user.server";
 

@@ -1,10 +1,8 @@
 import "server-only";
 
-import { Transaction } from "../transaction/transaction.utils";
 import { LocalCategory, LocalCategoryType } from "./category.schema";
-import { Budget } from "../budget/budget.utils";
+import { Budget, Category, Transaction } from "common-ts";
 import mongoose from "mongoose";
-import { Category } from "./category.utils";
 import { getBudget } from "../main.budget.server";
 import connectDb from "../db";
 
