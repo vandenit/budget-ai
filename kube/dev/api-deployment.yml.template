@@ -1,30 +1,30 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: budget-ai-app
+  name: budget-api-app
   namespace: dev
   labels:
-    app: budget-ai-app
+    app: budget-api-app
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: budget-ai-app
+      app: budget-api-app
   template:
     metadata:
       labels:
-        app: budget-ai-app
+        app: budget-api-app
     spec:
       containers:
-        - name: budget-ai-app
-          image: filipvdb321/budget-ai-web:${IMAGE_TAG}
+        - name: budget-api-app
+          image: filipvdb321/budget-api:${IMAGE_TAG}
           ports:
-            - containerPort: 3000
+            - containerPort: 4000
               name: http
           envFrom:
             - secretRef:
-                name: budget-ai-dev-secrets
+                name: budget-api-dev-secrets
             - configMapRef:
-                name: budget-ai-dev-config
+                name: budget-api-dev-config
       imagePullSecrets:
         - name: regcred-dev

@@ -35,7 +35,7 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 .env
-*.secrets.env
+*secrets.env
 test.yml
 .kubectl-dev.md
 docker-commands.md

@@ -11,4 +11,5 @@ data:
   AUTH0_CLIENT_ID: "IuFYfjlYNV0RhM1ztsfrlV6gJ4TGZiDM"
   AUTH0_SCOPE: "openid profile"
   AUTH0_CALLBACK: api/defauth/callback
-  API_URL: "/api"
+  AUTH0_AUDIENCE: "https://vandenit.eu.auth0.com/api/v2/"
+  API_URL: "http://budget-api-svc.dev:4000"

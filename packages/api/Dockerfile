@@ -14,7 +14,11 @@ COPY ../../tsconfig.json ./
 # Install dependencies and bootstrap with npm workspaces
 RUN npm install
 
-# Build the web package
+
+# Build the common-ts package first
+RUN npm run build --workspace common-ts
+
+# Build the api package
 RUN npm run build:api
 
 # Set the working directory to the api package

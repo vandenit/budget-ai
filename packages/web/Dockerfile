@@ -16,8 +16,11 @@ COPY ../../tsconfig.json ./
 # Install dependencies and bootstrap with npm workspaces
 RUN npm install
 
+# Build the common-ts package first
+RUN npm run build --workspace common-ts
+
 # Build the web package
-RUN npm run build:web
+RUN npm run build --workspace web
 
 # Set the working directory to the web package
 WORKDIR /app/packages/web

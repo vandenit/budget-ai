@@ -14,8 +14,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: List files in the web directory
-        run: ls -alh ./web
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v1
@@ -26,39 +24,52 @@ jobs:
       - name: Build and push Docker web image
         uses: docker/build-push-action@v2
         with:
-          context: ./web
-          file: ./web/Dockerfile
+          context: .
+          file: ./packages/web/Dockerfile
           push: true
-          tags: filipvdb321/budget-ai-web:${{ github.sha }}
+          tags: filipvdb321/budget-web:${{ github.sha }}
+
       - name: Build and push Docker api image
         uses: docker/build-push-action@v2
         with:
-          context: ./api
-          file: ./api/Dockerfile
+          context: .
+          file: ./packages/api/Dockerfile
           push: true
-          tags: filipvdb321/budget-ai-api:${{ github.sha }}
+          tags: filipvdb321/budget-api:${{ github.sha }}
+
       - name: Build and push Docker ai image
         uses: docker/build-push-action@v2
         with:
-          context: ./ai
-          file: ./ai/Dockerfile
+          context: .
+          file: ./packages/ai/Dockerfile
           push: true
-          tags: filipvdb321/budget-ai-ai:${{ github.sha }}
+          tags: filipvdb321/budget-ai:${{ github.sha }}
 
       - name: Install doctl
         uses: digitalocean/action-doctl@v2
         with:
           token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
 
-      - name: Replace image tag in Kubernetes deployment file
+      - name: Replace image tag in web Kubernetes deployment file
         run: |
-          envsubst '$IMAGE_TAG' < ./kube/dev/budget-ai-deployment.yml.template > ./kube/dev/budget-ai-deployment.yml
+          envsubst '$IMAGE_TAG' < ./kube/dev/web-deployment.yml.template > ./kube/dev/web-deployment.yml
 
-      - name: Replace image tag in Kubernetes deployment file
-        run: envsubst < ./kube/dev/budget-ai-deployment.yml.template > ./kube/dev/budget-ai-deployment.yml
+      - name: Replace image tag in api Kubernetes deployment file
+        run: |
+          envsubst '$IMAGE_TAG' < ./kube/dev/api-deployment.yml.template > ./kube/dev/api-deployment.yml
 
-      - name: Display the deployment file content
-        run: cat ./kube/dev/budget-ai-deployment.yml
+      - name: Replace image tag in ai Kubernetes deployment file
+        run: |
+          envsubst '$IMAGE_TAG' < ./kube/dev/ai-deployment.yml.template > ./kube/dev/ai-deployment.yml
+
+      - name: Display the web deployment file content
+        run: cat ./kube/dev/web-deployment.yml
+
+      - name: Display the api deployment file content
+        run: cat ./kube/dev/api-deployment.yml
+
+      - name: Display the ai deployment file content
+        run: cat ./kube/dev/ai-deployment.yml
 
       - name: Print IMAGE_TAG variable
         run: |
@@ -67,13 +78,27 @@ jobs:
       - name: Save Digital Ocean kubeconfig
         run: doctl kubernetes cluster kubeconfig save k8s-1-vandenit-ams3-dev
 
-      - name: Deploy config to Kubernetes
+      - name: Deploy all config to Kubernetes
         run: |
           kubectl apply -f ./kube/config/dev
 
-      - name: Deploy to Kubernetes
+      - name: Deploy web config to Kubernetes
         run: |
-          kubectl apply -f ./kube/dev
+          kubectl apply -f ./kube/dev/web-deployment.yml
 
-      - name: Verify deployment
+      - name: Deploy api config to Kubernetes
+        run: |
+          kubectl apply -f ./kube/dev/api-deployment.yml
+
+      - name: Deploy ai config to Kubernetes
+        run: |
+          kubectl apply -f ./kube/dev/ai-deployment.yml
+
+      - name: Verify web deployment
+        run: kubectl rollout status deployment/budget-web-app -n dev
+
+      - name: Verify api deployment
+        run: kubectl rollout status deployment/budget-api-app -n dev
+
+      - name: Verify ai deployment
         run: kubectl rollout status deployment/budget-ai-app -n dev
