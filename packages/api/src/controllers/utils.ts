@@ -2,7 +2,8 @@ import { UserType, getUserByAuthId } from "../data/user/user.server";
 
 export const getUserFromReq = async (req: any): Promise<UserType | null> => {
   // get user sub from authorization header
-  const authId = req?.User?.sub;
+  console.log(`userId: ${req.auth.payload.sub}`);
+  const authId = req?.auth?.payload?.sub;
   if (!authId) {
     return null;
   }

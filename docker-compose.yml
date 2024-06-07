@@ -9,6 +9,7 @@ services:
       - ./packages/web/.env
     environment:
       NODE_ENV: development
+      API_URL: http://api:4000
     depends_on:
       - api
       - ai
@@ -22,6 +23,8 @@ services:
       - "4000:4000"
     environment:
       NODE_ENV: development
+    env_file:
+      - ./packages/api/.env
     networks:
       - default
 

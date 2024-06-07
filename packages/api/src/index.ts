@@ -1,32 +1,29 @@
+const { auth, requiredScopes } = require("express-oauth2-jwt-bearer");
 import express from "express";
 import cors from "cors";
-const { expressjwt: jwt } = require("express-jwt");
-const jwks = require("jwks-rsa");
+require("dotenv").config();
 
 import transactionRoutes from "./routes/transactionRoutes";
 import budgetRoutes from "./routes/budgetRoutes";
 
-const authenticate = jwt({
-  secret: jwks.expressJwtSecret({
-    cache: true,
-    rateLimit: true,
-    jwksRequestsPerMinute: 5,
-    jwksUri: "https://vandenit.eu.auth0.com/.well-known/jwks.json",
-  }),
-  audience: "https://budgetai.vandenit.be",
-  issuer: "https://vandenit.eu.auth0.com/",
-  algorithms: ["RS256"],
-});
 const app = express();
+
+// Authorization middleware. When used, the Access Token must
+// exist and be verified against the Auth0 JSON Web Key Set.
+const checkJwt = auth({
+  audience:
+    process.env.AUTH0_AUDIENCE || "https://vandenit.eu.auth0.com/api/v2/",
+  issuerBaseURL: `https://vandenit.eu.auth0.com`,
+});
 
 // Middleware
 app.use(cors());
 app.use(express.json());
 
 // routes
-app.use("/budgets", authenticate, budgetRoutes);
+app.use("/budgets", checkJwt, budgetRoutes);
 
-app.use("/transactions", authenticate, transactionRoutes);
+app.use("/transactions", transactionRoutes);
 
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {

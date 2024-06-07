@@ -7,8 +7,9 @@ export const findBudgetsForUser = async (req: Request, res: Response) => {
   // get user from database
   const user = await getUserFromReq(req);
   if (!user) {
-    res.status(401).send("Unauthorized");
-    return;
+    console.error("no user found");
+    // res.status(401).send("Unauthorized");
+    return res.json([]);
   }
   // get budgets for user
   const budgets = await findBudgets(user);

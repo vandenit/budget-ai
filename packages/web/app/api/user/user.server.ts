@@ -32,7 +32,6 @@ export type UserType = {
 const getLoggedInUserAuthId = async (): Promise<string> => {
   try {
     const session = await getSession();
-    console.log("session:" + JSON.stringify(session));
     return session?.user?.sub || "";
   } catch (exception) {
     return "";
