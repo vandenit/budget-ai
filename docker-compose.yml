@@ -1,13 +1,4 @@
 services:
-  api:
-    build:
-      context: .
-      dockerfile: packages/api/Dockerfile
-    ports:
-      - "4000:4000"
-    environment:
-      NODE_ENV: development
-
   web:
     build:
       context: .
@@ -18,6 +9,22 @@ services:
       - ./packages/web/.env
     environment:
       NODE_ENV: development
+    depends_on:
+      - api
+      - ai
+    networks:
+      - default
+  api:
+    build:
+      context: .
+      dockerfile: packages/api/Dockerfile
+    ports:
+      - "4000:4000"
+    environment:
+      NODE_ENV: development
+    networks:
+      - default
+
   ai:
     build:
       context: .
@@ -26,6 +33,8 @@ services:
       - "8080:8080"
     env_file:
       - ./packages/ai/.env
+    networks:
+      - default
 networks:
   default:
     driver: bridge

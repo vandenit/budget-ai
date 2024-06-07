@@ -9,9 +9,13 @@
     "dev": "npx ts-node-dev --respawn --transpile-only src/index.ts"
   },
   "dependencies": {
+    "common-ts": "*",
     "cors": "^2.8.5",
     "express": "^4.17.1",
-    "common-ts": "*"
+    "express-jwt": "^8.4.1",
+    "jwks-rsa": "^3.1.0",
+    "mongodb": "^6.3.0",
+    "mongoose": "^8.0.3"
   },
   "author": "",
   "license": "ISC",

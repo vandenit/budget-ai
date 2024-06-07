@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: budget-ai-app
-          image: filipvdb321/budget-ai:latest
+          image: filipvdb321/budget-ai-web:${IMAGE_TAG}
           ports:
             - containerPort: 3000
               name: http

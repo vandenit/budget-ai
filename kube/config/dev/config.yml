@@ -11,3 +11,4 @@ data:
   AUTH0_CLIENT_ID: "IuFYfjlYNV0RhM1ztsfrlV6gJ4TGZiDM"
   AUTH0_SCOPE: "openid profile"
   AUTH0_CALLBACK: api/defauth/callback
+  API_URL: "/api"
