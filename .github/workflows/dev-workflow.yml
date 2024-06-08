@@ -62,15 +62,6 @@ jobs:
         run: |
           envsubst '$IMAGE_TAG' < ./kube/dev/ai-deployment.yml.template > ./kube/dev/ai-deployment.yml
 
-      - name: Display the web deployment file content
-        run: cat ./kube/dev/web-deployment.yml
-
-      - name: Display the api deployment file content
-        run: cat ./kube/dev/api-deployment.yml
-
-      - name: Display the ai deployment file content
-        run: cat ./kube/dev/ai-deployment.yml
-
       - name: Print IMAGE_TAG variable
         run: |
           echo $IMAGE_TAG
@@ -93,6 +84,16 @@ jobs:
       - name: Deploy ai config to Kubernetes
         run: |
           kubectl apply -f ./kube/dev/ai-deployment.yml
+
+      - name: Deploy web service to Kubernetes
+        run: |
+          kubectl apply -f ./kube/dev/web-service.yml
+      - name: Deploy api service to Kubernetes
+        run: |
+          kubectl apply -f ./kube/dev/api-service.yml
+      - name: Deploy ai service to Kubernetes
+        run: |
+          kubectl apply -f ./kube/dev/ai-service.yml
 
       - name: Verify web deployment
         run: kubectl rollout status deployment/budget-web-app -n dev
