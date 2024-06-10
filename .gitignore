@@ -41,3 +41,5 @@ test.yml
 .next
 
 __pycache__
+
+kube/dev/api-deployment.yaml
