@@ -33,6 +33,7 @@ kubectl get pods -n dev
 
 kubectl describe pod budget-web-app -n dev
 kubectl describe pod budget-ai-app -n dev
+kubectl describe pod budget-api-app -n dev
 
 kubectl logs -f budget-api-app-77d77dbffb-5kj9v -n dev
 

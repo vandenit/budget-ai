@@ -5,10 +5,6 @@ metadata:
   namespace: dev
   labels:
     app: budget-api-app
-  annotations:
-        prometheus.io/scrape: "true"
-        prometheus.io/path: "/metrics"
-        prometheus.io/port: "4000"
 spec:
   replicas: 1
   selector:
@@ -18,6 +14,10 @@ spec:
     metadata:
       labels:
         app: budget-api-app
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "/metrics"
+        prometheus.io/port: "4000"
     spec:
       containers:
         - name: budget-api-app
