@@ -38,7 +38,6 @@ next-env.d.ts
 *secrets.env
 test.yml
 .kubectl-dev.md
-docker-commands.md
 .next
 
 __pycache__
