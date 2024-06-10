@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: budget-web-app
+  namespace: dev
+  labels:
+    app: budget-web-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: budget-web-app
+  template:
+    metadata:
+      labels:
+        app: budget-web-app
+    spec:
+      containers:
+        - name: budget-web-app
+          image: filipvdb321/budget-web:${IMAGE_TAG}
+          ports:
+            - containerPort: 3000
+              name: http
+          envFrom:
+            - secretRef:
+                name: budget-web-dev-secrets
+            - configMapRef:
+                name: budget-web-dev-config
+      imagePullSecrets:
+        - name: regcred-dev
