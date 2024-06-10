@@ -14,17 +14,18 @@
     "chart.js": "^4.4.0",
     "chartjs-plugin-datalabels": "^2.2.0",
     "moment": "^2.29.4",
+    "mongodb": "^6.3.0",
+    "mongoose": "^8.0.3",
     "next": "^13.5.1",
     "next-auth": "^4.24.7",
     "openai": "^4.20.1",
+    "prom-client": "^15.1.2",
     "ramda": "^0.29.1",
     "react": "latest",
     "react-chartjs-2": "^5.0.0",
     "react-dom": "latest",
     "react-icons": "^5.2.0",
-    "ynab": "^2.0.0",
-    "mongodb": "^6.3.0",
-    "mongoose": "^8.0.3"
+    "ynab": "^2.0.0"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "6.1.2",
