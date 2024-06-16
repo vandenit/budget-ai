@@ -13,3 +13,12 @@ export type MonthSummary = {
   categoryUsages: Array<CategoryUsage>;
   overallTransactions: Array<Transaction>;
 };
+
+export type YnabConnection = {
+  accessToken: string;
+  refreshToken: string;
+};
+
+export type YnabUserData = {
+  connection: YnabConnection;
+};

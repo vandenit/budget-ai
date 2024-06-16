@@ -1,20 +1,25 @@
 import "server-only";
 import { connect } from "http2";
 import connectDb from "../db";
-import { getLoggedInUser, getUserByAuthId } from "../user/user.server";
+import {
+  UserType,
+  getLoggedInUser,
+  getUserByAuthId,
+} from "../user/user.server";
 import { LocalTransaction } from "./transaction.schema";
 import mongoose from "mongoose";
 import { Transaction } from "common-ts";
-import { getBudget } from "../main.budget.server";
+import { getBudget } from "../budget/budget.server";
 
 export const findTransactions = async (
   budgetUuid: string,
+  user: UserType,
   month?: string
 ): Promise<Transaction[]> => {
   await connectDb();
   console.log("find transactions:" + budgetUuid + "/" + month);
 
-  const budget = await getBudget(budgetUuid);
+  const budget = await getBudget(budgetUuid, user);
   if (!budget) {
     return [];
   }

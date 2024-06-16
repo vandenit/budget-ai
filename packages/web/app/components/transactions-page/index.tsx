@@ -5,7 +5,7 @@ import {
   getCategoriesContainingTransactions,
   getCategoriesFromTransactions,
   getFilteredTransactions,
-} from "../../api/main.budget.server";
+} from "../../api/main.budget.client";
 import TransactionContent from "./transaction-content";
 
 export default function TransactionsPage({

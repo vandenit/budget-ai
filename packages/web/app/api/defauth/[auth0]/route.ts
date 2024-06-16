@@ -7,7 +7,7 @@ import {
   CallbackOptions,
   AfterCallbackAppRoute,
 } from "@auth0/nextjs-auth0";
-import { createOrUpdateUser } from "../../user/user.server";
+import { createOrUpdateUser } from "../../user/user.client";
 import { NextApiRequest, NextApiResponse } from "next";
 import { NextRequest, NextResponse } from "next/server";
 

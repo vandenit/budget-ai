@@ -3,13 +3,15 @@ import "server-only";
 import { LocalCategory, LocalCategoryType } from "./category.schema";
 import { Budget, Category, Transaction } from "common-ts";
 import mongoose from "mongoose";
-import { getBudget } from "../main.budget.server";
 import connectDb from "../db";
+import { getBudget } from "../budget/budget.server";
+import { UserType } from "../user/user.server";
 
 export const getCategories = async (
-  budgetUuid: string
+  budgetUuid: string,
+  user: UserType
 ): Promise<Category[]> => {
-  const budget = await getBudget(budgetUuid);
+  const budget = await getBudget(budgetUuid, user);
   if (!budget) {
     return [];
   }

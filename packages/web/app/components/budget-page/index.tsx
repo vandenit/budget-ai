@@ -5,17 +5,16 @@ import Loading from "../Loading";
 import {
   calculateCurrentMontPercentage,
   calculateTotals,
-  getBudget,
   getMonthSummaries,
-} from "../../api/main.budget.server";
+} from "../../api/main.budget.client";
 import MonthSummaryBlock from "./month-summary-block";
 import CurrentMonth from "./current-month";
 
-import { getAIAnalysis } from "../../api/ai.server";
 import { savePreferredBudget } from "../../api/user/user.server";
 import { getCategories } from "../../api/category/category.server";
 import YnabLoginPage from "../ynab-login-page";
 import { categoriesToCategoryData, forecastSpendingWithES } from "../../api/es-forcasting.server";
+import { getBudget } from "../../api/budget/budget.client";
 
 export default function BudgetPage({ budgetUuid }: { budgetUuid: string }) {
   return (

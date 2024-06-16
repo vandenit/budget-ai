@@ -1,14 +1,13 @@
 import Image from "next/image";
 import { redirect } from "next/navigation";
-import { getCachedBudgets } from "./api/main.budget.server";
 import BudgetPage from "./components/budget-page";
 import {
-  getLoggedInUser,
   getLoggedInUserPreferredBudgetId as getLoggedInUserPreferredBudgetUuid,
-} from "./api/user/user.server";
+  isYnabTokenExpired
+} from "./api/user/user.client";
 import { useUser } from "@auth0/nextjs-auth0/client";
 import { getSession } from "@auth0/nextjs-auth0";
-import { isYnabTokenExpired } from "./api/ynab/ynab-api";
+import { findBudgets } from "./api/budget/budget.client";
 
 export default async function Home() {
   const session = await getSession();
@@ -19,7 +18,7 @@ export default async function Home() {
   if (ynabTokenExpired) {
     redirect("/ynablogin");
   }
-  const budgets = await getCachedBudgets();
+  const budgets = await findBudgets();
   if (budgets.length === 0) {
     //   redirect("/login");
   }

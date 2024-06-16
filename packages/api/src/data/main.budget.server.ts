@@ -1,5 +1,4 @@
 import "server-only";
-import { cache } from "react";
 import moment from "moment";
 import * as budgetServer from "./budget/budget.server";
 import { findTransactions } from "./transaction/transaction.server";
@@ -17,40 +16,7 @@ import {
   MonthTotal,
 } from "common-ts";
 import { getCategories } from "./category/category.server";
-import { UserType, getLoggedInUser } from "./user/user.server";
-
-// todo : doesn't seem to be taken into account
-export const revalidate = 3600; // revalidate the data at most every hour
-
-export async function getBudget(
-  uuid: string,
-  user?: UserType
-): Promise<Budget | null> {
-  try {
-    const finalUser = user || (await getLoggedInUser());
-    if (!finalUser) {
-      return null;
-    }
-    const budget = await budgetServer.getBudget(uuid, finalUser);
-    return budget;
-  } catch (exception) {
-    console.warn(exception);
-    return null;
-  }
-}
-
-export async function getBudgets(): Promise<Array<Budget>> {
-  try {
-    const budgets = await budgetServer.findBudgets();
-    return budgets.map((budget) => ({
-      uuid: budget.uuid,
-      name: budget.name,
-    }));
-  } catch (exception) {
-    console.warn(exception);
-    return [];
-  }
-}
+import { UserType } from "./user/user.server";
 
 export const calculateCurrentMontPercentage = () => {
   const now = moment();
@@ -77,34 +43,33 @@ export const calculateTotals = (categories: Array<Category>): MonthTotal => {
   );
 };
 
-export const getCachedBudgets = cache(getBudgets);
-
-const getFilteredTransactionsInternal = async (
+export const getFilteredTransactions = async (
   budgetId: string,
   month: string | null | undefined,
-  dayOfMonth: string | null | undefined
+  dayOfMonth: string | null | undefined,
+  user: UserType
 ): Promise<Array<Transaction>> => {
   console.log("getFilteredTransactionsInternal", budgetId, month, dayOfMonth);
-  const transactions = await getTransactions(budgetId, month || "");
+  const transactions = await getTransactions(budgetId, user, month || "");
   return transactions.filter((transaction) => {
     const transactionDayOfMonth = transaction.date.substring(8, 10);
     return !dayOfMonth || Number(transactionDayOfMonth) === Number(dayOfMonth);
   });
 };
 
-export const getFilteredTransactions = cache(getFilteredTransactionsInternal);
-
 export async function getTransactions(
   budgetUuid: string,
+  user: UserType,
   month: string | null | undefined
 ): Promise<Array<Transaction>> {
-  return await findTransactions(budgetUuid, month || "");
+  return await findTransactions(budgetUuid, user, month || "");
 }
 
 export async function getMonthSummaries(
-  id: string
+  id: string,
+  user: UserType
 ): Promise<Array<MonthSummary>> {
-  const transactions = await getTransactions(id, null);
+  const transactions = await getTransactions(id, user, null);
 
   return transactions.reduce(monthSummaryReducer, []);
 }
@@ -112,19 +77,24 @@ export async function getMonthSummaries(
 // return all categories that have transactions
 export const getCategoriesContainingTransactions = async (
   budgetUuid: string,
-  transactions: Transaction[]
+  transactions: Transaction[],
+  user: UserType
 ) => {
-  const categories = (await getCategories(budgetUuid)).filter((category) =>
-    transactions.find((transaction) => transaction.categoryId === category.uuid)
+  const categories = (await getCategories(budgetUuid, user)).filter(
+    (category) =>
+      transactions.find(
+        (transaction) => transaction.categoryId === category.uuid
+      )
   );
   return categories;
 };
 
 export const getCategoriesFromTransactions = async (
   budgetUuid: string,
-  transactions: Transaction[]
+  transactions: Transaction[],
+  user: UserType
 ): Promise<Category[]> => {
-  const budget = await getBudget(budgetUuid);
+  const budget = await budgetServer.getBudget(budgetUuid, user);
   if (!budget) {
     return [];
   }

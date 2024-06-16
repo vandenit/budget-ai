@@ -1,5 +1,5 @@
 import { NextAuthOptions } from "next-auth";
-import { connectUserWithYnab } from "../user/user.server";
+import { connectUserWithYnab } from "../user/user.client";
 
 export const ynabAuthOptions: NextAuthOptions = {
   providers: [
