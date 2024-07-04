@@ -4,7 +4,7 @@ import { Inter } from "next/font/google";
 import BudgetNavigation from "./components/budget-navigation";
 import { UserProvider } from "@auth0/nextjs-auth0/client";
 import { getSession } from "@auth0/nextjs-auth0";
-import { findCachedBudgers } from "./api/budget/budget.client";
+import { findBudgets } from "./api/budget/budget.client";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,7 +20,7 @@ export default async function RootLayout({
 }) {
   const session = await getSession();
   const isLoggedIn: boolean = !!session?.user;
-  const budgets = session && isLoggedIn ? await findCachedBudgers() : [];
+  const budgets = session && isLoggedIn ? await findBudgets() : [];
   return (
     <UserProvider>
       <html lang="en" data-theme="dark">

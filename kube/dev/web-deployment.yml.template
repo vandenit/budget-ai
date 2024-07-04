@@ -14,6 +14,10 @@ spec:
     metadata:
       labels:
         app: budget-web-app
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "/api/metrics"
+        prometheus.io/port: "3000"
     spec:
       containers:
         - name: budget-web-app

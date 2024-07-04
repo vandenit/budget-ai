@@ -63,12 +63,12 @@ export const categoriesToCategoryData = (
 const categoryClosedWhenAbove90HistoricalAverageFilter = (
   category: CategoryData
 ) => {
-  if (category.spent < 0.9 * category.historicalAverage) {
+  /* if (category.spent < 0.9 * category.historicalAverage) {
     console.log(
       "category included when lower than 90% historical average:",
       category.name
     );
-  }
+  }*/
   return category.spent < 0.9 * category.historicalAverage;
 };
 const calculateTypicalSpendingPatternForCategory = (
@@ -149,7 +149,7 @@ export function forecastSpendingWithES(
     (acc, category) => acc + category.spent,
     0
   );
-  console.log("days in month:" + daysInMonth);
+  // console.log("days in month:" + daysInMonth);
 
   // Use historicalAverage from CategoryData for historical trend
   const historicalTrend = filteredCategories.reduce((acc, category) => {
@@ -158,7 +158,7 @@ export function forecastSpendingWithES(
       category.typicalSpendingPattern;
     return acc;
   }, 0);
-  console.log("historicalTrend", historicalTrend);
+  // console.log("historicalTrend", historicalTrend);
   // Categorical Weighting for Current Month
   const weightedCurrentMonthTrend = filteredCategories.reduce(
     (acc, category) => {
@@ -167,7 +167,7 @@ export function forecastSpendingWithES(
     },
     0
   );
-  console.log("weightedCurrentMonthTrend", weightedCurrentMonthTrend);
+  // ("weightedCurrentMonthTrend", weightedCurrentMonthTrend);
   // Exponential Smoothing Forecast
   const forecastedSpending =
     alpha * weightedCurrentMonthTrend + (1 - alpha) * historicalTrend;

@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import { number } from "prop-types";
 const { Schema, model } = mongoose;
 
 export type LocalCategoryType = {

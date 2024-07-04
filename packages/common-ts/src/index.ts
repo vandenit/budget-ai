@@ -5,3 +5,4 @@ export * from "./budget";
 export * from "./main.budget.utils";
 export * from "./amounts";
 export * from "./forecasting";
+export * from "./user";

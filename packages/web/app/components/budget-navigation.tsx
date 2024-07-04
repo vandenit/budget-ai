@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { SignOut } from "./login";
 import { useParams } from "next/navigation";
-import { Budget } from "common-ts/src/budget/budget.utils";
+import { Budget } from "common-ts";
 
 type Props = {
   budgets: Budget[];

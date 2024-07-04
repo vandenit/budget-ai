@@ -1,10 +1,12 @@
 const { auth, requiredScopes } = require("express-oauth2-jwt-bearer");
 import express from "express";
 import cors from "cors";
+import register from "./metrics";
 require("dotenv").config();
 
-import transactionRoutes from "./routes/transactionRoutes";
 import budgetRoutes from "./routes/budgetRoutes";
+import userRoutes from "./routes/userRoutes";
+import syncRoutes from "./routes/syncRoutes";
 
 const app = express();
 
@@ -23,9 +25,17 @@ app.use(express.json());
 // routes
 app.use("/budgets", checkJwt, budgetRoutes);
 
-app.use("/transactions", transactionRoutes);
+app.use("/users", checkJwt, userRoutes);
+
+app.use("/sync", syncRoutes);
 
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
+});
+
+// Add the /metrics endpoint
+app.get("/metrics", async (req, res) => {
+  res.setHeader("Content-Type", register.contentType);
+  res.send(await register.metrics());
 });
