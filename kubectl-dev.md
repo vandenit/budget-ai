@@ -11,7 +11,7 @@ http://localhost:9090
 ## login to pod
 
 kubectl get pods -n dev
-kubectl exec -it budget-web-app-6d7cd784b-df229 -n dev -- /bin/sh
+kubectl exec -it budget-web-app-c4874449d-kdw8v -n dev -- /bin/sh
 kubectl exec -it budget-api-app-5d9f9dc8b9-gxjdt -n dev -- /bin/sh
 
 ## get logs
@@ -35,7 +35,7 @@ kubectl describe pod budget-web-app -n dev
 kubectl describe pod budget-ai-app -n dev
 kubectl describe pod budget-api-app -n dev
 
-kubectl logs -f budget-api-app-77d77dbffb-5kj9v -n dev
+kubectl logs -f budget-web-app-89dc9f5cd-c5rqk -n dev
 
 kubectl logs -l app=budget-web-app -n dev --tail=100
 kubectl logs -l app=budget-api-app -n dev --tail=100
@@ -43,13 +43,22 @@ kubectl logs -l app=budget-api-app -n dev --tail=100
 kubectl logs -l app=budget-ai-app -n dev --tail=100
 
 ```
+## stop web
 
+
+## stop all pods
+kubectl -n dev scale deployment budget-web-app --replicas=0
+## start again
+kubectl -n dev scale deployment budget-web-app --replicas=1
 ## restart dev
 
 ```
 
-kubectl -n service rollout restart deployment budget-web-app -n dev
-kubectl -n service rollout restart deployment budget-api-app -n dev
+kubectl -n dev rollout restart deployment budget-web-app
+kubectl -n dev rollout restart deployment budget-api-app
+kubectl -n dev rollout restart deployment budget-ai-app
+
+-- stop dev
 
 ```
 
@@ -81,6 +90,7 @@ kubectl get configmap budget-web-dev-config -n dev -o yaml
 
 ```
 
+kubectl delete secret budget-web-dev-secrets -n dev
 kubectl delete secret budget-ai-dev-secrets -n dev
 kubectl delete secret budget-ai-dev-secrets -n dev
 

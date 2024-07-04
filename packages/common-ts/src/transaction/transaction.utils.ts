@@ -1,3 +1,5 @@
+import { Category } from "../category";
+
 export type Transaction = {
   uuid: string;
   accountName: string;
@@ -12,3 +14,8 @@ export type Transaction = {
 export interface GroupedTransactions {
   [key: string]: Transaction[];
 }
+
+export type TransactionsWithCategories = {
+  transactions: Transaction[];
+  categories: Category[];
+};

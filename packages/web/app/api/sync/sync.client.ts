@@ -1,7 +1,4 @@
 import "server-only";
-import { api } from "ynab";
-import { apiPost } from "../client";
-
 export const syncBudgetData = async (): Promise<number> => {
   const apiBaseUrl = process.env.API_URL || "http://localhost:4000";
   const apiUrl = `${apiBaseUrl}/sync`;

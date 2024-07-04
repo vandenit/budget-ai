@@ -4,7 +4,6 @@ import cors from "cors";
 import register from "./metrics";
 require("dotenv").config();
 
-import transactionRoutes from "./routes/transactionRoutes";
 import budgetRoutes from "./routes/budgetRoutes";
 import userRoutes from "./routes/userRoutes";
 import syncRoutes from "./routes/syncRoutes";
@@ -27,8 +26,6 @@ app.use(express.json());
 app.use("/budgets", checkJwt, budgetRoutes);
 
 app.use("/users", checkJwt, userRoutes);
-
-app.use("/transactions", transactionRoutes);
 
 app.use("/sync", syncRoutes);
 

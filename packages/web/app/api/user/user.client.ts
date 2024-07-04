@@ -12,12 +12,14 @@ export const connectUserWithYnab = async (data: YnabConnection) => {
 export const createOrUpdateUser = async ({
   authId,
   name,
+  accessToken,
 }: {
   authId: string;
   name: string;
+  accessToken?: string;
 }) => {
   console.log("createOrUpdateUser with id:" + authId + " and name:" + name);
-  return await apiPut("users", { authId, name });
+  return await apiPut("users", { authId, name }, accessToken);
 };
 
 const getLoggedInUserInternal = async (): Promise<UserView> => {
@@ -34,4 +36,9 @@ export const getLoggedInUserPreferredBudgetId = async (): Promise<string> => {
 export const isYnabTokenExpired = async (): Promise<boolean> => {
   const user = await getLoggedInUser();
   return !user.ynab.isConnected || user.ynab.isTokenExpired;
+};
+
+export const savePreferredBudget = async (budgetUuid: string) => {
+  console.log(`saving preferred budget ${budgetUuid}`);
+  return await apiPut("users/preferred-budget", { budgetUuid });
 };

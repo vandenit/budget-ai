@@ -1,7 +1,5 @@
 "use client";
 import { useState } from "react";
-import { MonthlySpendingChart } from "../charts/mothly-spending-chart";
-import { getMonthlySpendingData } from "../charts/util";
 import CategorySelect from "./category-select";
 import { CategoryPieChart } from "../charts/category-pie-chart";
 import {

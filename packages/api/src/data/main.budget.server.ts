@@ -1,4 +1,3 @@
-import "server-only";
 import moment from "moment";
 import * as budgetServer from "./budget/budget.server";
 import { findTransactions } from "./transaction/transaction.server";
@@ -14,9 +13,32 @@ import {
   Category,
   MonthSummary,
   MonthTotal,
+  BudgetOverview,
 } from "common-ts";
 import { getCategories } from "./category/category.server";
 import { UserType } from "./user/user.server";
+import {
+  categoriesToCategoryData,
+  forecastSpendingWithES,
+} from "./forecasting/es-forcasting.server";
+
+export const getBudgetOverviewForUser = async (
+  budgetId: string
+): Promise<BudgetOverview> => {
+  const monthPercentage = calculateCurrentMontPercentage();
+  const monthSummaries = await getMonthSummaries(budgetId);
+  const categories = await getCategories(budgetId);
+  const monthTotal = calculateTotals(categories);
+  const categoryData = categoriesToCategoryData(categories, monthSummaries);
+  const forecast = forecastSpendingWithES(categoryData);
+  return {
+    monthPercentage,
+    monthSummaries,
+    categories,
+    monthTotal,
+    forecast,
+  };
+};
 
 export const calculateCurrentMontPercentage = () => {
   const now = moment();
@@ -46,60 +68,32 @@ export const calculateTotals = (categories: Array<Category>): MonthTotal => {
 export const getFilteredTransactions = async (
   budgetId: string,
   month: string | null | undefined,
-  dayOfMonth: string | null | undefined,
-  user: UserType
+  dayOfMonth: string | null | undefined
 ): Promise<Array<Transaction>> => {
   console.log("getFilteredTransactionsInternal", budgetId, month, dayOfMonth);
-  const transactions = await getTransactions(budgetId, user, month || "");
-  return transactions.filter((transaction) => {
+  const transactions = await findTransactions(budgetId, month || "");
+  const filteredTransactions = transactions.filter((transaction) => {
     const transactionDayOfMonth = transaction.date.substring(8, 10);
     return !dayOfMonth || Number(transactionDayOfMonth) === Number(dayOfMonth);
   });
+  return filteredTransactions;
 };
 
-export async function getTransactions(
-  budgetUuid: string,
-  user: UserType,
-  month: string | null | undefined
-): Promise<Array<Transaction>> {
-  return await findTransactions(budgetUuid, user, month || "");
-}
-
 export async function getMonthSummaries(
-  id: string,
-  user: UserType
+  budgetId: string
 ): Promise<Array<MonthSummary>> {
-  const transactions = await getTransactions(id, user, null);
+  const transactions = await findTransactions(budgetId);
 
   return transactions.reduce(monthSummaryReducer, []);
 }
 
-// return all categories that have transactions
-export const getCategoriesContainingTransactions = async (
-  budgetUuid: string,
-  transactions: Transaction[],
-  user: UserType
-) => {
-  const categories = (await getCategories(budgetUuid, user)).filter(
-    (category) =>
-      transactions.find(
-        (transaction) => transaction.categoryId === category.uuid
-      )
-  );
-  return categories;
-};
-
 export const getCategoriesFromTransactions = async (
-  budgetUuid: string,
+  budgetId: string,
   transactions: Transaction[],
   user: UserType
 ): Promise<Category[]> => {
-  const budget = await budgetServer.getBudget(budgetUuid, user);
-  if (!budget) {
-    return [];
-  }
   return transactions
     .reduce(categoryUsageReducer, [])
-    .map(categoryUsageMapper(budget._id || ""))
+    .map(categoryUsageMapper(budgetId || ""))
     .sort(categorySorter);
 };

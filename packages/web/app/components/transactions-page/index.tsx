@@ -1,11 +1,7 @@
 import Link from "next/link";
 import { Suspense, useState } from "react";
 import Loading from "../Loading";
-import {
-  getCategoriesContainingTransactions,
-  getCategoriesFromTransactions,
-  getFilteredTransactions,
-} from "../../api/main.budget.client";
+import { getFilteredTransactionsWithCategories } from "../../api/transaction/transaction.client";
 import TransactionContent from "./transaction-content";
 
 export default function TransactionsPage({
@@ -44,14 +40,10 @@ async function TransactionsInfo({
   month?: string;
   dayOfMonth?: string;
 }) {
-  const transactions = await getFilteredTransactions(
+  const { transactions, categories } = await getFilteredTransactionsWithCategories(
     budgetUuid,
     month,
     dayOfMonth
-  );
-  const categories = await getCategoriesFromTransactions(
-    budgetUuid,
-    transactions
   );
   return (
     <TransactionContent

@@ -2,6 +2,7 @@ import { UserView } from "common-ts";
 import {
   connectUserWithYnab,
   createOrUpdateUser,
+  savePreferredBudget,
 } from "../data/user/user.server";
 import { getUserFromReq } from "./utils";
 import { Request, Response } from "express";
@@ -68,5 +69,23 @@ export const handleGetLoggedInUser = async (req: Request, res: Response) => {
   } catch (exception) {
     console.error(exception);
     res.status(400).send("Failed to get logged in user");
+  }
+};
+
+export const handleSavePreferredBudget = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const user = await getUserFromReq(req);
+    if (!user) {
+      console.error("no user found");
+      return res.status(401).send("Unauthorized");
+    }
+    const { budgetUuid } = req.body;
+    await savePreferredBudget(budgetUuid, user.authId);
+  } catch (exception) {
+    console.error(exception);
+    res.status(400).send("Failed to save preferred budget");
   }
 };

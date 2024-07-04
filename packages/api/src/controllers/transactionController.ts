@@ -1,30 +1,40 @@
 import { Request, Response } from "express";
 import { Transaction } from "common-ts";
+import {
+  getCategoriesFromTransactions,
+  getFilteredTransactions,
+} from "../data/main.budget.server";
+import { getUserFromReq } from "./utils";
+import { getBudget } from "../data/budget/budget.server";
 
-// Mock data
-const transactions: Transaction[] = [
-  {
-    uuid: "1",
-    accountName: "Checking",
-    amount: 100,
-    date: "2021-01-01",
-    categoryName: "Groceries",
-    categoryId: "1",
-    payeeName: "Walmart",
-    memo: "",
-  },
-  {
-    uuid: "2",
-    accountName: "Checking",
-    amount: 50,
-    date: "2021-01-02",
-    categoryName: "Gas",
-    categoryId: "2",
-    payeeName: "Exxon",
-    memo: "",
-  },
-];
-
-export const getAllTransactions = (req: Request, res: Response) => {
-  res.json(transactions);
+export const getFilteredTransactionsWithCategories = async (
+  req: Request,
+  res: Response
+) => {
+  // get user from database
+  const user = await getUserFromReq(req);
+  if (!user) {
+    console.error("no user found");
+    return res.status(401).send("Unauthorized");
+  }
+  const budgetUuid = req.params.uuid;
+  // print all req.params
+  //print all query
+  const { month, dayOfMonth } = req.query;
+  const budget = await getBudget(budgetUuid, user);
+  if (!budget) {
+    console.error(`budget ${budgetUuid} does not belong to user`);
+    return res.status(401).send("Unauthorized");
+  }
+  const transactions = await getFilteredTransactions(
+    budget._id,
+    month?.toString(),
+    dayOfMonth?.toString()
+  );
+  const categories = await getCategoriesFromTransactions(
+    budget._id,
+    transactions,
+    user
+  );
+  res.json({ transactions, categories });
 };
