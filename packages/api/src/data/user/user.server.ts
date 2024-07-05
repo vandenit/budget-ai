@@ -78,7 +78,10 @@ export const connectUserWithYnab = async (
   console.log(`connecting user with ynab: ${JSON.stringify(connection)}`);
   const authId = user?.authId;
   if (!authId) {
-    return;
+    throw new Error("User not set");
+  }
+  if (!connection.accessToken || !connection.refreshToken) {
+    throw new Error("Connection data not set");
   }
   await User.updateOne(
     { authId },

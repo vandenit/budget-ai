@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { syncBudgetData } from "./sync.server";
+import { syncBudgetData } from "./sync.client";
 
 const containsSecret = (request: NextRequest) => {
   const secret = process.env.SYNC_SECRET;

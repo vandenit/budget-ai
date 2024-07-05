@@ -7,19 +7,18 @@ import {
   CallbackOptions,
   AfterCallbackAppRoute,
 } from "@auth0/nextjs-auth0";
-import { createOrUpdateUser } from "../../user/user.server";
-import { NextApiRequest, NextApiResponse } from "next";
+import { createOrUpdateUser } from "../../user/user.client";
 import { NextRequest, NextResponse } from "next/server";
 
 const afterCallback: AfterCallbackAppRoute = async (
   req: NextRequest,
-  session: Session,
-  state: any
+  session: Session
 ) => {
   if (session.user) {
     await createOrUpdateUser({
       authId: session.user.sub,
       name: session.user.name,
+      accessToken: session.accessToken,
     });
   }
   return session;

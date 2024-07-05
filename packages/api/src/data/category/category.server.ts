@@ -1,19 +1,12 @@
-import "server-only";
-
 import { LocalCategory, LocalCategoryType } from "./category.schema";
 import { Budget, Category, Transaction } from "common-ts";
 import mongoose from "mongoose";
-import { getBudget } from "../main.budget.server";
 import connectDb from "../db";
+import { getBudget } from "../budget/budget.server";
+import { UserType } from "../user/user.server";
 
-export const getCategories = async (
-  budgetUuid: string
-): Promise<Category[]> => {
-  const budget = await getBudget(budgetUuid);
-  if (!budget) {
-    return [];
-  }
-  const localCategories = await LocalCategory.find({ budgetId: budget._id });
+export const getCategories = async (budgetId: string): Promise<Category[]> => {
+  const localCategories = await LocalCategory.find({ budgetId });
   return localCategories.map(mapLocalCategory);
 };
 

@@ -1,9 +1,7 @@
-import { getServerSession } from "next-auth";
-import "server-only";
 import * as ynab from "ynab";
 import {
-  getLoggedInUser,
   connectUserWithYnab,
+  getLoggedInUser,
   UserType,
 } from "../user/user.server";
 
@@ -28,6 +26,7 @@ const refreshAccessToken = async (refreshToken: string) => {
   }
 };
 
+// todo move to client (stop using user client for connectUserWithYnab)
 export const refreshUserToken = async (user: UserType) => {
   const refreshToken = user.ynab?.connection?.refreshToken;
   if (!refreshToken) {
@@ -48,28 +47,16 @@ export const refreshUserToken = async (user: UserType) => {
   }
 };
 
-const refreshLoggedInUserToken = async () => {
-  const user = await getLoggedInUser();
-  if (!user) {
-    throw new Error("Not logged in");
-  }
-  await refreshUserToken(user);
-};
-
-export const isYnabTokenExpired = async () => {
+export const isYnabTokenExpired = async (user: UserType) => {
   try {
-    await refreshLoggedInUserToken();
+    await refreshUserToken(user);
     return false;
   } catch (exception) {
     return true;
   }
 };
 
-const getApi = async (userInput?: UserType) => {
-  const user = userInput || (await getLoggedInUser());
-  if (!user) {
-    throw new Error("No user given or logged in");
-  }
+const getApi = async (user: UserType) => {
   const token = user?.ynab?.connection.accessToken;
   if (!token) {
     throw new Error("No token found");
@@ -77,10 +64,13 @@ const getApi = async (userInput?: UserType) => {
   return new ynab.api(token);
 };
 
-export const getBudget = async (id: string): Promise<ynab.BudgetDetail> => {
+export const getBudget = async (
+  id: string,
+  user: UserType
+): Promise<ynab.BudgetDetail> => {
   const emptyBudget = { id: "", name: "" };
   try {
-    const api = await getApi();
+    const api = await getApi(user);
     const { data } = await api.budgets.getBudgetById(id);
     return data?.budget || emptyBudget;
   } catch (exception) {
@@ -90,7 +80,7 @@ export const getBudget = async (id: string): Promise<ynab.BudgetDetail> => {
 };
 
 export const getBudgets = async (
-  user?: UserType
+  user: UserType
 ): Promise<ynab.BudgetDetail[]> => {
   try {
     const api = await getApi(user);
@@ -118,7 +108,7 @@ type GetTransactionsInput = {
   sinceDate?: string;
   type?: ynab.GetTransactionsTypeEnum;
   lastKnowledgeOfServer?: number;
-  user?: UserType;
+  user: UserType;
 };
 
 const getTransactionsInternal = async ({
@@ -141,16 +131,17 @@ const getTransactionsInternal = async ({
 export const getTransactions = async (
   budgetId: string,
   lastKnowledgeOfServer: number,
-  user?: UserType
+  user: UserType
 ): Promise<ynab.TransactionsResponseData> => {
   return getTransactionsInternal({ budgetId, lastKnowledgeOfServer, user });
 };
 
 export const getUncategorizedOrUnApprovedTransactions = async (
-  budgetId: string
+  budgetId: string,
+  user: UserType
 ): Promise<ynab.TransactionsResponseData> => {
-  const api = await getApi();
-  return getTransactionsInternal({ budgetId, type: "uncategorized" });
+  const api = await getApi(user);
+  return getTransactionsInternal({ budgetId, type: "uncategorized", user });
 };
 
 type CategoriesWithKnowledge = {
@@ -160,7 +151,7 @@ type CategoriesWithKnowledge = {
 export async function getCategories(
   budgetId: string,
   knowledge: number,
-  user?: UserType
+  user: UserType
 ): Promise<CategoriesWithKnowledge> {
   const api = await getApi(user);
   const { data } = await api.categories.getCategories(budgetId, knowledge);

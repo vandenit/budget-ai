@@ -4,8 +4,9 @@ import cors from "cors";
 import register from "./metrics";
 require("dotenv").config();
 
-import transactionRoutes from "./routes/transactionRoutes";
 import budgetRoutes from "./routes/budgetRoutes";
+import userRoutes from "./routes/userRoutes";
+import syncRoutes from "./routes/syncRoutes";
 
 const app = express();
 
@@ -24,7 +25,9 @@ app.use(express.json());
 // routes
 app.use("/budgets", checkJwt, budgetRoutes);
 
-app.use("/transactions", transactionRoutes);
+app.use("/users", checkJwt, userRoutes);
+
+app.use("/sync", syncRoutes);
 
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {

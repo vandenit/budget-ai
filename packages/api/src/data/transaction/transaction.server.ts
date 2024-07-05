@@ -1,27 +1,18 @@
-import "server-only";
-import { connect } from "http2";
 import connectDb from "../db";
-import { getLoggedInUser, getUserByAuthId } from "../user/user.server";
 import { LocalTransaction } from "./transaction.schema";
-import mongoose from "mongoose";
 import { Transaction } from "common-ts";
-import { getBudget } from "../main.budget.server";
 
 export const findTransactions = async (
-  budgetUuid: string,
+  budgetId: string,
   month?: string
 ): Promise<Transaction[]> => {
   await connectDb();
-  console.log("find transactions:" + budgetUuid + "/" + month);
+  console.log("find transactions:" + budgetId + "/" + month);
 
-  const budget = await getBudget(budgetUuid);
-  if (!budget) {
-    return [];
-  }
   // find transactions with month with format YYYY-MM or include all if month empty
   const dateFilter = month ? { $regex: `^${month}` } : { $exists: true };
   const filter = {
-    budgetId: budget._id || "",
+    budgetId,
     date: dateFilter,
   };
   console.log("filter?" + JSON.stringify(filter));

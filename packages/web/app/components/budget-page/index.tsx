@@ -2,20 +2,12 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import Loading from "../Loading";
-import {
-  calculateCurrentMontPercentage,
-  calculateTotals,
-  getBudget,
-  getMonthSummaries,
-} from "../../api/main.budget.server";
 import MonthSummaryBlock from "./month-summary-block";
 import CurrentMonth from "./current-month";
 
-import { getAIAnalysis } from "../../api/ai.server";
-import { savePreferredBudget } from "../../api/user/user.server";
-import { getCategories } from "../../api/category/category.server";
 import YnabLoginPage from "../ynab-login-page";
-import { categoriesToCategoryData, forecastSpendingWithES } from "../../api/es-forcasting.server";
+import { getBudget, getBudgetOverviewForUser } from "../../api/budget/budget.client";
+import { savePreferredBudget } from "../../api/user/user.client";
 
 export default function BudgetPage({ budgetUuid }: { budgetUuid: string }) {
   return (
@@ -33,14 +25,10 @@ async function BudgetInfo({ budgetUuid: budgetUuid }: { budgetUuid: string }) {
   if (!budget) {
     return <YnabLoginPage />;
   }
-  const monthPercentage = calculateCurrentMontPercentage();
-  const monthSummaries = await getMonthSummaries(budgetUuid);
-  // const aiResponse = await getAIAnalysis(monthSummaries);
+  const { monthPercentage, monthSummaries, categories, monthTotal, forecast } = await getBudgetOverviewForUser(budgetUuid);
+
   const aiResponse = { response: "AI response" };
-  const categories = await getCategories(budgetUuid);
-  const monthTotal = calculateTotals(categories);
-  const categoryData = categoriesToCategoryData(categories, monthSummaries);
-  const forecast = forecastSpendingWithES(categoryData);
+
   if (monthSummaries.length === 0) {
     return <YnabLoginPage />;
   }

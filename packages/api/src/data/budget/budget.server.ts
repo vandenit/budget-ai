@@ -1,6 +1,6 @@
 import { UserType } from "../user/user.server";
 import { LocalBudget } from "./budget.schema";
-import { Budget } from "common-ts";
+import { Budget, NewBudget } from "common-ts";
 
 export const findBudgets = async (userInput: UserType): Promise<Budget[]> => {
   const localBudgets = await LocalBudget.find({ users: userInput._id });
@@ -39,7 +39,7 @@ export const getBudget = async (
 };
 
 export const saveNewBudget = async (
-  budget: Budget,
+  budget: NewBudget,
   user: UserType
 ): Promise<void> => {
   const localBudget = new LocalBudget({
