@@ -33,7 +33,6 @@ describe("monthSummaryReducer", () => {
             transactions: [transaction],
           },
         ],
-        overallTransactions: [transaction],
       },
     ]);
   });
@@ -56,7 +55,6 @@ describe("monthSummaryReducer", () => {
             transactions: [transaction],
           },
         ],
-        overallTransactions: [transaction],
       },
     ]);
   });
@@ -80,7 +78,6 @@ describe("monthSummaryReducer", () => {
             transactions: [transaction],
           },
         ],
-        overallTransactions: [transaction],
       },
     ];
 
@@ -106,7 +103,6 @@ describe("monthSummaryReducer", () => {
               transactions: [transaction, newTransaction],
             },
           ],
-          overallTransactions: [transaction, newTransaction],
         },
       ]);
     });
@@ -132,7 +128,6 @@ describe("monthSummaryReducer", () => {
               transactions: [transaction],
             },
           ],
-          overallTransactions: [transaction],
         },
         {
           month: "2020-02",
@@ -145,7 +140,6 @@ describe("monthSummaryReducer", () => {
               transactions: [newTransaction],
             },
           ],
-          overallTransactions: [newTransaction],
         },
       ]);
     });

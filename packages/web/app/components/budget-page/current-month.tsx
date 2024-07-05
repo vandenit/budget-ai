@@ -24,7 +24,7 @@ const sortByCategoryUsageWithInflowNameFirst = (a: Category, b: Category) => {
 };
 
 const withBudgetFilter = (category: Category) => {
-  return category.budgeted >= 0;
+  return category.budgeted > 0;
 };
 
 const CurrentMonth = ({

@@ -12,7 +12,6 @@ export type MonthSummary = {
   month: string;
   isCurrentMonth: boolean;
   categoryUsages: Array<CategoryUsage>;
-  overallTransactions: Array<Transaction>;
 };
 
 export type YnabConnection = {

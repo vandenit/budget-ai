@@ -15,13 +15,11 @@ export const monthSummaryReducer = (
       monthSummary.categoryUsages,
       transaction
     );
-    monthSummary.overallTransactions.push(transaction);
   } else {
     monthSummaries.push({
       month,
       isCurrentMonth: month === currentMonth,
       categoryUsages: categoryUsageReducer([], transaction),
-      overallTransactions: [transaction],
     });
   }
   return monthSummaries;
