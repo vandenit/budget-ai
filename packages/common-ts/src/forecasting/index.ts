@@ -1,9 +1,5 @@
 export type CategoryData = {
-  id: string;
-  name: string;
-  budgeted: number;
-  balance: number;
-  spent: number;
+  categoryId: string;
   typicalSpendingPattern: number; // A weight from 0 (start of month) to 1 (end of month)
   historicalAverage: number;
 };

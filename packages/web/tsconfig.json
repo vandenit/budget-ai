@@ -24,6 +24,12 @@
       "common-ts/*": ["../../common-ts/dist/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "../common-ts/src/budget/budget.utils.ts"],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    "../common-ts/src/budget/budget.utils.ts"
+  ],
   "exclude": ["node_modules"]
 }

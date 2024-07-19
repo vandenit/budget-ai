@@ -19,15 +19,15 @@ function CategorySelect({
   const { replace } = useRouter();
 
   const navigateToCategory = (event: ChangeEvent<HTMLSelectElement>) => {
-    const newCategoryId = event.target.value;
+    const newCategoryUuid = event.target.value;
     const params = new URLSearchParams(searchParams);
-    if (newCategoryId) {
-      params.set("categoryUuid", newCategoryId);
+    if (newCategoryUuid) {
+      params.set("categoryUuid", newCategoryUuid);
     } else {
       params.delete("categoryUuid");
     }
     replace(`${pathname}?${params.toString()}`);
-    onChange(newCategoryId);
+    onChange(newCategoryUuid);
   };
 
   return (

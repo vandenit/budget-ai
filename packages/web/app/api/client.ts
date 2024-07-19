@@ -9,6 +9,7 @@ const getToken = async (accesToken?: string) => {
   if (!session || !session.accessToken) {
     throw new Error("no session found");
   }
+  console.log("token", session.accessToken);
   return session.accessToken;
 };
 

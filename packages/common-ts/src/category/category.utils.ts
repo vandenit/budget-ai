@@ -9,6 +9,8 @@ export type Category = {
   activity: number;
   targetAmount: number;
   budgetId: string;
+  typicalSpendingPattern: number;
+  historicalAverage: number;
 };
 
 export const emptyCategory: Category = {
@@ -20,13 +22,14 @@ export const emptyCategory: Category = {
   activity: 0,
   targetAmount: 0,
   budgetId: "",
+  typicalSpendingPattern: 0,
+  historicalAverage: 0,
 };
 
 export type CategoryUsage = {
   name: string;
   uuid: string | undefined | null;
   amount: number;
-  transactions: Array<Transaction>;
 };
 
 export const isInflowCategory = (category: Category) => {

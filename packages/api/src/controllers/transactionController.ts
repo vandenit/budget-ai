@@ -1,11 +1,12 @@
 import { Request, Response } from "express";
-import { Transaction } from "common-ts";
-import {
-  getCategoriesFromTransactions,
-  getFilteredTransactions,
-} from "../data/main.budget.server";
+import { Category, Transaction } from "common-ts";
+import { getFilteredTransactions } from "../data/main.budget.server";
 import { getUserFromReq } from "./utils";
 import { getBudget } from "../data/budget/budget.server";
+import { findCategories } from "../data/category/category.server";
+
+const inTransactions = (transactions: Transaction[]) => (category: Category) =>
+  transactions.some((t) => t.categoryId === category._id);
 
 export const getFilteredTransactionsWithCategories = async (
   req: Request,
@@ -31,10 +32,8 @@ export const getFilteredTransactionsWithCategories = async (
     month?.toString(),
     dayOfMonth?.toString()
   );
-  const categories = await getCategoriesFromTransactions(
-    budget._id,
-    transactions,
-    user
+  const categories = (await findCategories(budget._id)).filter(
+    inTransactions(transactions)
   );
   res.json({ transactions, categories });
 };

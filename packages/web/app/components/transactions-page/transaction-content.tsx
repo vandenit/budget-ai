@@ -27,14 +27,18 @@ const TransactionContent = ({
   transactions: Transaction[];
 }) => {
   const [viewMode, setViewMode] = useState("list");
-  const [newCategoryId, setNewCategoryId] = useState(categoryUuid);
-  const usedCategoryId = newCategoryId || categoryUuid;
+  const [newCategoryUuid, setNewCategoryUuid] = useState(categoryUuid);
+  const usedCategoryUuid = newCategoryUuid || categoryUuid;
 
   const groupedTransactions = groupByDate(transactions);
 
   const toggleView = (mode: string) => {
     setViewMode(mode);
   };
+
+  const usedCategoryId = categories.find(
+    (category) => category.uuid === usedCategoryUuid
+  )?._id;
 
   const categoryFilter = (transaction: Transaction) =>
     usedCategoryId === undefined || transaction.categoryId === usedCategoryId;
@@ -45,9 +49,9 @@ const TransactionContent = ({
     <>
       <h1 className="m-2">Transactions {month}</h1>
       <CategorySelect
-        categoryUuid={usedCategoryId}
+        categoryUuid={usedCategoryUuid}
         categories={categories}
-        onChange={setNewCategoryId}
+        onChange={setNewCategoryUuid}
       />
       <>
         <div className="p-4">
@@ -66,7 +70,7 @@ const TransactionContent = ({
           )}
         </div>
         {viewMode === "list" || categoryUuid ? (
-          <TransactionList transactions={filteredTransactions} />
+          <TransactionList transactions={filteredTransactions} categories={categories} />
         ) : (
           <div className="m-5 w-3/4 text-center">
             <CategoryPieChart

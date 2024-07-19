@@ -1,8 +1,7 @@
-import { update } from "ramda";
+import { T, update } from "ramda";
 import * as ynab from "ynab";
 import {
   findBudgets,
-  getBudget,
   getBudgetWithoutUserCheck,
   saveNewBudget,
   updateBudget,
@@ -11,14 +10,17 @@ import { UserType, clearYnabConnection } from "../user/user.server";
 import * as ynabApi from "./ynab-api"; // Import the missing ynapApi module
 import {
   deleteCategory,
+  findCategories,
   getCategory,
   saveNewCategory,
   updateCategory,
 } from "../category/category.server";
-import { Budget } from "common-ts/src/budget/budget.utils";
-import { LocalTransaction } from "../transaction/transaction.schema";
+import { Budget, Category } from "common-ts";
 import YnabBudget from "./ynab.schema";
-import { ObjectId } from "mongodb";
+import { updateTransactionsSpendingPattern } from "../forecasting/es-forcasting.server";
+import { extractYearsFromTransactions } from "./transaction.util";
+import { NewOrUpdatedTransaction } from "../transaction/transaction.server";
+import * as transactionServer from "../transaction/transaction.server";
 
 type ServerKnowledge = {
   transactions: number;
@@ -36,52 +38,59 @@ type YnabBudgetType = {
 
 const insertOrUpdateMissingTransaction = async (
   ynabTransaction: ynab.TransactionDetail,
+  categories: Category[],
   budgetId: string
 ) => {
-  const localTransaction = await LocalTransaction.findOne({
-    uuid: ynabTransaction.id,
-  });
-  const newData = {
+  const categoryId = categories.find(
+    (category) => category.uuid === ynabTransaction.category_id
+  )?._id;
+  const newData: NewOrUpdatedTransaction = {
     accountName: ynabTransaction.account_name,
     amount: ynabTransaction.amount,
     date: ynabTransaction.date,
-    categoryName: ynabTransaction.category_name,
-    categoryId: ynabTransaction.category_id,
+    categoryId,
     payeeName: ynabTransaction.payee_name,
     memo: ynabTransaction.memo,
   };
-  if (!localTransaction && !ynabTransaction.deleted) {
-    const newLocalTransaction = new LocalTransaction({
-      uuid: ynabTransaction.id,
-      budgetId: budgetId,
-      ...newData,
-    });
-    console.log("save transaction:" + ynabTransaction.id);
-    await newLocalTransaction.save();
-  } else if (localTransaction) {
-    if (ynabTransaction.deleted) {
-      await LocalTransaction.deleteOne({ uuid: ynabTransaction.id }).exec();
-      return;
-    }
-    await LocalTransaction.updateOne(
-      { uuid: ynabTransaction.id },
-      newData
-    ).exec();
-  }
+  await transactionServer.insertOrUpdateMissingTransaction(
+    ynabTransaction.id,
+    ynabTransaction.deleted,
+    budgetId,
+    newData
+  );
 };
 
 const transactionToInsertOrUpdatePromise =
-  (budgetId: string) => (transaction: ynab.TransactionDetail) =>
-    insertOrUpdateMissingTransaction(transaction, budgetId);
+  (budgetId: string, categories: Category[]) =>
+  (transaction: ynab.TransactionDetail) =>
+    insertOrUpdateMissingTransaction(transaction, categories, budgetId);
 
 const insertOrUpdateMissingTransactions = async (
   budgetId: string,
   transactions: ynab.TransactionDetail[]
 ) => {
-  console.log(`insert or update ${transactions.length} number of transactions`);
-
-  const promiseMapper = transactionToInsertOrUpdatePromise(budgetId);
-  await Promise.all(transactions.map(promiseMapper));
+  try {
+    console.log(
+      `insert or update ${transactions.length} number of transactions`
+    );
+    const categories = await findCategories(budgetId);
+    const promiseMapper = transactionToInsertOrUpdatePromise(
+      budgetId,
+      categories
+    );
+    await Promise.all(transactions.map(promiseMapper));
+    if (transactions.length > 0) {
+      const years = extractYearsFromTransactions(transactions);
+      await Promise.all(
+        years.map((year) => updateTransactionsSpendingPattern(budgetId, year))
+      );
+    }
+  } catch (exception) {
+    console.error(
+      `Error while inserting or updating transactions: ${exception}`
+    );
+    throw new Error("Error while inserting or updating transactions");
+  }
 };
 
 const updateUserServerKnowledge = async ({
@@ -242,16 +251,18 @@ const mapCategory = (
   targetAmount: ynabCategory.goal_target || 0,
   budgeted: ynabCategory.budgeted,
   activity: ynabCategory.activity,
+  historicalAverage: 0,
+  typicalSpendingPattern: 0,
   _id,
 });
 
-const toSyncPromise = (user: UserType) => (budget: Budget) =>
+const toTransactionsSyncPromise = (user: UserType) => (budget: Budget) =>
   syncTransactions(user, budget);
 
 const syncAllTransactions = async (user: UserType) => {
   console.log("syncing all transactions for user:" + user.authId);
   const localBudgets = await findBudgets(user);
-  const promises = localBudgets.map(toSyncPromise(user));
+  const promises = localBudgets.map(toTransactionsSyncPromise(user));
   await Promise.all(promises);
 };
 

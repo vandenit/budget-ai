@@ -5,6 +5,9 @@ export const formatBasicAmount = (
   amount: number,
   absolute: boolean = false
 ) => {
+  if (!amount) {
+    return "?.??€";
+  }
   const number = absolute ? Math.abs(amount) : amount;
   return number.toFixed(2) + "€";
 };
