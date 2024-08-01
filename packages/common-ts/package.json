@@ -4,12 +4,18 @@
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
     "scripts": {
-        "build": "rimraf dist && rollup --config"
+        "build": "rimraf dist && rollup --config",
+        "test": "vitest"
+    },
+    "dependencies": {
+        "ramda": "^0.29.1"
     },
     "devDependencies": {
         "rollup": "^2.60.2",
         "rollup-plugin-typescript2": "^0.31.1",
         "typescript": "^5.4.5",
-        "rimraf": "^3.0.2"
+        "rimraf": "^3.0.2",
+        "vitest": "^0.34.6",
+        "@types/ramda": "^0.29.9"
     }
 }

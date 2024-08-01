@@ -9,9 +9,9 @@ import { handleRequest } from "../controllers/utils";
 
 const router = Router();
 
-router.get("/logged-in", handleGetLoggedInUser);
-router.put("/", handleCreateOrUpdateUser);
-router.put("/connect-ynab", handleConnectUserWithYnab);
+router.get("/logged-in", handleRequest(handleGetLoggedInUser));
+router.put("/", handleRequest(handleCreateOrUpdateUser));
+router.put("/connect-ynab", handleRequest(handleConnectUserWithYnab));
 
 // users/preferred-budget
 router.put("/preferred-budget", handleRequest(handleSavePreferredBudget));

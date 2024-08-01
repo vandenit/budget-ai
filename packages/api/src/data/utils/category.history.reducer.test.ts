@@ -4,6 +4,9 @@ import { CategoryHistoryReducer } from "./category.history.reducer";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 describe("CategoryHistoryReducer", () => {
+  const budgetId = "1";
+  const historyReducer = CategoryHistoryReducer(budgetId);
+
   it("should update existing category history if it exists", () => {
     // Arrange
     const categoryHistories: Array<CategoryHistoryForInsert> = [
@@ -11,13 +14,13 @@ describe("CategoryHistoryReducer", () => {
         categoryId: "1",
         month: "2021-01",
         activity: -500,
-        startDateOfMonth: new Date("2021-01-01"),
+        budgetId,
       },
       {
         categoryId: "2",
         month: "2021-01",
         activity: -300,
-        startDateOfMonth: new Date("2021-01-01"),
+        budgetId,
       },
     ];
     const transaction: any = {
@@ -27,7 +30,7 @@ describe("CategoryHistoryReducer", () => {
     };
 
     // Act
-    const result = CategoryHistoryReducer(categoryHistories, transaction);
+    const result = historyReducer(categoryHistories, transaction);
 
     // Assert
     expect(result).toEqual([
@@ -35,13 +38,13 @@ describe("CategoryHistoryReducer", () => {
         categoryId: "1",
         month: "2021-01",
         activity: -700,
-        startDateOfMonth: new Date("2021-01-01"),
+        budgetId,
       },
       {
         categoryId: "2",
         month: "2021-01",
         activity: -300,
-        startDateOfMonth: new Date("2021-01-01"),
+        budgetId,
       },
     ]);
   });
@@ -53,7 +56,7 @@ describe("CategoryHistoryReducer", () => {
         categoryId: "1",
         month: "2021-01",
         activity: -500,
-        startDateOfMonth: new Date("2021-01-01"),
+        budgetId,
       },
     ];
     const transaction: any = {
@@ -63,7 +66,7 @@ describe("CategoryHistoryReducer", () => {
     };
 
     // Act
-    const result = CategoryHistoryReducer(categoryHistories, transaction);
+    const result = historyReducer(categoryHistories, transaction);
 
     // Assert
     expect(result).toEqual([
@@ -71,13 +74,13 @@ describe("CategoryHistoryReducer", () => {
         categoryId: "1",
         month: "2021-01",
         activity: -500,
-        startDateOfMonth: new Date("2021-01-01"),
+        budgetId,
       },
       {
         categoryId: "2",
         month: "2021-01",
         activity: -200,
-        startDateOfMonth: new Date("2021-01-01"),
+        budgetId,
       },
     ]);
   });

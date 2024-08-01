@@ -3,13 +3,15 @@ import { c } from "vitest/dist/reporters-5f784f42.js";
 
 const getToken = async (accesToken?: string) => {
   if (accesToken) {
+    console.log("custom accesstoekn:" + accesToken);
     return accesToken;
   }
   const session = await getSession();
   if (!session || !session.accessToken) {
     throw new Error("no session found");
   }
-  console.log("token", session.accessToken);
+  // todo remove this log!
+  //console.log("token", session.accessToken);
   return session.accessToken;
 };
 

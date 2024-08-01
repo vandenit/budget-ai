@@ -35,7 +35,7 @@ kubectl describe pod budget-web-app -n dev
 kubectl describe pod budget-ai-app -n dev
 kubectl describe pod budget-api-app -n dev
 
-kubectl logs -f budget-api-app-6bc5494dbb-g87c7 -n dev
+kubectl logs -f budget-api-app-5d9689f479-wvbsh -n dev
 
 kubectl logs -l app=budget-web-app -n dev --tail=100
 kubectl logs -l app=budget-api-app -n dev --tail=100

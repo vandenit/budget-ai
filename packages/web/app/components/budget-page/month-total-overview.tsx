@@ -1,6 +1,5 @@
 import {
   MonthTotal, Category, formatAmount,
-  formatBasicAmount,
   totalPercentageSpent, MonthlyForcast
 } from "common-ts";
 
@@ -104,24 +103,24 @@ const TotalTable = ({
         <tr>
           <td>Forecasted Remaining amount</td>
           <td colSpan={2}>
-            {formatBasicAmount(forecast.predictedRemainingAmount)}
+            {formatAmount(forecast.predictedRemainingAmount)}
           </td>
         </tr>
         <tr>
           <td>Forecasted Daily amount</td>
           <td colSpan={2}>
-            {formatBasicAmount(forecast.predictedRemainingPerDay)}
+            {formatAmount(forecast.predictedRemainingPerDay)}
           </td>
         </tr>
         <tr>
           <td>Actual Remaing per day amount</td>
           <td colSpan={2}>
-            {formatBasicAmount(forecast.actualRemainingPerDay)}
+            {formatAmount(forecast.actualRemainingPerDay)}
           </td>
         </tr>
         <tr>
           <td>Extra suggested</td>
-          <td colSpan={2}>{formatBasicAmount(forecast.extraAmountNeeded)}</td>
+          <td colSpan={2}>{formatAmount(forecast.extraAmountNeeded)}</td>
         </tr>
       </tbody>
     </table>

@@ -33,6 +33,10 @@ const categoryHistorySchema = new Schema({
   categoryId: { type: mongoose.Schema.Types.ObjectId, ref: "LocalCategory" },
   activity: Number,
   month: { type: String, index: true },
+  budgetId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "LocalBudget",
+  },
 });
 
 // combination categoryId month is unique

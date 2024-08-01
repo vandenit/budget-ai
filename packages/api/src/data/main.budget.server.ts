@@ -78,8 +78,9 @@ export async function getMonthSummaries(
 ): Promise<Array<MonthSummary>> {
   const categoryHistoryRecords = await getCategoryHistoryForBudget(budgetId);
 
-  return categoryHistoryRecords.reduce(
-    monthSummaryFromCategoryHistoryReducer,
-    []
-  );
+  return categoryHistoryRecords
+    .reduce(monthSummaryFromCategoryHistoryReducer, [])
+    .sort((a, b) => {
+      return a.month > b.month ? -1 : 1;
+    });
 }

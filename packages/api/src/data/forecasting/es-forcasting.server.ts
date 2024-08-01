@@ -75,10 +75,9 @@ const calculateTypicalSpendingPatternForMultipleMonths = (
     ).getDate();
     const dayOfTransaction = transactionDate.getDate();
     const normalizedDateValue = dayOfTransaction / daysInThatMonth;
-    totalWeightedSum +=
-      absoluteD1000Number(transaction.amount) * normalizedDateValue;
+    totalWeightedSum += Math.abs(transaction.amount) * normalizedDateValue;
 
-    totalSpending += absoluteD1000Number(transaction.amount);
+    totalSpending += Math.abs(transaction.amount);
   });
   const averageSpending = totalSpending / transactions.length;
   totalWeightedSum / totalSpending;
@@ -92,7 +91,10 @@ export function forecastSpendingWithES(
   categories: Category[],
   alpha = 0.5 // Smoothing factor for Exponential Smoothing, typically between 0 and 1
 ): MonthlyForcast {
-  const filteredCategories = categories.filter(
+  const categoriesWithBudget = categories.filter(
+    (category) => category.budgeted > 0
+  );
+  const filteredCategories = categoriesWithBudget.filter(
     categoryClosedWhenAbove90HistoricalAverageFilter
   );
   const currentDate = new Date();
@@ -103,11 +105,11 @@ export function forecastSpendingWithES(
   ).getDate();
   const daysPassed = currentDate.getDate();
 
-  const totalSpentSoFar = categories.reduce(
+  const totalSpentSoFar = categoriesWithBudget.reduce(
     (acc, category) => acc + spent(category),
     0
   );
-  const totalAvailableSoFar = categories.reduce(
+  const totalAvailableSoFar = categoriesWithBudget.reduce(
     (acc, category) => acc + category.balance,
     0
   );
@@ -147,6 +149,8 @@ export function forecastSpendingWithES(
     (daysInMonth - daysPassed);
   const predictedRemainingAmount =
     predictedSpendingEndOfMonth - totalSpentSoFar;
+  console.log("days left:" + (daysInMonth - daysPassed));
+  console.log("totalAvailableSoFar:" + totalAvailableSoFar);
   return {
     totalSpentSoFar,
     predictedSpendingEndOfMonth,

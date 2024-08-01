@@ -14,12 +14,14 @@ export type CategoryHistory = {
   categoryId: string;
   month: string;
   activity: number;
+  budgetId: string;
 };
 
 export type CategoryHistoryForInsert = {
   categoryId: string;
   activity: number;
   month: string;
+  budgetId: string;
 };
 
 export const findCategories = async (budgetId: string): Promise<Category[]> => {
@@ -198,7 +200,7 @@ export const populateCategoryHistoryFromTransactions = async (
 ) => {
   const categoryHistoryForInsert: CategoryHistoryForInsert[] = transactions
     .filter((transaction) => transaction.categoryId)
-    .reduce(CategoryHistoryReducer, []);
+    .reduce(CategoryHistoryReducer(budgetId), []);
   console.log(
     `inserting ${categoryHistoryForInsert.length} category histories for ${year}
     and budgetId ${budgetId}`

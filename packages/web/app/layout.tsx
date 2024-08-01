@@ -5,6 +5,8 @@ import BudgetNavigation from "./components/budget-navigation";
 import { UserProvider } from "@auth0/nextjs-auth0/client";
 import { getSession } from "@auth0/nextjs-auth0";
 import { findBudgets } from "./api/budget/budget.client";
+import { useEffect } from "react";
+import { overrideConsoleLog } from "common-ts";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,6 +20,8 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  overrideConsoleLog();
+
   const session = await getSession();
   const isLoggedIn: boolean = !!session?.user;
   const budgets = session && isLoggedIn ? await findBudgets() : [];

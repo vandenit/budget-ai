@@ -18,7 +18,9 @@ export const createOrUpdateUser = async ({
   name: string;
   accessToken?: string;
 }) => {
-  console.log("createOrUpdateUser with id:" + authId + " and name:" + name);
+  console.log(
+    "createOrUpdateUser with id:" + authId + " and name:" + name + ", token?"
+  );
   return await apiPut("users", { authId, name }, accessToken);
 };
 

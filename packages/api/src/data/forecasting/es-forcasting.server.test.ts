@@ -8,6 +8,7 @@ import {
   populateCategoryHistoryFromTransactions,
 } from "../category/category.server";
 import { updateTransactionsSpendingPattern } from "./es-forcasting.server";
+import { buffer } from "stream/consumers";
 
 const mocks = vi.hoisted(() => {
   return {
@@ -42,6 +43,7 @@ describe("es-forcasting.server", () => {
           name: "Category 1",
           balance: 1000,
           activity: -500000,
+          budgeted: 200000,
           historicalAverage: 800000,
           typicalSpendingPattern: 0.6,
         },
@@ -50,6 +52,7 @@ describe("es-forcasting.server", () => {
           name: "Category 2",
           balance: 2000,
           activity: -1000000,
+          budgeted: 200000,
           historicalAverage: 1200000,
           typicalSpendingPattern: 0.8,
         },
@@ -114,12 +117,12 @@ describe("es-forcasting.server", () => {
         const expectedCategoryData = [
           {
             categoryId: "1",
-            historicalAverage: 1500,
-            typicalSpendingPattern: 0.03456221198156682,
+            historicalAverage: 1500000,
+            typicalSpendingPattern: 0.034562211981566816,
           },
           {
             categoryId: "2",
-            historicalAverage: 3000,
+            historicalAverage: 3000000,
             typicalSpendingPattern: 1,
           },
         ];

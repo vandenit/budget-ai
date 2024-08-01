@@ -193,6 +193,54 @@ describe("categoryServer tests", () => {
     });
   });
 
+  describe("populateCategoryHistoryFromTransactions", () => {
+    it("should insert category histories for the specified year and budgetId", async () => {
+      const budgetId = "123";
+      const insertManyMock = vi.fn();
+      const transactions: any[] = [
+        {
+          categoryId: "1",
+          amount: 100,
+          date: "2022-01-01",
+        },
+        {
+          categoryId: "2",
+          amount: 200,
+          date: "2022-01-02",
+        },
+      ];
+      const year = "2022";
+
+      // Mock the LocalCategoryHistory.insertMany function
+      vi.mocked(LocalCategoryHistory).insertMany = insertManyMock;
+
+      insertManyMock.mockResolvedValueOnce([]);
+
+      // Call the populateCategoryHistoryFromTransactions function
+      await categoryServer.populateCategoryHistoryFromTransactions(
+        budgetId,
+        transactions,
+        year
+      );
+
+      // Expect the LocalCategoryHistory.insertMany function to be called with the correct arguments
+      expect(insertManyMock).toHaveBeenCalledWith([
+        {
+          categoryId: "1",
+          activity: 100,
+          month: "2022-01",
+          budgetId: "123",
+        },
+        {
+          categoryId: "2",
+          activity: 200,
+          month: "2022-01",
+          budgetId: "123",
+        },
+      ]);
+    });
+  });
+
   afterEach(() => {
     vi.restoreAllMocks();
   });

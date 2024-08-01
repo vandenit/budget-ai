@@ -82,22 +82,6 @@ describe("main budget server tests", () => {
       const monthPercentage = 100;
       const monthSummaries: MonthSummary[] = [
         {
-          month: "2021-01",
-          isCurrentMonth: true,
-          categoryUsages: [
-            {
-              uuid: "1",
-              name: "Category 1",
-              amount: -500,
-            },
-            {
-              uuid: "2",
-              name: "Category 2",
-              amount: -1000,
-            },
-          ],
-        },
-        {
           month: "2021-02",
           isCurrentMonth: false,
           categoryUsages: [
@@ -110,6 +94,22 @@ describe("main budget server tests", () => {
               uuid: "2",
               name: "Category 2",
               amount: -2000,
+            },
+          ],
+        },
+        {
+          month: "2021-01",
+          isCurrentMonth: true,
+          categoryUsages: [
+            {
+              uuid: "1",
+              name: "Category 1",
+              amount: -500,
+            },
+            {
+              uuid: "2",
+              name: "Category 2",
+              amount: -1000,
             },
           ],
         },

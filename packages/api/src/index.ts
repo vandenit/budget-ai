@@ -7,6 +7,9 @@ require("dotenv").config();
 import budgetRoutes from "./routes/budgetRoutes";
 import userRoutes from "./routes/userRoutes";
 import syncRoutes from "./routes/syncRoutes";
+import { overrideConsoleLog } from "common-ts";
+
+overrideConsoleLog();
 
 const app = express();
 

@@ -29,11 +29,6 @@ export const handleConnectUserWithYnab = async (
 
 export const handleCreateOrUpdateUser = async (req: Request, res: Response) => {
   try {
-    const user = await getUserFromReq(req);
-    if (!user) {
-      console.error("no user found");
-      return res.status(401).send("Unauthorized");
-    }
     const { authId, name } = req.body;
     await createOrUpdateUser({ authId, name });
     res.send({ success: true });
@@ -84,6 +79,7 @@ export const handleSavePreferredBudget = async (
     }
     const { budgetUuid } = req.body;
     await savePreferredBudget(budgetUuid, user.authId);
+    return res.send({ success: true });
   } catch (exception) {
     console.error(exception);
     res.status(400).send("Failed to save preferred budget");
