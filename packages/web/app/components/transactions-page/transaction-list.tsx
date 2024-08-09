@@ -2,7 +2,7 @@ import { calculateTotals, formatDate, groupByDate } from "./utils";
 import { useState } from "react";
 import { Category, formatAmount, Transaction } from "common-ts";
 import { FaArrowDown, FaArrowUp } from "react-icons/fa";
-import { get } from "http";
+import { TransactionAmount } from "./transaction-amount";
 
 export const TransactionList = ({
   transactions,
@@ -62,12 +62,7 @@ export const TransactionList = ({
                 </div>
               </div>
               <div className="text-right">
-                <div
-                  className={`font-bold text-lg ${transaction.amount >= 0 ? "text-green-500" : "text-red-500"
-                    } dark:text-green-200 dark:text-red-300`}
-                >
-                  {formatAmount(transaction.amount)}
-                </div>
+                <TransactionAmount amount={transaction.amount} />
                 <div className="text-gray-500 dark:text-gray-400 text-sm">
                   {transaction.memo}
                 </div>

@@ -12,6 +12,7 @@ import {
 import { calculateTotals, formatDate, groupByDate } from "./utils";
 import { FaArrowDown, FaArrowUp, FaChartBar, FaList } from "react-icons/fa";
 import { TransactionList } from "./transaction-list";
+import { TransactionTotals } from "./transaction-totals";
 
 const TransactionContent = ({
   budgetUuid,
@@ -68,6 +69,7 @@ const TransactionContent = ({
               </button>
             </div>
           )}
+          <TransactionTotals transactions={filteredTransactions} />
         </div>
         {viewMode === "list" || categoryUuid ? (
           <TransactionList transactions={filteredTransactions} categories={categories} />

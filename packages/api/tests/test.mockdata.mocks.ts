@@ -1,8 +1,11 @@
+import { am } from "vitest/dist/reporters-5f784f42.js";
+
 export const mockTransactions = [
   {
     id: "1",
     name: "mock transaction",
     categoryId: "1",
+    amount: 100,
   },
 ];
 

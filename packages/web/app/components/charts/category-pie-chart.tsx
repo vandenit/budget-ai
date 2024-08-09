@@ -191,8 +191,7 @@ export const CategoryPieChart = ({
               return "";
             }
             return (
-              `${
-                context.chart.data.labels[context.dataIndex]
+              `${context.chart.data.labels[context.dataIndex]
               } ${valueToPercentageOfTotal(value, totalAmount)}%` || value
             );
             // This will display the label of each pie slice inside the slice

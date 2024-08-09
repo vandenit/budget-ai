@@ -82,7 +82,14 @@ describe("getFilteredTransactionsWithCategories", () => {
     expect(res.json).toHaveBeenCalledWith({
       transactions: mockTransactions,
       // only categories present in the transactions should be returned
-      categories: mockCategories.filter((category) => category._id === "1"),
+      // with amount of transaction
+      categories: [
+        {
+          _id: "1",
+          key: "mock category",
+          activity: 100,
+        },
+      ],
     });
   });
 
