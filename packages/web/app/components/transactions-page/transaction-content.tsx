@@ -7,12 +7,16 @@ import {
   Category,
   formatAmount,
   Transaction,
+  PayeeWithActivity,
 
 } from "common-ts";
 import { calculateTotals, formatDate, groupByDate } from "./utils";
-import { FaArrowDown, FaArrowUp, FaChartBar, FaList } from "react-icons/fa";
+import { FaArrowDown, FaArrowUp, FaChartBar, FaChartPie, FaList } from "react-icons/fa";
 import { TransactionList } from "./transaction-list";
 import { TransactionTotals } from "./transaction-totals";
+import { PayeeActivityChart } from "../charts/payee-activity-chart";
+import { payeeWithActivityReducer } from "./payeeWithActivity-reducer";
+import { PayeeChart } from "./payee-chart";
 
 const TransactionContent = ({
   budgetUuid,
@@ -45,7 +49,8 @@ const TransactionContent = ({
     usedCategoryId === undefined || transaction.categoryId === usedCategoryId;
 
   const filteredTransactions = transactions.filter(categoryFilter);
-
+  const payeesWithActivities = filteredTransactions.reduce(payeeWithActivityReducer, []);
+  const categoryPieChartDisabled = categoryUuid ? true : false;
   return (
     <>
       <h1 className="m-2">Transactions {month}</h1>
@@ -59,29 +64,33 @@ const TransactionContent = ({
           <h1 className="text-lg font-bold text-center mb-4 dark:text-white">
             Bank Transactions
           </h1>
-          {!categoryUuid && (
-            <div>
-              <button onClick={() => toggleView("graph")} className="p-2">
-                <FaChartBar title="Show Graph" />
-              </button>
-              <button onClick={() => toggleView("list")} className="p-2">
-                <FaList title="Show List" />
-              </button>
-            </div>
-          )}
+          <div>
+            <button onClick={() => toggleView("graph")} className="p-2 disabled" disabled={categoryPieChartDisabled}>
+              <FaChartBar title="Show Graph" className={categoryPieChartDisabled ? "text-gray-400" : "text-current"}
+              />
+            </button>
+            <button onClick={() => toggleView("list")} className="p-2">
+              <FaList title="Show List" />
+            </button>
+            <button onClick={() => toggleView("payeeChart")} className="p-2">
+              <FaChartPie title="Show payee overview" />
+            </button>
+          </div>
           <TransactionTotals transactions={filteredTransactions} />
         </div>
-        {viewMode === "list" || categoryUuid ? (
+        {viewMode === "graph" && (
+          <CategoryPieChart
+            month={month || ""}
+            categories={categories}
+            selectedAmountTypes={["activity"]}
+            budgetUuid={budgetUuid}
+          />
+        )}
+        {viewMode === "list" && (
           <TransactionList transactions={filteredTransactions} categories={categories} />
-        ) : (
-          <div className="m-5 w-3/4 text-center">
-            <CategoryPieChart
-              month={month || ""}
-              categories={categories}
-              selectedAmountTypes={["activity"]}
-              budgetUuid={budgetUuid}
-            />
-          </div>
+        )}
+        {viewMode === "payeeChart" && (
+          <PayeeChart payeesWithActivities={payeesWithActivities} />
         )}
       </>
     </>

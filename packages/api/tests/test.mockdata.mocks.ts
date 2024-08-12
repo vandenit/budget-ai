@@ -1,4 +1,4 @@
-import { am } from "vitest/dist/reporters-5f784f42.js";
+import { am, c } from "vitest/dist/reporters-5f784f42.js";
 
 export const mockTransactions = [
   {
@@ -6,6 +6,14 @@ export const mockTransactions = [
     name: "mock transaction",
     categoryId: "1",
     amount: 100,
+    cleanPayeeName: "mock payee",
+  },
+  {
+    id: "1",
+    name: "mock transaction",
+    categoryId: "1",
+    amount: 200,
+    cleanPayeeName: "mock payee 2",
   },
 ];
 

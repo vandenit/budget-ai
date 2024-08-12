@@ -1,6 +1,7 @@
 import connectDb from "../db";
 import { LocalTransaction } from "./transaction.schema";
 import { Transaction } from "common-ts";
+import { extractPayeeName } from "./utils";
 
 export type NewOrUpdatedTransaction = {
   accountName: string;
@@ -46,6 +47,7 @@ export const findTransactions = async (
     date: transaction.date,
     categoryId: transaction.categoryId,
     payeeName: transaction.payeeName,
+    cleanPayeeName: extractPayeeName(transaction.payeeName),
     memo: transaction.memo,
   }));
 };

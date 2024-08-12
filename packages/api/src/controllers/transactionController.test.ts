@@ -87,7 +87,7 @@ describe("getFilteredTransactionsWithCategories", () => {
         {
           _id: "1",
           key: "mock category",
-          activity: 100,
+          activity: 300,
         },
       ],
     });

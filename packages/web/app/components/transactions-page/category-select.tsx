@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { ChangeEvent, ChangeEventHandler } from "react";
 import { useSearchParams, usePathname, useRouter } from "next/navigation";
-import { Category } from "common-ts";
+import { Category, formatAmount } from "common-ts";
 
 function CategorySelect({
   categoryUuid,
@@ -40,7 +40,7 @@ function CategorySelect({
       <option value={""}>Select category</option>
       {categories.map((category) => (
         <option key={category.uuid} value={category.uuid}>
-          {category.name}
+          {category.name} {formatAmount(category.activity)}
         </option>
       ))}
     </select>

@@ -44,5 +44,6 @@ export const getFilteredTransactionsWithCategories = async (
     categoryUsageReducer(categoriesFromDb),
     []
   );
+
   res.json({ transactions, categories });
 };
