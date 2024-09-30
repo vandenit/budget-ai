@@ -1,10 +1,15 @@
+import { isNil } from "ramda";
+
 import { MonthTotal } from "../budget";
 import { Category } from "../category/category.utils";
 
 export const formatBasicAmount = (
-  amount: number,
+  amount: number | null | undefined,
   absolute: boolean = false
 ) => {
+  if (isNil(amount)) {
+    return "?.??€";
+  }
   const number = absolute ? Math.abs(amount) : amount;
   return number.toFixed(2) + "€";
 };

@@ -5,9 +5,9 @@ export type Transaction = {
   accountName: string;
   amount: number;
   date: string;
-  categoryName: string;
   categoryId: string | undefined | null;
   payeeName: string;
+  cleanPayeeName: string;
   memo: string;
 };
 
@@ -18,4 +18,9 @@ export interface GroupedTransactions {
 export type TransactionsWithCategories = {
   transactions: Transaction[];
   categories: Category[];
+};
+
+export type PayeeWithActivity = {
+  payeeName: string;
+  activity: number;
 };

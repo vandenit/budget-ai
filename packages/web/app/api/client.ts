@@ -9,6 +9,8 @@ const getToken = async (accesToken?: string) => {
   if (!session || !session.accessToken) {
     throw new Error("no session found");
   }
+  // todo remove this log!
+  //console.log("token", session.accessToken);
   return session.accessToken;
 };
 

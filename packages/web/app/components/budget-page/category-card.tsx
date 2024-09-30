@@ -1,3 +1,4 @@
+"use client";
 import Link from "next/link";
 import Progress from "../progress";
 import {
@@ -18,32 +19,56 @@ interface StatusIndicatorProps {
   monthTotal: MonthTotal;
 }
 
+import { useState } from "react";
+import { FaAngleDown, FaAngleUp } from "react-icons/fa";
+
 const CategoryCard: React.FC<StatusIndicatorProps> = ({
   category,
   budgetUuid,
   currentMonthLbl,
   monthTotal,
 }) => {
+  const [isCollapsed, setIsCollapsed] = useState(true);
   const percentage = percentageSpent(category);
-
   const statusClass = percentageToStatusClass(percentage);
+
+  const handleToggleCollapse = () => {
+    setIsCollapsed(!isCollapsed);
+  };
+
   return (
     <div className="w-full sm:w-1/2 md:w-1/3 mb-5">
       <div className="card mx-2 bg-base-100 shadow-xl">
         <div className="card-body">
-          <h2 className="card-title">
-            <Link
-              className="link"
-              href={`/budgets/${budgetUuid}/transactions?month=${currentMonthLbl}&categoryUuid=${category.uuid}`}
+          <div className="flex items-center justify-between">
+            <h2 className="card-title">
+              <Link
+                className="link"
+                href={`/budgets/${budgetUuid}/transactions?month=${currentMonthLbl}&categoryUuid=${category.uuid}`}
+              >
+                {category.name}
+              </Link>{" "}
+            </h2>
+            <PercentageBadget category={category} />
+            <button
+              className="btn btn-ghost btn-sm"
+              onClick={handleToggleCollapse}
             >
-              {category.name}
-            </Link>{" "}
-          </h2>
-          {!isInflowCategory(category) && (
-            <ExpenseCategoryCard category={category} monthTotal={monthTotal} />
-          )}
-          {isInflowCategory(category) && (
-            <InflowCategoryCard category={category} />
+              {isCollapsed ? <FaAngleDown /> : <FaAngleUp />}
+            </button>
+          </div>
+          {!isCollapsed && (
+            <>
+              {!isInflowCategory(category) && (
+                <ExpenseCategoryCard
+                  category={category}
+                  monthTotal={monthTotal}
+                />
+              )}
+              {isInflowCategory(category) && (
+                <InflowCategoryCard category={category} />
+              )}
+            </>
           )}
         </div>
       </div>
@@ -104,9 +129,6 @@ const ExpenseCategoryCard = ({
           </tr>
         </tbody>
       </table>
-      <span className={`mx-3 badge badge-${statusClass} badge-outline`}>
-        {formatPercentage(percentage)}
-      </span>
       <progress
         className={`progress progress-${statusClass} w-56`}
         value={percentage}
@@ -115,6 +137,16 @@ const ExpenseCategoryCard = ({
     </>
   );
 };
+
+const PercentageBadget = ({ category }: { category: Category }) => {
+  const percentage = percentageSpent(category);
+  const statusClass = percentageToStatusClass(percentage);
+  return (
+    <span className={`mx-3 badge badge-${statusClass} badge-outline`}>
+      {formatPercentage(percentage)}
+    </span>
+  );
+}
 
 const InflowCategoryCard = ({ category }: { category: Category }) => (
   <>

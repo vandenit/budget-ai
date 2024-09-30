@@ -1,132 +1,100 @@
 import {
-  CategoryData,
-  MonthSummary,
-  MonthlySpending,
   MonthlyForcast,
   Category,
   absoluteD1000Number,
-  TransactionData,
+  Transaction,
 } from "common-ts";
+import { findTransactions } from "../transaction/transaction.server";
+import { uniq } from "ramda";
+import {
+  clearCategoryHistoryForYear,
+  populateCategoryHistoryFromTransactions,
+  saveSpendingData,
+} from "../category/category.server";
 
-const monthSummariesToMonthlySpendingForCategory = (
-  monthSummaries: MonthSummary[],
-  categoryUuid: string
-): MonthlySpending[] => {
-  return monthSummaries.map((summary) => {
-    const categoryUsage = summary.categoryUsages.find(
-      (usage) => usage.uuid === categoryUuid
-    );
-    return {
-      month: new Date(summary.month),
-      amount: categoryUsage ? categoryUsage.amount : 0,
-    };
-  });
+type SpendingPattern = {
+  typicalSpendingPattern: number;
+  historicalAverage: number;
 };
 
-const calculateHistoricalAverage = (
-  spendingData: MonthlySpending[]
-): number => {
-  const totalSpending = spendingData.reduce(
-    (acc, data) => acc + absoluteD1000Number(data.amount),
-    0
-  );
-  return totalSpending / spendingData.length;
-};
-
-export const categoriesToCategoryData = (
-  categories: Category[],
-  monthSummaries: MonthSummary[]
-): CategoryData[] => {
-  return categories
-    .map((category) => {
-      const spendingData = monthSummariesToMonthlySpendingForCategory(
-        monthSummaries,
-        category.uuid
-      );
-      return {
-        id: category.uuid,
-        name: category.name,
-        budgeted: absoluteD1000Number(category.budgeted),
-        spent: absoluteD1000Number(category.activity),
-        balance: absoluteD1000Number(category.balance),
-        typicalSpendingPattern: calculateTypicalSpendingPatternForCategory(
-          monthSummaries,
-          category.uuid
-        ),
-        historicalAverage: calculateHistoricalAverage(spendingData),
-      };
-    })
-    .filter((category) => category.historicalAverage > 0)
-    .filter((category) => !category.name.startsWith("Inflow"));
-};
+const spent = (category: Category) => absoluteD1000Number(category.activity);
 
 const categoryClosedWhenAbove90HistoricalAverageFilter = (
-  category: CategoryData
+  category: Category
 ) => {
-  /* if (category.spent < 0.9 * category.historicalAverage) {
-    console.log(
-      "category included when lower than 90% historical average:",
-      category.name
-    );
-  }*/
-  return category.spent < 0.9 * category.historicalAverage;
+  return spent(category) < 0.9 * category.historicalAverage;
 };
-const calculateTypicalSpendingPatternForCategory = (
-  monthSummaries: MonthSummary[],
-  categoryId: string
-): number =>
-  calculateTypicalSpendingPatternForMultipleMonths(
-    collectTransactionsForCategory(monthSummaries, categoryId)
-  );
 
-const collectTransactionsForCategory = (
-  monthSummaries: MonthSummary[],
-  categoryUuid: string
-): TransactionData[] => {
-  return monthSummaries.reduce((acc, summary) => {
-    const categoryUsage = summary.categoryUsages.find(
-      (usage) => usage.uuid === categoryUuid
+export const updateTransactionsSpendingPattern = async (
+  budgetId: string,
+  yearString: string // eg "2021"
+) => {
+  console.log(
+    `updating spending pattern for ${budgetId} for year ${yearString}`
+  );
+  const transactions = await findTransactions(budgetId, yearString);
+  const uniqCategories = uniq(
+    transactions.map((transaction) => transaction.categoryId)
+  ).filter((categoryId) => categoryId);
+  if (!uniqCategories.length) {
+    console.log("no valid categories found");
+    return;
+  }
+  const categoryData = uniqCategories.map((categoryId) => {
+    const categoryTransactions = transactions.filter(
+      (transaction) => transaction.categoryId === categoryId
     );
-    if (categoryUsage) {
-      acc = acc.concat(
-        categoryUsage.transactions.map((transaction) => ({
-          date: new Date(transaction.date),
-          amount: transaction.amount,
-          categoryId: transaction.categoryId || "",
-          categoryName: transaction.categoryName || "",
-        }))
-      );
-    }
-    return acc;
-  }, [] as TransactionData[]);
+    const categorySpendingPattern =
+      calculateTypicalSpendingPatternForMultipleMonths(categoryTransactions);
+    return {
+      categoryId: categoryId || "",
+      historicalAverage: categorySpendingPattern.historicalAverage,
+      typicalSpendingPattern: categorySpendingPattern.typicalSpendingPattern,
+    };
+  });
+  await saveSpendingData(categoryData);
+  await clearCategoryHistoryForYear(budgetId, yearString);
+  await populateCategoryHistoryFromTransactions(
+    budgetId,
+    transactions,
+    yearString
+  );
 };
 
 const calculateTypicalSpendingPatternForMultipleMonths = (
-  transactions: TransactionData[]
-): number => {
+  transactions: Transaction[]
+): SpendingPattern => {
   let totalWeightedSum = 0;
   let totalSpending = 0;
   transactions.forEach((transaction) => {
+    const transactionDate = new Date(transaction.date);
     const daysInThatMonth = new Date(
-      transaction.date.getFullYear(),
-      transaction.date.getMonth() + 1,
+      transactionDate.getFullYear(),
+      transactionDate.getMonth() + 1,
       0
     ).getDate();
-    const dayOfTransaction = transaction.date.getDate();
+    const dayOfTransaction = transactionDate.getDate();
     const normalizedDateValue = dayOfTransaction / daysInThatMonth;
-    totalWeightedSum +=
-      absoluteD1000Number(transaction.amount) * normalizedDateValue;
+    totalWeightedSum += Math.abs(transaction.amount) * normalizedDateValue;
 
-    totalSpending += absoluteD1000Number(transaction.amount);
+    totalSpending += Math.abs(transaction.amount);
   });
-  return totalWeightedSum / totalSpending;
+  const averageSpending = totalSpending / transactions.length;
+  totalWeightedSum / totalSpending;
+  return {
+    typicalSpendingPattern: totalWeightedSum / totalSpending,
+    historicalAverage: averageSpending,
+  };
 };
 
 export function forecastSpendingWithES(
-  categories: CategoryData[],
+  categories: Category[],
   alpha = 0.5 // Smoothing factor for Exponential Smoothing, typically between 0 and 1
 ): MonthlyForcast {
-  const filteredCategories = categories.filter(
+  const categoriesWithBudget = categories.filter(
+    (category) => category.budgeted > 0
+  );
+  const filteredCategories = categoriesWithBudget.filter(
     categoryClosedWhenAbove90HistoricalAverageFilter
   );
   const currentDate = new Date();
@@ -137,36 +105,57 @@ export function forecastSpendingWithES(
   ).getDate();
   const daysPassed = currentDate.getDate();
 
-  const totalSpentSoFar = categories.reduce(
-    (acc, category) => acc + category.spent,
+  const totalSpentSoFar = categoriesWithBudget.reduce(
+    (acc, category) => acc + spent(category),
     0
   );
-  const totalAvailableSoFar = categories.reduce(
+  const totalAvailableSoFar = categoriesWithBudget.reduce(
     (acc, category) => acc + category.balance,
     0
   );
   const totalSpentSoFarNonClosed = filteredCategories.reduce(
-    (acc, category) => acc + category.spent,
+    (acc, category) => acc + spent(category),
     0
   );
   // console.log("days in month:" + daysInMonth);
 
   // Use historicalAverage from CategoryData for historical trend
-  const historicalTrend = filteredCategories.reduce((acc, category) => {
+  /* const historicalTrend = filteredCategories.reduce((acc, category) => {
     acc +=
       (category.historicalAverage / daysInMonth) *
       category.typicalSpendingPattern;
     return acc;
-  }, 0);
+  }, 0);*/
   // console.log("historicalTrend", historicalTrend);
   // Categorical Weighting for Current Month
-  const weightedCurrentMonthTrend = filteredCategories.reduce(
+  /* const weightedCurrentMonthTrend = filteredCategories.reduce(
     (acc, category) => {
-      acc += (category.spent / daysPassed) * category.typicalSpendingPattern;
+      acc += (spent(category) / daysPassed) * category.typicalSpendingPattern;
+      return acc;
+    },
+    0
+  );*/
+  const categoryTrends = filteredCategories.map((category) => {
+    return {
+      category,
+      weightedCurrentMonthTrend:
+        (spent(category) / daysPassed) * category.typicalSpendingPattern,
+      historicalTrend:
+        (category.historicalAverage / daysInMonth) *
+        category.typicalSpendingPattern,
+    };
+  });
+  const weightedCurrentMonthTrend = categoryTrends.reduce(
+    (acc, categoryTrend) => {
+      acc += categoryTrend.weightedCurrentMonthTrend;
       return acc;
     },
     0
   );
+  const historicalTrend = categoryTrends.reduce((acc, categoryTrend) => {
+    acc += categoryTrend.historicalTrend;
+    return acc;
+  }, 0);
   // ("weightedCurrentMonthTrend", weightedCurrentMonthTrend);
   // Exponential Smoothing Forecast
   const forecastedSpending =
@@ -181,6 +170,8 @@ export function forecastSpendingWithES(
     (daysInMonth - daysPassed);
   const predictedRemainingAmount =
     predictedSpendingEndOfMonth - totalSpentSoFar;
+  console.log("days left:" + (daysInMonth - daysPassed));
+  console.log("totalAvailableSoFar:" + totalAvailableSoFar);
   return {
     totalSpentSoFar,
     predictedSpendingEndOfMonth,

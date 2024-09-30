@@ -1,27 +1,32 @@
 import { MonthSummary, Transaction } from "common-ts";
-import { categoryUsageReducer } from "./category.usage.reducer";
+import { CategoryHistory } from "../category/category.server";
 
-export const monthSummaryReducer = (
+export const monthSummaryFromCategoryHistoryReducer = (
   monthSummaries: Array<MonthSummary>,
-  transaction: Transaction
+  categoryHistory: CategoryHistory
 ) => {
-  const month = transaction.date.substring(0, 7);
+  const month = categoryHistory.month;
   const currentMonth = new Date().toISOString().substring(0, 7);
   const monthSummary = monthSummaries.find(
     (summary: MonthSummary) => summary.month === month
   );
   if (monthSummary) {
-    monthSummary.categoryUsages = categoryUsageReducer(
-      monthSummary.categoryUsages,
-      transaction
-    );
-    monthSummary.overallTransactions.push(transaction);
+    monthSummary.categoryUsages.push({
+      name: categoryHistory.categoryName,
+      uuid: categoryHistory.categoryUuid,
+      amount: categoryHistory.activity,
+    });
   } else {
     monthSummaries.push({
       month,
       isCurrentMonth: month === currentMonth,
-      categoryUsages: categoryUsageReducer([], transaction),
-      overallTransactions: [transaction],
+      categoryUsages: [
+        {
+          name: categoryHistory.categoryName,
+          uuid: categoryHistory.categoryUuid,
+          amount: categoryHistory.activity,
+        },
+      ],
     });
   }
   return monthSummaries;

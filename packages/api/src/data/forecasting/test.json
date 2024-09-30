@@ -1,0 +1,249 @@
+[
+    {
+        "updateOne": {
+            "filter": {
+                "uuid": "156b97e6-8431-47b2-a580-76f74e391eb9"
+            },
+            "update": {
+                "$set": {
+                    "historicalAverage": 23.92542105263156,
+                    "typicalSpendingPattern": 0.5243779286003765
+                }
+            }
+        }
+    },
+    {
+        "updateOne": {
+            "filter": {
+                "uuid": "cbe3bf80-852a-416d-be8c-06e8e0e9b07c"
+            },
+            "update": {
+                "$set": {
+                    "historicalAverage": 23.715324675324677,
+                    "typicalSpendingPattern": 0.4588719614600775
+                }
+            }
+        }
+    },
+    {
+        "updateOne": {
+            "filter": {
+                "uuid": "5120694c-c766-4f8c-a44f-d3df2a520db1"
+            },
+            "update": {
+                "$set": {
+                    "historicalAverage": 187.83714285714288,
+                    "typicalSpendingPattern": 0.6724120400420726
+                }
+            }
+        }
+    },
+    {
+        "updateOne": {
+            "filter": {
+                "uuid": "3a9df08d-5aeb-4748-bcf2-e6c7e587dae8"
+            },
+            "update": {
+                "$set": {
+                    "historicalAverage": 1105.7455555555555,
+                    "typicalSpendingPattern": 0.48071922842783893
+                }
+            }
+        }
+    },
+    {
+        "updateOne": {
+            "filter": {
+                "uuid": "b297ccc0-f42b-4b31-ab8e-617630db46eb"
+            },
+            "update": {
+                "$set": {
+                    "historicalAverage": 9.792770270270264,
+                    "typicalSpendingPattern": 0.4090536723806671
+                }
+            }
+        }
+    },
+    {
+        "updateOne": {
+            "filter": {
+                "uuid": "fc1b648c-39fa-4381-81dc-73920c65b62e"
+            },
+            "update": {
+                "$set": {
+                    "historicalAverage": 160.8042105263158,
+                    "typicalSpendingPattern": 0.5538982697247574
+                }
+            }
+        }
+    },
+    {
+        "updateOne": {
+            "filter": {
+                "uuid": "c565f795-5bb7-4e59-92c1-3da68c03083d"
+            },
+            "update": {
+                "$set": {
+                    "historicalAverage": 25.3821568627451,
+                    "typicalSpendingPattern": 0.47040945426050434
+                }
+            }
+        }
+    },
+    {
+        "updateOne": {
+            "filter": {
+                "uuid": "90bc0222-8d30-46e8-87b9-7ce2218dfbf9"
+            },
+            "update": {
+                "$set": {
+                    "historicalAverage": 31.349166666666672,
+                    "typicalSpendingPattern": 0.27584033691508547
+                }
+            }
+        }
+    },
+    {
+        "updateOne": {
+            "filter": {
+                "uuid": "dbbb9c8f-cc3e-44d2-98a5-53abc31d4d05"
+            },
+            "update": {
+                "$set": {
+                    "historicalAverage": 648.1388095238096,
+                    "typicalSpendingPattern": 0.20388876206610404
+                }
+            }
+        }
+    },
+    {
+        "updateOne": {
+            "filter": {
+                "uuid": "851ef288-8c1a-4e91-9f7b-34ed47977c6b"
+            },
+            "update": {
+                "$set": {
+                    "historicalAverage": 82.16090909090909,
+                    "typicalSpendingPattern": 0.4636126376715172
+                }
+            }
+        }
+    },
+    {
+        "updateOne": {
+            "filter": {
+                "uuid": "cf90320f-4ec5-4096-a402-630861f6b7dc"
+            },
+            "update": {
+                "$set": {
+                    "historicalAverage": 635.265,
+                    "typicalSpendingPattern": 0.5576847660475956
+                }
+            }
+        }
+    },
+    {
+        "updateOne": {
+            "filter": {
+                "uuid": "4dcc21a6-898e-4cf7-bce4-3bc9453fff03"
+            },
+            "update": {
+                "$set": {
+                    "historicalAverage": 49.25,
+                    "typicalSpendingPattern": 0.6941214999181268
+                }
+            }
+        }
+    },
+    {
+        "updateOne": {
+            "filter": {
+                "uuid": "5bdee18c-395e-424e-83f7-680747283739"
+            },
+            "update": {
+                "$set": {
+                    "historicalAverage": 219.31416666666667,
+                    "typicalSpendingPattern": 0.35496976409316167
+                }
+            }
+        }
+    },
+    {
+        "updateOne": {
+            "filter": {
+                "uuid": "a2202a72-81b6-40ee-ad41-f8d7e05f3bf8"
+            },
+            "update": {
+                "$set": {
+                    "historicalAverage": 7.966666666666667,
+                    "typicalSpendingPattern": 0.4402343840901791
+                }
+            }
+        }
+    },
+    {
+        "updateOne": {
+            "filter": {
+                "uuid": "2d997461-a2dd-4baf-aef4-b6270c31957f"
+            },
+            "update": {
+                "$set": {
+                    "historicalAverage": 272.708125,
+                    "typicalSpendingPattern": 0.7115032605122159
+                }
+            }
+        }
+    },
+    {
+        "updateOne": {
+            "filter": {
+                "uuid": "dbf713de-e41b-4d9e-adfd-b1f50fc63e6e"
+            },
+            "update": {
+                "$set": {
+                    "historicalAverage": 158,
+                    "typicalSpendingPattern": 0.4838709677419355
+                }
+            }
+        }
+    },
+    {
+        "updateOne": {
+            "filter": {
+                "uuid": "6e1ea634-a696-4d18-b966-b63140e74242"
+            },
+            "update": {
+                "$set": {
+                    "historicalAverage": 40,
+                    "typicalSpendingPattern": 0.2258064516129032
+                }
+            }
+        }
+    },
+    {
+        "updateOne": {
+            "filter": {
+                "uuid": "08a7525f-5ff2-4a50-9da7-5b3e1f8efad6"
+            },
+            "update": {
+                "$set": {
+                    "historicalAverage": 900,
+                    "typicalSpendingPattern": 0.5115560499320232
+                }
+            }
+        }
+    },
+    {
+        "updateOne": {
+            "filter": {
+                "uuid": "5d19aa0a-cda0-42e0-a48b-404d43db863c"
+            },
+            "update": {
+                "$set": {
+                    "historicalAverage": 158.96428571428572,
+                    "typicalSpendingPattern": 0.55420773824682
+                }
+            }
+        }
+    }
+]

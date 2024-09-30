@@ -4,11 +4,9 @@ metadata:
   name: budget-web-dev-config
   namespace: dev
 data:
-  YNAB_CLIENT_ID: ZNiZJ1gzMUkfbAwa0adlFrSjhYbil9-cRATKesDsDp4
   NEXTAUTH_URL: https://budget-dev.vandenit.be
   AUTH0_BASE_URL: https://budget-dev.vandenit.be
   AUTH0_ISSUER_BASE_URL: "https://vandenit.eu.auth0.com"
-  AUTH0_CLIENT_ID: "IuFYfjlYNV0RhM1ztsfrlV6gJ4TGZiDM"
   AUTH0_SCOPE: "openid profile"
   AUTH0_CALLBACK: api/defauth/callback
   AUTH0_AUDIENCE: "https://vandenit.eu.auth0.com/api/v2/"

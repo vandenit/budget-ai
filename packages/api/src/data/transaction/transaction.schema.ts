@@ -14,8 +14,11 @@ const localTransactionSchema = new Schema({
   accountName: String,
   amount: Number,
   date: String,
-  categoryName: String,
-  categoryId: { type: String, index: true },
+  categoryId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "LocalCategory",
+    nullable: true,
+  },
   payeeName: String,
   memo: String,
 });

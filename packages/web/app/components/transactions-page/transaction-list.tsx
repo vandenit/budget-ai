@@ -1,12 +1,15 @@
 import { calculateTotals, formatDate, groupByDate } from "./utils";
 import { useState } from "react";
-import { formatAmount, Transaction } from "common-ts";
+import { Category, formatAmount, Transaction } from "common-ts";
 import { FaArrowDown, FaArrowUp } from "react-icons/fa";
+import { TransactionAmount } from "./transaction-amount";
 
 export const TransactionList = ({
   transactions,
+  categories
 }: {
   transactions: Transaction[];
+  categories: Category[];
 }) => {
   const [openDays, setOpenDays] = useState<{ [key: string]: boolean }>(() => {
     // Automatically open the first date
@@ -17,6 +20,10 @@ export const TransactionList = ({
   const toggleDay = (date: string) => {
     setOpenDays((prev) => ({ ...prev, [date]: !prev[date] }));
   };
+  const getCategoryName = (categoryId: string | undefined | null, categories: Category[]) => {
+    const category = categories.find((category) => category._id === categoryId);
+    return category ? category.name : "Uncategorized";
+  }
 
   const groupedTransactions = groupByDate(transactions);
   return Object.entries(groupedTransactions).map(([date, transactions]) => (
@@ -51,17 +58,11 @@ export const TransactionList = ({
                   {transaction.payeeName}
                 </div>
                 <div className="text-gray-600 dark:text-gray-300">
-                  {transaction.categoryName}
+                  {getCategoryName(transaction.categoryId, categories)}
                 </div>
               </div>
               <div className="text-right">
-                <div
-                  className={`font-bold text-lg ${
-                    transaction.amount >= 0 ? "text-green-500" : "text-red-500"
-                  } dark:text-green-200 dark:text-red-300`}
-                >
-                  {formatAmount(transaction.amount)}
-                </div>
+                <TransactionAmount amount={transaction.amount} />
                 <div className="text-gray-500 dark:text-gray-400 text-sm">
                   {transaction.memo}
                 </div>

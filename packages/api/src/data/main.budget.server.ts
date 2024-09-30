@@ -1,36 +1,30 @@
 import moment from "moment";
-import * as budgetServer from "./budget/budget.server";
 import { findTransactions } from "./transaction/transaction.server";
-import { T } from "types-ramda";
-import { monthSummaryReducer } from "./utils/month.summary.reducer";
-import { categoryUsageReducer } from "./utils/category.usage.reducer";
-import { categoryUsageMapper } from "./utils/category-usage.mapper";
+import { monthSummaryFromCategoryHistoryReducer } from "./utils/month.summary.reducer";
 import {
-  Budget,
   Transaction,
-  categorySorter,
   withoutInflowCategoryFilter,
   Category,
   MonthSummary,
   MonthTotal,
   BudgetOverview,
 } from "common-ts";
-import { getCategories } from "./category/category.server";
-import { UserType } from "./user/user.server";
 import {
-  categoriesToCategoryData,
-  forecastSpendingWithES,
-} from "./forecasting/es-forcasting.server";
+  findCategories,
+  getCategoryHistoryForBudget,
+} from "./category/category.server";
+import { forecastSpendingWithES } from "./forecasting/es-forcasting.server";
+import { cp } from "fs";
 
 export const getBudgetOverviewForUser = async (
   budgetId: string
 ): Promise<BudgetOverview> => {
   const monthPercentage = calculateCurrentMontPercentage();
   const monthSummaries = await getMonthSummaries(budgetId);
-  const categories = await getCategories(budgetId);
+  const categories = await findCategories(budgetId);
   const monthTotal = calculateTotals(categories);
-  const categoryData = categoriesToCategoryData(categories, monthSummaries);
-  const forecast = forecastSpendingWithES(categoryData);
+  const forecast = forecastSpendingWithES(categories);
+
   return {
     monthPercentage,
     monthSummaries,
@@ -82,18 +76,11 @@ export const getFilteredTransactions = async (
 export async function getMonthSummaries(
   budgetId: string
 ): Promise<Array<MonthSummary>> {
-  const transactions = await findTransactions(budgetId);
+  const categoryHistoryRecords = await getCategoryHistoryForBudget(budgetId);
 
-  return transactions.reduce(monthSummaryReducer, []);
+  return categoryHistoryRecords
+    .reduce(monthSummaryFromCategoryHistoryReducer, [])
+    .sort((a, b) => {
+      return a.month > b.month ? -1 : 1;
+    });
 }
-
-export const getCategoriesFromTransactions = async (
-  budgetId: string,
-  transactions: Transaction[],
-  user: UserType
-): Promise<Category[]> => {
-  return transactions
-    .reduce(categoryUsageReducer, [])
-    .map(categoryUsageMapper(budgetId || ""))
-    .sort(categorySorter);
-};
