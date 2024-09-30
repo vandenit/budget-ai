@@ -120,21 +120,42 @@ export function forecastSpendingWithES(
   // console.log("days in month:" + daysInMonth);
 
   // Use historicalAverage from CategoryData for historical trend
-  const historicalTrend = filteredCategories.reduce((acc, category) => {
+  /* const historicalTrend = filteredCategories.reduce((acc, category) => {
     acc +=
       (category.historicalAverage / daysInMonth) *
       category.typicalSpendingPattern;
     return acc;
-  }, 0);
+  }, 0);*/
   // console.log("historicalTrend", historicalTrend);
   // Categorical Weighting for Current Month
-  const weightedCurrentMonthTrend = filteredCategories.reduce(
+  /* const weightedCurrentMonthTrend = filteredCategories.reduce(
     (acc, category) => {
       acc += (spent(category) / daysPassed) * category.typicalSpendingPattern;
       return acc;
     },
     0
+  );*/
+  const categoryTrends = filteredCategories.map((category) => {
+    return {
+      category,
+      weightedCurrentMonthTrend:
+        (spent(category) / daysPassed) * category.typicalSpendingPattern,
+      historicalTrend:
+        (category.historicalAverage / daysInMonth) *
+        category.typicalSpendingPattern,
+    };
+  });
+  const weightedCurrentMonthTrend = categoryTrends.reduce(
+    (acc, categoryTrend) => {
+      acc += categoryTrend.weightedCurrentMonthTrend;
+      return acc;
+    },
+    0
   );
+  const historicalTrend = categoryTrends.reduce((acc, categoryTrend) => {
+    acc += categoryTrend.historicalTrend;
+    return acc;
+  }, 0);
   // ("weightedCurrentMonthTrend", weightedCurrentMonthTrend);
   // Exponential Smoothing Forecast
   const forecastedSpending =
