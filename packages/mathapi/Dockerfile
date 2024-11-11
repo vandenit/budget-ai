@@ -2,16 +2,14 @@
 FROM python:3.10-slim
 
 WORKDIR /app
+# Copy only the app package to the container
+COPY ../../packages/mathapi ./
 
-# Kopieer de vereiste bestanden
-COPY requirements.txt ./
 RUN pip install -r requirements.txt
 
-# Kopieer de applicatiecode
-COPY . .
 
 # Stel de standaardpoort in
 EXPOSE 5000
 
-# Start de applicatie (bijv. met Flask)
-CMD ["python", "app.py"]
+# Start de applicatie
+CMD ["python", "app/app.py"]

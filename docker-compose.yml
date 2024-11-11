@@ -46,6 +46,7 @@ services:
       - "5000:5000" # Exporteer een andere poort, bijv. 5000
     environment:
       NODE_ENV: development
+      FLASK_ENV: development
     networks:
       - default
 networks:
