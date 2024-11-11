@@ -4,12 +4,14 @@
   "description": "the budget-ai main api",
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && npm run sentry:sourcemaps",
     "start": "ts-node src/index.ts",
     "dev": "npx ts-node-dev --respawn --transpile-only src/index.ts",
-    "test": "vitest"
+    "test": "vitest",
+    "sentry:sourcemaps": "sentry-cli sourcemaps inject --org vanden-it --project budget-ai-api ./dist && sentry-cli sourcemaps upload --org vanden-it --project budget-ai-api ./dist"
   },
   "dependencies": {
+    "@sentry/cli": "^2.38.2",
     "@sentry/node": "^8.37.1",
     "@sentry/profiling-node": "^8.37.1",
     "common-ts": "*",
