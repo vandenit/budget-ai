@@ -91,7 +91,7 @@ kubectl get configmap budget-web-dev-config -n dev -o yaml
 ```
 
 kubectl delete secret budget-web-dev-secrets -n dev
-kubectl delete secret budget-ai-dev-secrets -n dev
+kubectl delete secret budget-api-dev-secrets -n dev
 kubectl delete secret budget-ai-dev-secrets -n dev
 
 kubectl create secret generic budget-web-dev-secrets \
