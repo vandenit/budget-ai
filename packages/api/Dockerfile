@@ -1,6 +1,8 @@
 # Use a node image as base
 FROM node:20-alpine AS base
 
+ENV SENTRY_AUTH_TOKEN=${SENTRY_AUTH_TOKEN}
+
 WORKDIR /app
 
 # Copy the root package.json, package-lock.json
@@ -19,7 +21,9 @@ RUN npm install
 RUN npm run build --workspace common-ts
 
 # Build the api package
-RUN npm run build:api
+RUN --mount=type=secret,id=SENTRY_AUTH_TOKEN \
+    export SENTRY_AUTH_TOKEN=$(cat /run/secrets/SENTRY_AUTH_TOKEN) && \
+    npm run build:api
 
 # Set the working directory to the api package
 WORKDIR /app/packages/api
