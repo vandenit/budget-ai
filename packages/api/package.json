@@ -10,6 +10,8 @@
     "test": "vitest"
   },
   "dependencies": {
+    "@sentry/node": "^8.37.1",
+    "@sentry/profiling-node": "^8.37.1",
     "common-ts": "*",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
