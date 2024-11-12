@@ -6,7 +6,6 @@ import {
   saveNewBudget,
   updateBudget,
 } from "../budget/budget.server";
-import _ from "lodash";
 import { UserType, clearYnabConnection } from "../user/user.server";
 import * as ynabApi from "./ynab-api"; // Import the missing ynapApi module
 import {
