@@ -6,6 +6,7 @@ import {
   saveNewBudget,
   updateBudget,
 } from "../budget/budget.server";
+import _ from "lodash";
 import { UserType, clearYnabConnection } from "../user/user.server";
 import * as ynabApi from "./ynab-api"; // Import the missing ynapApi module
 import {
@@ -15,7 +16,7 @@ import {
   saveNewCategory,
   updateCategory,
 } from "../category/category.server";
-import { Budget, Category } from "common-ts";
+import { Budget, Category, CategoryTarget } from "common-ts";
 import YnabBudget from "./ynab.schema";
 import { updateTransactionsSpendingPattern } from "../forecasting/es-forcasting.server";
 import { extractYearsFromTransactions } from "./transaction.util";
@@ -243,7 +244,7 @@ const mapCategory = (
   ynabCategory: ynab.Category,
   budget: Budget,
   _id?: string
-) => ({
+): Category => ({
   uuid: ynabCategory.id,
   name: ynabCategory.name,
   budgetId: budget._id || "",
@@ -254,8 +255,27 @@ const mapCategory = (
   historicalAverage: 0,
   typicalSpendingPattern: 0,
   _id,
+  target: mapTarget(ynabCategory),
 });
 
+const mapTarget = (ynabCategory: ynab.Category): CategoryTarget | null => {
+  if (!ynabCategory.goal_type) return null; // Only map if goal_type is set
+
+  return {
+    goal_type: ynabCategory.goal_type,
+    goal_day: ynabCategory.goal_day ?? null,
+    goal_cadence: ynabCategory.goal_cadence ?? null,
+    goal_cadence_frequency: ynabCategory.goal_cadence_frequency ?? null,
+    goal_creation_month: ynabCategory.goal_creation_month ?? null,
+    goal_target: ynabCategory.goal_target ?? null,
+    goal_target_month: ynabCategory.goal_target_month ?? null,
+    goal_percentage_complete: ynabCategory.goal_percentage_complete ?? null,
+    goal_months_to_budget: ynabCategory.goal_months_to_budget ?? null,
+    goal_under_funded: ynabCategory.goal_under_funded ?? null,
+    goal_overall_funded: ynabCategory.goal_overall_funded ?? null,
+    goal_overall_left: ynabCategory.goal_overall_left ?? null,
+  };
+};
 const toTransactionsSyncPromise = (user: UserType) => (budget: Budget) =>
   syncTransactions(user, budget);
 
