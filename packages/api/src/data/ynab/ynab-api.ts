@@ -1,9 +1,5 @@
 import * as ynab from "ynab";
-import {
-  connectUserWithYnab,
-  getLoggedInUser,
-  UserType,
-} from "../user/user.server";
+import { connectUserWithYnab, UserType } from "../user/user.server";
 
 const refreshAccessToken = async (refreshToken: string) => {
   // refresh using native fetch
@@ -148,6 +144,11 @@ type CategoriesWithKnowledge = {
   knowledge: number;
   categories: Array<ynab.Category>;
 };
+
+type AccountsWithKnowledge = {
+  knowledge: number;
+  accounts: Array<ynab.Account>;
+};
 export async function getCategories(
   budgetId: string,
   knowledge: number,
@@ -166,3 +167,22 @@ export async function getCategories(
     categories,
   };
 }
+
+export const getAccounts = async (
+  budgetId: string,
+  serverKnowledge: number,
+  user: UserType
+): Promise<AccountsWithKnowledge> => {
+  const api = await getApi(user);
+  console.log(
+    "getting accounts for budgetId: " +
+      budgetId +
+      " and knowledge: " +
+      serverKnowledge
+  );
+  const { data } = await api.accounts.getAccounts(budgetId, serverKnowledge);
+  return {
+    knowledge: data.server_knowledge,
+    accounts: data.accounts,
+  };
+};
