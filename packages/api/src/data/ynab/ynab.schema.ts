@@ -13,6 +13,7 @@ const ynabBudgetSchema = new Schema({
   serverKnowledge: {
     transactions: Number,
     categories: Number,
+    accounts: Number,
   },
 });
 

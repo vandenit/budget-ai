@@ -21,15 +21,24 @@ import { updateTransactionsSpendingPattern } from "../forecasting/es-forcasting.
 import { extractYearsFromTransactions } from "./transaction.util";
 import { NewOrUpdatedTransaction } from "../transaction/transaction.server";
 import * as transactionServer from "../transaction/transaction.server";
+import {
+  deleteAccount,
+  getAccount,
+  saveNewAccount,
+  updateAccount,
+} from "../accounts/account.server";
+import { LocalAccountType } from "../accounts/account.schema";
 
 type ServerKnowledge = {
   transactions: number;
   categories: number;
+  accounts: number;
 };
 
 export const emptyServerKnowledge: ServerKnowledge = {
   transactions: 0,
   categories: 0,
+  accounts: 0,
 };
 
 type YnabBudgetType = {
@@ -101,7 +110,7 @@ const updateUserServerKnowledge = async ({
 }: {
   user: UserType;
   budget: Budget;
-  type: "transactions" | "categories";
+  type: "transactions" | "categories" | "accounts";
   knowledge: number;
 }) => {
   console.log("updateUserServerKnowledge:", budget.name, type, knowledge);
@@ -144,6 +153,7 @@ const findYnabBudget = async (
         serverKnowledge: {
           transactions: budgetData.serverKnowledge.transactions || 0,
           categories: budgetData.serverKnowledge.categories || 0,
+          accounts: budgetData.serverKnowledge.accounts || 0,
         },
       };
 };
@@ -232,6 +242,54 @@ const syncYnabCategories = async (user: UserType, budget: Budget) => {
   });
 };
 
+const mapAccount = (
+  ynabAccount: ynab.Account,
+  budget: Budget,
+  _id?: string
+): LocalAccountType => ({
+  uuid: ynabAccount.id,
+  name: ynabAccount.name,
+  balance: ynabAccount.balance,
+  cleared_balance: ynabAccount.cleared_balance,
+  uncleared_balance: ynabAccount.uncleared_balance,
+  budgetId: budget._id || "",
+  _id,
+});
+
+const syncYnabAccount = async (ynabAccount: ynab.Account, budget: Budget) => {
+  if (ynabAccount.deleted) {
+    await deleteAccount(ynabAccount.id);
+    return;
+  }
+  const localAccount = await getAccount(ynabAccount.id);
+  if (!localAccount) {
+    await saveNewAccount(mapAccount(ynabAccount, budget));
+  } else {
+    await updateAccount(mapAccount(ynabAccount, budget, localAccount._id));
+  }
+};
+
+const syncYnabAccounts = async (user: UserType, budget: Budget) => {
+  const ynabBudget = await findYnabBudget(user, budget);
+  const ynabAccountsData = await ynabApi.getAccounts(
+    budget.uuid,
+    ynabBudget.serverKnowledge.accounts,
+    user
+  );
+  console.log(`syncing ${ynabAccountsData?.accounts?.length} accounts`);
+  const promises = ynabAccountsData.accounts.map((ynabAccount) =>
+    syncYnabAccount(ynabAccount, budget)
+  );
+  await Promise.all(promises);
+  // for now set knowledge to 0 to have the latest categories all the time (keeps
+  // we noticed otherwise that properties as activity, balance are not updated correctly)
+  await updateUserServerKnowledge({
+    user,
+    budget,
+    type: "accounts",
+    knowledge: ynabAccountsData.knowledge,
+  });
+};
 const syncCategories = async (user: UserType) => {
   const budgets = await findBudgets(user);
   console.log(`syncing categories for ${budgets.length} budgets`);
@@ -285,6 +343,13 @@ const syncAllTransactions = async (user: UserType) => {
   await Promise.all(promises);
 };
 
+const syncAccounts = async (user: UserType) => {
+  console.log("syncing accounts for user:" + user.authId);
+  const localBudgets = await findBudgets(user);
+  const promises = localBudgets.map((budget) => syncYnabAccounts(user, budget));
+  await Promise.all(promises);
+};
+
 export const syncYnabUser = async (user: UserType) => {
   console.log(`syncing Ynab data for user with id: ${user.authId}`);
   try {
@@ -295,4 +360,5 @@ export const syncYnabUser = async (user: UserType) => {
   await syncBudgets(user);
   await syncCategories(user);
   await syncAllTransactions(user);
+  await syncAccounts(user);
 };

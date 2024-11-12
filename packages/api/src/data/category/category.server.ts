@@ -80,6 +80,7 @@ export const updateCategory = async (category: Category) => {
       budgeted: category.budgeted,
       activity: category.activity,
       targetAmount: category.targetAmount,
+      target: category.target,
     }
   ).exec();
 };
