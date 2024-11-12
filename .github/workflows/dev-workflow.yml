@@ -35,6 +35,8 @@ jobs:
           context: .
           file: ./packages/api/Dockerfile
           push: true
+          secrets: |
+            SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
           tags: filipvdb321/budget-api:${{ github.sha }}
 
       - name: Build and push Docker ai image

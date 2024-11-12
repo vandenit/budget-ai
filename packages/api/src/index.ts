@@ -1,4 +1,6 @@
 const { auth, requiredScopes } = require("express-oauth2-jwt-bearer");
+require("./instrument.ts");
+const Sentry = require("@sentry/node");
 import express from "express";
 import cors from "cors";
 import register from "./metrics";
@@ -31,6 +33,17 @@ app.use("/budgets", checkJwt, budgetRoutes);
 app.use("/users", checkJwt, userRoutes);
 
 app.use("/sync", syncRoutes);
+
+// The error handler must be registered before any other error middleware and after all controllers
+Sentry.setupExpressErrorHandler(app);
+
+// Optional fallthrough error handler
+app.use(function onError(_err: any, _req: any, res: any) {
+  // The error id is attached to `res.sentry` to be returned
+  // and optionally displayed to the user for support.
+  res.statusCode = 500;
+  res.end(res.sentry + "\n");
+});
 
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {
