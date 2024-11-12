@@ -6,7 +6,6 @@ import {
 import { Category, CategoryData, Transaction } from "common-ts";
 import connectDb from "../db";
 import { CategoryHistoryReducer } from "../utils/category.history.reducer";
-import moment from "moment";
 
 export type CategoryHistory = {
   categoryName: string;
