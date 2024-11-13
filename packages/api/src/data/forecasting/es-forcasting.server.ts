@@ -80,7 +80,6 @@ const calculateTypicalSpendingPatternForMultipleMonths = (
     totalSpending += Math.abs(transaction.amount);
   });
   const averageSpending = totalSpending / transactions.length;
-  totalWeightedSum / totalSpending;
   return {
     typicalSpendingPattern: totalWeightedSum / totalSpending,
     historicalAverage: averageSpending,
