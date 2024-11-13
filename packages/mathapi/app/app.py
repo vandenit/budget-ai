@@ -26,7 +26,7 @@ def balance_prediction():
     accounts = get_accounts_for_budget(budget_id)
     
     # Perform balance prediction logic here
-    projected_balances = project_daily_balances_with_reasons(accounts, categories, future_transactions, days_ahead=30)
+    projected_balances = project_daily_balances_with_reasons(accounts, categories, future_transactions, 300)
 
     # The projected_balances object is now JSON-compatible and can be rendered directly
     return jsonify(projected_balances)  # Flask's jsonify automatically converts to JSON format
