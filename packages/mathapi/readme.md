@@ -1,7 +1,7 @@
 # activate env
 
 ```
-source venv/bin/activate
+source env/bin/activate
 
 ```
 
