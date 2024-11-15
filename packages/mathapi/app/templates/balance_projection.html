@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+  </head>
+  <body>
+    <div id="balance-chart"></div>
+    <script>
+      // Pass the JSON data directly
+      var data = {{ plot_data | safe }};
+
+      // Render the Plotly chart
+      Plotly.newPlot('balance-chart', data);
+    </script>
+  </body>
+</html>
