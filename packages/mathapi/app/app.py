@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template
 from ynab_api import get_scheduled_transactions
 from categories_api import get_categories_for_budget
 from budget_api import get_objectid_for_budget
@@ -32,7 +32,43 @@ def balance_prediction():
     return jsonify(projected_balances)  # Flask's jsonify automatically converts to JSON format
 
 
-    
+# New route for interactive HTML
+@app.route('/balance-prediction/interactive', methods=['GET'])
+def balance_prediction_interactive():
+    # Step 1: Get `budget_id` from query parameters
+    budget_uuid = request.args.get('budget_id')
+    if not budget_uuid:
+        return "budget_id query parameter is required", 400
+
+    # Step 2: Fetch data for predictions
+    try:
+        budget_id = get_objectid_for_budget(budget_uuid)
+        future_transactions = get_scheduled_transactions(budget_uuid)
+        categories = get_categories_for_budget(budget_id)
+        accounts = get_accounts_for_budget(budget_id)
+        projected_balances = project_daily_balances_with_reasons(accounts, categories, future_transactions, 300)
+    except Exception as e:
+        return f"Error fetching data: {str(e)}", 500
+
+    # Step 3: Prepare data for Plotly
+    dates = list(projected_balances.keys())
+    balances = [float(projected_balances[date]["balance"].replace("€", "")) for date in dates]
+
+    # Prepare plot data for rendering
+    plot_data = [{
+        "x": dates,
+        "y": balances,
+        "type": "scatter",
+        "mode": "lines+markers",
+        "name": "Balance"
+    }]
+
+    # Convert plot data to JSON for the template
+    sanitized_plot_data = json.dumps(plot_data)
+
+    # Render HTML template with plot data
+    return render_template('balance_projection.html', plot_data=sanitized_plot_data)
+
 @app.route('/future-transactions', methods=['GET'])
 def future_transactions():
     logging.info("Retrieving future transactions")
