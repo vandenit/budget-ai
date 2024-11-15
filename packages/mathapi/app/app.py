@@ -50,17 +50,34 @@ def balance_prediction_interactive():
     except Exception as e:
         return f"Error fetching data: {str(e)}", 500
 
-    # Step 3: Prepare data for Plotly
+    # Step 3: Prepare data for Plotly with detailed hover info
     dates = list(projected_balances.keys())
     balances = [float(projected_balances[date]["balance"].replace("€", "")) for date in dates]
 
-    # Prepare plot data for rendering
+    # Generate hover text with balance and change details for each date
+    hover_texts = []
+    for date in dates:
+        day_data = projected_balances[date]
+        balance = day_data["balance"]
+        changes = day_data["changes"]
+
+        # Prepare a hover text with balance and each change
+        hover_text = f"Date: {date}<br>Balance: {balance}"
+        if changes:
+            hover_text += "<br>Changes:"
+            for change in changes:
+                hover_text += f"<br>- {change['amount']} ({change['category']} - {change['reason']})"
+        hover_texts.append(hover_text)
+
+    # Prepare plot data with the hover text
     plot_data = [{
         "x": dates,
         "y": balances,
         "type": "scatter",
         "mode": "lines+markers",
-        "name": "Balance"
+        "name": "Balance",
+        "text": hover_texts,  # Attach hover text
+        "hoverinfo": "text"   # Use the custom text for hover display
     }]
 
     # Convert plot data to JSON for the template
