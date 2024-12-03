@@ -14,8 +14,6 @@ def projected_balances_for_budget(budget_uuid, days_ahead=300, simulations=None)
     
     # Perform balance prediction logic here
     projected_balances = project_daily_balances_with_reasons(accounts, categories, future_transactions, days_ahead, simulations)
-    # Filter out balances without changes
-    projected_balances = {date: data for date, data in projected_balances.items() if data["changes"]}
     return projected_balances
 
 
@@ -25,7 +23,7 @@ def calculate_typical_spending_day(typical_spending_pattern, target_date):
     return int(round(typical_spending_pattern * days_in_month))
 
 
-def project_daily_balances_with_reasons(accounts, categories, future_transactions, days_ahead=30, simulations=None):
+def project_daily_balances_with_reasons(accounts, categories, future_transactions, days_ahead=120, simulations=None):
     initial_balance = calculate_initial_balance(accounts)
     daily_projection = initialize_daily_projection(initial_balance, days_ahead)
 
@@ -36,8 +34,9 @@ def project_daily_balances_with_reasons(accounts, categories, future_transaction
     add_simulations_to_projection(daily_projection, simulations)
 
     calculate_running_balance(daily_projection, initial_balance, days_ahead)
+    projected_balances = {date: data for date, data in daily_projection.items() if data["changes"]}
 
-    return daily_projection
+    return projected_balances
 
 
 def calculate_initial_balance(accounts):
