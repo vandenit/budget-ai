@@ -18,7 +18,6 @@ With dependencies installed, you can start the Flask app.
 ## Set the Flask app environment:
 
 ```bash
-Copy code
 export FLASK_APP=app/app.py      # Replace `app.py` with your main app file if different
 export FLASK_ENV=development  # This enables debug mode
 ```
@@ -28,3 +27,9 @@ export FLASK_ENV=development  # This enables debug mode
 ```bash
 flask run
 ```
+
+## balance predictions
+
+### vanden it
+
+http://127.0.0.1:5000/balance-prediction/interactive?budget_id=1b443ebf-ea07-4ab7-8fd5-9330bf80608c
