@@ -1,3 +1,5 @@
+import os
+import itertools
 from flask import Flask, jsonify, request, render_template
 from ynab_api import get_scheduled_transactions
 from categories_api import get_categories_for_budget
@@ -6,41 +8,37 @@ from accounts_api import get_accounts_for_budget
 from prediction_api import project_daily_balances_with_reasons, projected_balances_for_budget
 import logging
 import json
-import os
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
 
 app = Flask(__name__)
 
-def load_simulations(file_name="simulations.json"):
-    """Load simulations from a JSON file relative to the app directory."""
-    base_dir = os.path.dirname(os.path.abspath(__file__))  # Directory of the current file
-    file_path = os.path.join(base_dir, file_name)
+def load_simulations_folder(folder_name="simulations"):
+    """Load all simulations from a folder containing JSON files."""
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    folder_path = os.path.join(base_dir, folder_name)
     
-    if not os.path.exists(file_path):
-        logging.warning(f"Simulation file not found: {file_path}")
-        return []
-    with open(file_path, "r") as file:
-        return json.load(file)
+    simulations = {}
+    if not os.path.exists(folder_path):
+        logging.warning(f"Simulation folder not found: {folder_path}")
+        return simulations
 
-@app.route('/balance_prediction', methods=['GET'])
-def balance_prediction():
-    budget_uuid = request.args.get('budget_id')
-    logging.info(f"Getting balance prediction for budget ID: {budget_uuid}")
-    
-    # Check for required parameters
-    if not budget_uuid:
-        return jsonify({"error": "budget_id is required as query parameter"}), 400
-    
-    # Load simulations
-    simulations = load_simulations()
+    for file_name in os.listdir(folder_path):
+        if file_name.endswith('.json'):
+            file_path = os.path.join(folder_path, file_name)
+            try:
+                with open(file_path, "r") as file:
+                    simulations[file_name] = json.load(file)
+            except Exception as e:
+                logging.warning(f"Failed to load simulation file {file_name}: {str(e)}")
+    return simulations
 
-    # Perform balance prediction logic here
-    projected_balances = projected_balances_for_budget(budget_uuid, 300, simulations)
-
-    # The projected_balances object is now JSON-compatible and can be rendered directly
-    return jsonify(projected_balances)  # Flask's jsonify automatically converts to JSON format
+def generate_unique_colors():
+    """Generate unique colors for the plots."""
+    colors = itertools.cycle(["red", "green", "blue", "purple", "orange", "cyan", "magenta"])
+    for color in colors:
+        yield color
 
 @app.route('/balance-prediction/interactive', methods=['GET'])
 def balance_prediction_interactive():
@@ -49,76 +47,84 @@ def balance_prediction_interactive():
     if not budget_uuid:
         return "budget_id query parameter is required", 400
 
-    # Load simulations
-    simulations = load_simulations()
+    # Step 2: Load simulations from folder
+    simulations = load_simulations_folder()
 
-    # Step 2: Fetch data for predictions
+    # Step 3: Fetch base data (no simulation)
     try:
-        # Perform balance prediction logic here
-        projected_balances = projected_balances_for_budget(budget_uuid, 300, simulations)
-
+        base_projected_balances = projected_balances_for_budget(budget_uuid, 300, None)
     except Exception as e:
-        return f"Error fetching data: {str(e)}", 500
+        return f"Error fetching base data: {str(e)}", 500
 
-    # Step 3: Prepare data for Plotly with detailed hover info
-    dates = list(projected_balances.keys())
-    balances = [float(projected_balances[date]["balance"].replace("€", "")) for date in dates]
-
-    # Generate hover text with balance and change details for each date
-    hover_texts = []
-    marker_colors = []  # To visually distinguish simulation points
+    # Step 4: Prepare Plotly data for the base line
+    dates = list(base_projected_balances.keys())
+    base_balances = [float(base_projected_balances[date]["balance"].replace("€", "")) for date in dates]
+    base_hover_texts = []
     for date in dates:
-        day_data = projected_balances[date]
+        day_data = base_projected_balances[date]
         balance = day_data["balance"]
         changes = day_data["changes"]
-
-        # Prepare a hover text with balance and each change
         hover_text = f"Date: {date}<br>Balance: {balance}"
-        is_simulation_day = False  # Flag to check if this date has simulation changes
         if changes:
             hover_text += "<br>Changes:"
             for change in changes:
-                simulation_flag = "(Simulation)" if change.get("is_simulation", False) else ""
-                if change.get("is_simulation", False):
-                    is_simulation_day = True
-                hover_text += f"<br>{change['amount']} ({change['category']} - {change['reason']}) {simulation_flag}"
-        hover_texts.append(hover_text)
+                hover_text += f"<br>{change['amount']} ({change['category']} - {change['reason']})"
+        base_hover_texts.append(hover_text)
 
-        # Add marker color: red for simulations, blue for others
-        marker_colors.append("red" if is_simulation_day else "blue")
-
-    # Prepare plot data with the hover text
+    # Add base line to the plot
     plot_data = [{
         "x": dates,
-        "y": balances,
+        "y": base_balances,
         "type": "scatter",
         "mode": "lines+markers",
-        "name": "Balance",
-        "text": hover_texts,  # Attach hover text
-        "hoverinfo": "text",  # Use the custom text for hover display
-        "marker": {"color": marker_colors}  # Use colors to distinguish simulations
+        "name": "Actual Balance",
+        "text": base_hover_texts,
+        "hoverinfo": "text",
+        "marker": {"color": "black"}  # Black for the base line
     }]
+
+    # Step 5: Add lines for simulations
+    color_generator = generate_unique_colors()
+    for simulation_file, simulation_data in simulations.items():
+        try:
+            simulated_balances = projected_balances_for_budget(budget_uuid, 300, simulation_data)
+        except Exception as e:
+            logging.warning(f"Error processing simulation file {simulation_file}: {str(e)}")
+            continue
+
+        # Prepare data for the simulation line
+        simulation_dates = list(simulated_balances.keys())
+        simulation_y = [float(simulated_balances[date]["balance"].replace("€", "")) for date in simulation_dates]
+        simulation_hover_texts = []
+        for date in simulation_dates:
+            day_data = simulated_balances[date]
+            balance = day_data["balance"]
+            changes = day_data["changes"]
+            hover_text = f"Date: {date}<br>Balance: {balance}"
+            if changes:
+                hover_text += "<br>Changes:"
+                for change in changes:
+                    simulation_flag = "(Simulation)" if change.get("is_simulation", False) else ""
+                    hover_text += f"<br>{change['amount']} ({change['category']} - {change['reason']}) {simulation_flag}"
+            simulation_hover_texts.append(hover_text)
+
+        # Add the simulation line
+        plot_data.append({
+            "x": simulation_dates,
+            "y": simulation_y,
+            "type": "scatter",
+            "mode": "lines+markers",
+            "name": f"Simulation ({simulation_file})",
+            "text": simulation_hover_texts,
+            "hoverinfo": "text",
+            "marker": {"color": next(color_generator)}  # Unique color for each simulation
+        })
 
     # Convert plot data to JSON for the template
     sanitized_plot_data = json.dumps(plot_data)
 
     # Render HTML template with plot data
     return render_template('balance_projection.html', plot_data=sanitized_plot_data)
-
-@app.route('/future-transactions', methods=['GET'])
-def future_transactions():
-    logging.info("Retrieving future transactions")
-    budget_id = request.args.get('budget_id')
-    
-    if not budget_id:
-        return jsonify({"error": "budget_id is required as a query parameter"}), 400
-
-    # Call the YNAB API helper function to get scheduled transactions
-    result = get_scheduled_transactions(budget_id)
-    if "error" in result:
-        return jsonify(result), 500
-
-    return jsonify(result)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
