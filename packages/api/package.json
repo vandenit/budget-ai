@@ -23,7 +23,7 @@
     "jwks-rsa": "^3.1.0",
     "moment": "^2.29.4",
     "mongodb": "^6.3.0",
-    "mongoose": "^8.0.3",
+    "mongoose": "^8.8.3",
     "openai": "^4.20.1",
     "prom-client": "^15.1.2",
     "ramda": "^0.29.1",
