@@ -189,5 +189,55 @@ def balance_prediction_interactive():
     # Render HTML template with plot data
     return render_template('balance_projection.html', plot_data=sanitized_plot_data)
 
+@app.route('/balance-prediction/data', methods=['GET'])
+def balance_prediction_data():
+    # Step 1: Get `budget_id` and `days_ahead` from query parameters
+    budget_uuid = request.args.get('budget_id')
+    if not budget_uuid:
+        return jsonify({"error": "budget_id query parameter is required"}), 400
+
+    days_ahead_param = request.args.get('days_ahead')
+    try:
+        days_ahead = int(days_ahead_param) if days_ahead_param is not None else 300
+    except ValueError:
+        return jsonify({"error": "Invalid days_ahead query parameter, it must be an integer."}), 400
+
+    # Step 2: Load simulations from folder
+    simulations = load_simulations_folder()
+
+    try:
+        budget_id = get_objectid_for_budget(budget_uuid)
+        future_transactions = get_scheduled_transactions(budget_uuid)
+        categories = get_categories_for_budget(budget_id)
+        accounts = get_accounts_for_budget(budget_id)
+    except Exception as e:
+        return jsonify({"error": f"Error fetching data: {str(e)}"}), 500
+
+    # Step 3: Prepare data for baseline and simulations
+    data = {}
+
+    # Add baseline
+    try:
+        data["baseline"] = project_daily_balances_with_reasons(
+            accounts, categories, future_transactions, days_ahead
+        )
+    except Exception as e:
+        logging.error(f"Error generating baseline: {e}")
+        return jsonify({"error": f"Error generating baseline: {str(e)}"}), 500
+
+    # Add simulations
+    for simulation_name, simulation_data in simulations.items():
+        try:
+            simulation_key = f"simulation_{simulation_name}"
+            data[simulation_key] = project_daily_balances_with_reasons(
+                accounts, categories, future_transactions, days_ahead, simulation_data
+            )
+        except Exception as e:
+            logging.warning(f"Error processing simulation '{simulation_name}': {str(e)}")
+            data[f"simulation_{simulation_name}"] = {"error": f"Error: {str(e)}"}
+
+    # Return data as JSON
+    return jsonify(data)
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
