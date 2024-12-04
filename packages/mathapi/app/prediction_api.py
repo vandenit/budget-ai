@@ -15,14 +15,7 @@ def projected_balances_for_budget(budget_uuid, days_ahead=300, simulations=None)
     
     # Perform balance prediction logic here
     projected_balances = project_daily_balances_with_reasons(accounts, categories, future_transactions, days_ahead, simulations)
-    # Filter out balances without changes
     return projected_balances
-
-
-def calculate_typical_spending_day(typical_spending_pattern, target_date):
-    """Calculate the typical spending day of the month."""
-    days_in_month = calendar.monthrange(target_date.year, target_date.month)[1]
-    return int(round(typical_spending_pattern * days_in_month))
 
 
 def project_daily_balances_with_reasons(accounts, categories, future_transactions, days_ahead=30, simulations=None):
@@ -50,7 +43,7 @@ def initialize_daily_projection(initial_balance, days_ahead):
     for day in range(days_ahead + 1):
         date = (datetime.now().date() + timedelta(days=day)).isoformat()
         daily_projection[date] = {
-            "balance": f"{initial_balance}€",
+            "balance": initial_balance,  # Keep raw numeric value
             "changes": []
         }
     return daily_projection
@@ -61,12 +54,12 @@ def add_future_transactions_to_projection(daily_projection, future_transactions)
     for txn in future_transactions:
         transaction_date = datetime.strptime(txn['date_next'], '%Y-%m-%d').date().isoformat()
         category_name = txn['category_name']
-        amount_eur = txn['amount'] / 1000  # Convert to thousands
+        amount = txn['amount'] / 1000  # Convert to thousands
 
         if transaction_date in daily_projection:
             daily_projection[transaction_date]["changes"].append({
                 "reason": "Scheduled Transaction",
-                "amount": f"{amount_eur}€",
+                "amount": amount,  # Keep raw numeric value
                 "category": category_name,
                 "account": txn['account_name'],
                 "payee": txn['payee_name'],
@@ -117,7 +110,7 @@ def apply_target_month(daily_projection, category, target, current_balance, targ
     if target_date in daily_projection:
         daily_projection[target_date]["changes"].append({
             "reason": "Planned NEED Category Spending (Target Month)",
-            "amount": f"{-amount_to_add}€",
+            "amount": -amount_to_add,  # Keep raw numeric value
             "category": category["name"]
         })
 
@@ -158,18 +151,19 @@ def apply_typical_spending_pattern(daily_projection, category, target, current_b
         if date_str in daily_projection:
             daily_projection[date_str]["changes"].append({
                 "reason": "Planned NEED Category Spending",
-                "amount": f"{-amount_to_add}€",
+                "amount": -amount_to_add,  # Keep raw numeric value
                 "category": category["name"]
             })
         else:
             daily_projection[date_str] = {
-                "balance": "0€",
+                "balance": 0.0,  # Initialize with numeric value
                 "changes": [{
                     "reason": "Planned NEED Category Spending",
-                    "amount": f"{-amount_to_add}€",
+                    "amount": -amount_to_add,  # Keep raw numeric value
                     "category": category["name"]
                 }]
             }
+
 
 def add_simulations_to_projection(daily_projection, simulations):
     if not simulations:
@@ -177,22 +171,22 @@ def add_simulations_to_projection(daily_projection, simulations):
 
     for sim in simulations:
         sim_date = sim["date"]
-        sim_amount = sim["amount"]
+        sim_amount = float(sim["amount"])  # Convert string to float
         sim_reason = sim.get("reason", "Simulation")
         sim_category = sim.get("category", "Miscellaneous")
 
         if sim_date in daily_projection:
             daily_projection[sim_date]["changes"].append({
-                "amount": f"{sim_amount}€",
+                "amount": sim_amount,  # Use raw numeric value
                 "category": sim_category,
                 "reason": sim_reason,
                 "is_simulation": True
             })
         else:
             daily_projection[sim_date] = {
-                "balance": "0€",
+                "balance": 0.0,  # Initialize with numeric value
                 "changes": [{
-                    "amount": f"{sim_amount}€",
+                    "amount": sim_amount,  # Use raw numeric value
                     "category": sim_category,
                     "reason": sim_reason,
                     "is_simulation": True
@@ -202,22 +196,13 @@ def add_simulations_to_projection(daily_projection, simulations):
 
 def calculate_running_balance(daily_projection, initial_balance, days_ahead):
     running_balance = initial_balance
-    previous_balance = initial_balance  # Track the balance of the previous day
     for day in range(days_ahead + 1):
         current_date = (datetime.now().date() + timedelta(days=day)).isoformat()
         day_entry = daily_projection[current_date]
 
-        # Calculate and store the balance difference
-        balance_diff = running_balance - previous_balance
-        day_entry["balance_diff"] = f"{balance_diff:.2f}€"  # Format to two decimals
+        # Apply changes and calculate new balance
+        day_entry["balance_diff"] = sum(change["amount"] for change in day_entry["changes"])
+        running_balance += day_entry["balance_diff"]
 
-        # Update the running balance with changes
-        day_entry["balance"] = f"{running_balance:.2f}€"
-        for change in day_entry["changes"]:
-            change_amount = float(change["amount"].replace("€", ""))
-            running_balance += change_amount
-        
-        # Update the balance and previous balance
-        day_entry["balance"] = f"{running_balance:.2f}€"
-        previous_balance = running_balance
-
+        # Update balance
+        day_entry["balance"] = running_balance
