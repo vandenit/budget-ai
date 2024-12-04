@@ -4,6 +4,7 @@ from ynab_api import get_scheduled_transactions
 from categories_api import get_categories_for_budget
 from accounts_api import get_accounts_for_budget
 import calendar
+import logging
 
 
 def projected_balances_for_budget(budget_uuid, days_ahead=300, simulations=None):
@@ -14,6 +15,7 @@ def projected_balances_for_budget(budget_uuid, days_ahead=300, simulations=None)
     
     # Perform balance prediction logic here
     projected_balances = project_daily_balances_with_reasons(accounts, categories, future_transactions, days_ahead, simulations)
+    # Filter out balances without changes
     return projected_balances
 
 
@@ -23,7 +25,7 @@ def calculate_typical_spending_day(typical_spending_pattern, target_date):
     return int(round(typical_spending_pattern * days_in_month))
 
 
-def project_daily_balances_with_reasons(accounts, categories, future_transactions, days_ahead=120, simulations=None):
+def project_daily_balances_with_reasons(accounts, categories, future_transactions, days_ahead=30, simulations=None):
     initial_balance = calculate_initial_balance(accounts)
     daily_projection = initialize_daily_projection(initial_balance, days_ahead)
 
@@ -122,42 +124,52 @@ def apply_target_month(daily_projection, category, target, current_balance, targ
 
 def apply_typical_spending_pattern(daily_projection, category, target, current_balance, target_amount, days_ahead, scheduled_dates_by_category):
     today = datetime.now().date()
-    typical_spending_pattern = category.get("typicalSpendingPattern", 0.0)
     applied_months = set()
+    
+    # Iterate explicitly by months
+    for month_offset in range((days_ahead // 30) + 1):
+        # Calculate the target month using year and month increments
+        target_year = today.year + ((today.month - 1 + month_offset) // 12)
+        target_month = ((today.month - 1 + month_offset) % 12) + 1
+        last_day_of_month = calendar.monthrange(target_year, target_month)[1]
+        target_date = datetime(target_year, target_month, last_day_of_month).date()
+        date_str = target_date.isoformat()
 
-    for month in range((days_ahead // 30) + 1):
-        target_date = (today.replace(day=1) + timedelta(days=month * 30)).replace(day=1)
-        typical_day = calculate_typical_spending_day(typical_spending_pattern, target_date)
+        logging.warning(f"last day of month: month {month_offset}, {date_str}")
 
-        try:
-            spending_date = target_date.replace(day=typical_day)
-        except ValueError:
+        # Skip if a scheduled transaction already exists for this category in this month
+        month_key = (target_year, target_month)
+        if category["name"] in scheduled_dates_by_category and any(
+            date.startswith(f"{target_year}-{target_month:02d}")
+            for date in scheduled_dates_by_category[category["name"]]
+        ):
+            logging.warning(f"Skipping {date_str} for {category['name']} due to scheduling conflict")
             continue
 
-        date_str = spending_date.isoformat()
-        if target.get("goal_day") is None:
-            last_day_of_month = target_date.replace(
-                day=calendar.monthrange(target_date.year, target_date.month)[1]
-            )
-            date_str = last_day_of_month.isoformat()
-
-        amount_to_add = current_balance if month == 0 else target_amount
-        if category["name"] in scheduled_dates_by_category and date_str in scheduled_dates_by_category[category["name"]]:
-            continue
-
-        month_key = (target_date.year, target_date.month)
+        # Avoid reapplying spending for the same month
         if month_key in applied_months:
+            logging.warning(f"Skipping already applied month: {month_key}")
             continue
 
         applied_months.add(month_key)
 
+        # Apply spending for the last day of the month
+        amount_to_add = current_balance if month_offset == 0 else target_amount
         if date_str in daily_projection:
             daily_projection[date_str]["changes"].append({
                 "reason": "Planned NEED Category Spending",
                 "amount": f"{-amount_to_add}€",
                 "category": category["name"]
             })
-
+        else:
+            daily_projection[date_str] = {
+                "balance": "0€",
+                "changes": [{
+                    "reason": "Planned NEED Category Spending",
+                    "amount": f"{-amount_to_add}€",
+                    "category": category["name"]
+                }]
+            }
 
 def add_simulations_to_projection(daily_projection, simulations):
     if not simulations:
@@ -190,12 +202,22 @@ def add_simulations_to_projection(daily_projection, simulations):
 
 def calculate_running_balance(daily_projection, initial_balance, days_ahead):
     running_balance = initial_balance
+    previous_balance = initial_balance  # Track the balance of the previous day
     for day in range(days_ahead + 1):
         current_date = (datetime.now().date() + timedelta(days=day)).isoformat()
         day_entry = daily_projection[current_date]
 
-        day_entry["balance"] = f"{running_balance}€"
+        # Calculate and store the balance difference
+        balance_diff = running_balance - previous_balance
+        day_entry["balance_diff"] = f"{balance_diff:.2f}€"  # Format to two decimals
+
+        # Update the running balance with changes
+        day_entry["balance"] = f"{running_balance:.2f}€"
         for change in day_entry["changes"]:
             change_amount = float(change["amount"].replace("€", ""))
             running_balance += change_amount
-        day_entry["balance"] = f"{running_balance}€"
+        
+        # Update the balance and previous balance
+        day_entry["balance"] = f"{running_balance:.2f}€"
+        previous_balance = running_balance
+

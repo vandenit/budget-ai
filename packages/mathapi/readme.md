@@ -30,6 +30,10 @@ flask run
 
 ## balance predictions
 
-### vanden it
+### Interactive
 
 http://127.0.0.1:5000/balance-prediction/interactive?budget_id=1b443ebf-ea07-4ab7-8fd5-9330bf80608c&days_ahead=120
+
+### non interactive json
+
+http://127.0.0.1:5000/balance-prediction/data?budget_id=1b443ebf-ea07-4ab7-8fd5-9330bf80608c&days_ahead=120
