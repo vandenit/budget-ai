@@ -3,6 +3,7 @@ from budget_api import get_objectid_for_budget
 from ynab_api import get_scheduled_transactions
 from categories_api import get_categories_for_budget
 from accounts_api import get_accounts_for_budget
+from collections import OrderedDict
 import calendar
 import logging
 
@@ -30,8 +31,9 @@ def project_daily_balances_with_reasons(accounts, categories, future_transaction
 
     calculate_running_balance(daily_projection, initial_balance, days_ahead)
     projected_balances = {date: data for date, data in daily_projection.items() if data["changes"]}
-
-    return projected_balances
+    sorted_projected_balances = OrderedDict(sorted(projected_balances.items(), key=lambda item: item[0]))
+    
+    return sorted_projected_balances        
 
 
 def calculate_initial_balance(accounts):
