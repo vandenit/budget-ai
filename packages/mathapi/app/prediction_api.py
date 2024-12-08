@@ -92,13 +92,16 @@ def process_need_categories(daily_projection, categories, scheduled_dates_by_cat
 def process_need_category(daily_projection, category, target, scheduled_dates_by_category, days_ahead):
     target_amount = target.get("goal_target", 0) / 1000  # Convert to thousands
     current_balance = category.get("balance", 0) / 1000  # Convert to thousands
-    goal_target_month = target.get("goal_target_month")
 
-    if goal_target_month:
-        apply_target_month(daily_projection, category, target, current_balance, target_amount, goal_target_month, scheduled_dates_by_category)
-    else:
-        apply_typical_spending_pattern(daily_projection, category, target, current_balance, target_amount, days_ahead, scheduled_dates_by_category)
-
+    apply_need_category_spending(
+        daily_projection,
+        category,
+        target,
+        current_balance,
+        target_amount,
+        days_ahead,
+        scheduled_dates_by_category
+    )
 
 def apply_target_month(daily_projection, category, target, current_balance, target_amount, goal_target_month, scheduled_dates_by_category):
     target_date = datetime.strptime(goal_target_month, '%Y-%m-%d').date().isoformat()
@@ -122,31 +125,26 @@ def calculate_typical_spending_day(typical_spending_pattern, target_date):
     days_in_month = calendar.monthrange(target_date.year, target_date.month)[1]
     return int(round(typical_spending_pattern * days_in_month))
 
-
-def apply_typical_spending_pattern(daily_projection, category, target, current_balance, target_amount, days_ahead, scheduled_dates_by_category):
+def apply_need_category_spending(daily_projection, category, target, current_balance, target_amount, days_ahead, scheduled_dates_by_category):
     today = datetime.now().date()
     applied_months = set()
-    
-    # Get typical spending pattern (0.0 to 1.0, representing day fraction)
-    typical_spending_pattern = category.get("typicalSpendingPattern", 1.0)  # Default to end of the month if not set
 
     for month_offset in range((days_ahead // 30) + 1):
-        # Calculate the target month using year and month increments
+        # Calculate the target year and month
         target_year = today.year + ((today.month - 1 + month_offset) // 12)
         target_month = ((today.month - 1 + month_offset) % 12) + 1
         days_in_month = calendar.monthrange(target_year, target_month)[1]
 
-        # Determine the spending date
-        typical_day = calculate_typical_spending_day(typical_spending_pattern, datetime(target_year, target_month, 1).date())
+        # Use the day from the target if provided, otherwise default to the last day of the month
+        target_day = target.get("goal_target_day", days_in_month)
         try:
-            spending_date = datetime(target_year, target_month, typical_day).date()
+            spending_date = datetime(target_year, target_month, target_day).date()
         except ValueError:
-            # Fallback to the last day of the month if typical day is invalid
-            spending_date = datetime(target_year, target_month, days_in_month).date()
+            spending_date = datetime(target_year, target_month, days_in_month).date()  # Fallback to last day of month
 
         date_str = spending_date.isoformat()
 
-        # Skip if a scheduled transaction already exists for this category in this month
+        # Skip if spending for this category already exists in the same month
         month_key = (target_year, target_month)
         if category["name"] in scheduled_dates_by_category and any(
             date.startswith(f"{target_year}-{target_month:02d}")
@@ -155,19 +153,21 @@ def apply_typical_spending_pattern(daily_projection, category, target, current_b
             logging.warning(f"Skipping {date_str} for {category['name']} due to scheduling conflict")
             continue
 
-        # Avoid reapplying spending for the same month
+        # Avoid reapplying for the same month
         if month_key in applied_months:
             logging.warning(f"Skipping already applied month: {month_key}")
             continue
 
         applied_months.add(month_key)
 
-        # Apply spending for the determined spending date
+        # Determine the amount to add for this spending date
         amount_to_add = current_balance if month_offset == 0 else target_amount
+
+        # Apply the spending to the daily projection
         if date_str in daily_projection:
             daily_projection[date_str]["changes"].append({
                 "reason": "Planned NEED Category Spending",
-                "amount": -amount_to_add,  # Keep raw numeric value
+                "amount": -amount_to_add,  # Negative for spending
                 "category": category["name"]
             })
         else:
@@ -175,7 +175,7 @@ def apply_typical_spending_pattern(daily_projection, category, target, current_b
                 "balance": 0.0,  # Initialize with numeric value
                 "changes": [{
                     "reason": "Planned NEED Category Spending",
-                    "amount": -amount_to_add,  # Keep raw numeric value
+                    "amount": -amount_to_add,  # Negative for spending
                     "category": category["name"]
                 }]
             }
