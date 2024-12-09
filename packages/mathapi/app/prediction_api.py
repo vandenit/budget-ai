@@ -118,10 +118,8 @@ def apply_need_category_spending(daily_projection, category, target, current_bal
     cadence_config = None
     # Retrieve goal information
     goal_target_month = target.get("goal_target_month")
-    goal_cadence_frequency = target.get("goal_cadence_frequency")  # Default to 1 if None
-    if goal_cadence_frequency is None:
-        goal_cadence_frequency = 1  # Fallback to 1 if it is None
-    else:
+    goal_cadence_frequency = target.get("goal_cadence_frequency")  
+    if goal_cadence_frequency:
         cadence_config = CADENCE_CONFIG.get(target.get("goal_cadence", 1), {"type": "monthly", "interval": 1})  # Default to monthly
         cadence_interval = cadence_config["interval"] * goal_cadence_frequency  # Apply multiplier to interval
 
