@@ -103,82 +103,82 @@ def process_need_category(daily_projection, category, target, scheduled_dates_by
         scheduled_dates_by_category
     )
 
-def apply_target_month(daily_projection, category, target, current_balance, target_amount, goal_target_month, scheduled_dates_by_category):
-    target_date = datetime.strptime(goal_target_month, '%Y-%m-%d').date().isoformat()
-
-    month_key = target_date[:7]  # Year and month (YYYY-MM)
-    if category["name"] in scheduled_dates_by_category:
-        if any(date.startswith(month_key) for date in scheduled_dates_by_category[category["name"]]):
-            return
-
-    amount_to_add = current_balance if datetime.now().date().isoformat()[:7] == target_date[:7] else target_amount
-    if target_date in daily_projection:
-        daily_projection[target_date]["changes"].append({
-            "reason": "Planned NEED Category Spending (Target Month)",
-            "amount": -amount_to_add,  # Keep raw numeric value
-            "category": category["name"]
-        })
-
-
-def calculate_typical_spending_day(typical_spending_pattern, target_date):
-    """Calculate the typical spending day of the month."""
-    days_in_month = calendar.monthrange(target_date.year, target_date.month)[1]
-    return int(round(typical_spending_pattern * days_in_month))
 
 def apply_need_category_spending(daily_projection, category, target, current_balance, target_amount, days_ahead, scheduled_dates_by_category):
     today = datetime.now().date()
     applied_months = set()
 
+    # Haal doelmaand en herhalingsfrequentie op, als doelmaand niet bestaat, gebruik alternatieve logica
+    goal_target_month = target.get("goal_target_month")
+    goal_cadence_frequency = target.get("goal_cadence_frequency") or 1  # Gebruik standaardwaarde 1 als None
+    goal_day = target.get("goal_day")  # Specifieke dag als dat nodig is
+
+    if goal_target_month:
+        goal_target_month = datetime.strptime(goal_target_month, '%Y-%m-%d').date()
+
     for month_offset in range((days_ahead // 30) + 1):
-        # Calculate the target year and month
+        # Bepaal de doelmaand
         target_year = today.year + ((today.month - 1 + month_offset) // 12)
         target_month = ((today.month - 1 + month_offset) % 12) + 1
-        days_in_month = calendar.monthrange(target_year, target_month)[1]
+        target_date = datetime(target_year, target_month, 1).date()
 
-        # Use the day from the target if provided, otherwise default to the last day of the month
-        target_day = target.get("goal_target_day", days_in_month)
-        try:
-            spending_date = datetime(target_year, target_month, target_day).date()
-        except ValueError:
-            spending_date = datetime(target_year, target_month, days_in_month).date()  # Fallback to last day of month
+        # Bereken het laatste moment in de doelperiode
+        days_in_month = calendar.monthrange(target_year, target_month)[1]
+        spending_date = datetime(target_year, target_month, days_in_month).date()
+
+        # Als er een specifieke dag is, gebruik die
+        if goal_day and goal_day <= days_in_month:
+            spending_date = datetime(target_year, target_month, goal_day).date()
 
         date_str = spending_date.isoformat()
 
-        # Skip if spending for this category already exists in the same month
-        month_key = (target_year, target_month)
-        if category["name"] in scheduled_dates_by_category and any(
-            date.startswith(f"{target_year}-{target_month:02d}")
-            for date in scheduled_dates_by_category[category["name"]]
-        ):
-            logging.warning(f"Skipping {date_str} for {category['name']} due to scheduling conflict")
+        # Controleer of de huidige maand is
+        is_current_month = today.year == target_year and today.month == target_month
+
+        # Verwerk huidige maand
+        if is_current_month:
+            if current_balance > 0 and not scheduled_dates_by_category.get(category["name"]):
+                # Geen geplande transactie => haal huidig toegewezen bedrag eraf
+                apply_transaction(daily_projection, date_str, current_balance, category["name"], "Assigned Spending")
             continue
 
-        # Avoid reapplying for the same month
-        if month_key in applied_months:
-            logging.warning(f"Skipping already applied month: {month_key}")
+        # Verwerk doelmaand (laatste maand in de huidige cyclus)
+        if goal_target_month and target_date == goal_target_month:
+            remaining_amount = target_amount - current_balance
+            if remaining_amount > 0:
+                apply_transaction(daily_projection, date_str, remaining_amount, category["name"], "Remaining Spending (Goal Target)")
             continue
 
-        applied_months.add(month_key)
+        # Verwerk herhalingen na de doelmaand
+        if goal_target_month and target_date > goal_target_month:
+            months_since_goal = (target_date.year - goal_target_month.year) * 12 + (target_date.month - goal_target_month.month)
+            if months_since_goal % goal_cadence_frequency == 0:
+                apply_transaction(daily_projection, date_str, target_amount, category["name"], "Recurring Spending")
+            continue
 
-        # Determine the amount to add for this spending date
-        amount_to_add = current_balance if month_offset == 0 else target_amount
+        # Als er geen doelmaand is, gebruik laatste dag van de maand
+        if not goal_target_month:
+            apply_transaction(daily_projection, date_str, target_amount, category["name"], "Spending (No Target Month)")
+            continue
 
-        # Apply the spending to the daily projection
-        if date_str in daily_projection:
-            daily_projection[date_str]["changes"].append({
-                "reason": "Planned NEED Category Spending",
-                "amount": -amount_to_add,  # Negative for spending
-                "category": category["name"]
-            })
-        else:
-            daily_projection[date_str] = {
-                "balance": 0.0,  # Initialize with numeric value
-                "changes": [{
-                    "reason": "Planned NEED Category Spending",
-                    "amount": -amount_to_add,  # Negative for spending
-                    "category": category["name"]
-                }]
-            }
+def apply_transaction(daily_projection, date_str, amount, category_name, reason):
+    """Hulpfunctie om transacties toe te voegen aan daily_projection."""
+    if date_str in daily_projection:
+        daily_projection[date_str]["changes"].append({
+            "reason": reason,
+            "amount": -amount,  # Negatief voor uitgaven
+            "category": category_name
+        })
+    else:
+        daily_projection[date_str] = {
+            "balance": 0.0,  # Initieer saldo
+            "changes": [{
+                "reason": reason,
+                "amount": -amount,
+                "category": category_name
+            }]
+        }
+
 
 def add_simulations_to_projection(daily_projection, simulations):
     if not simulations:
