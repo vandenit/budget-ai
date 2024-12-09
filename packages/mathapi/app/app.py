@@ -172,5 +172,18 @@ def balance_prediction_data():
     # Return data as JSON
     return jsonify(data)
 
+@app.route('/sheduled-transactions', methods=['GET'])
+def get_scheduled_transactions_route():
+    budget_uuid = request.args.get('budget_id')
+    if not budget_uuid:
+        return "budget_id query parameter is required", 400
+
+    try:
+        transactions = get_scheduled_transactions(budget_uuid)
+        return jsonify(transactions)
+    except Exception as e:
+        return f"Error fetching scheduled transactions: {str(e)}", 500
+    
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
