@@ -7,6 +7,13 @@ from collections import OrderedDict
 import calendar
 import logging
 
+CADENCE_CONFIG = {
+    1: {"type": "monthly", "interval": 1},       # Monthly cadence
+    3: {"type": "quarterly", "interval": 3},    # Quarterly cadence
+    13: {"type": "yearly", "interval": 12},     # Special case: Yearly with an irregular identifier
+    # Add other cadence configurations as needed
+}
+
 
 def projected_balances_for_budget(budget_uuid, days_ahead=300, simulations=None):
     budget_id = get_objectid_for_budget(budget_uuid)
@@ -108,58 +115,55 @@ def apply_need_category_spending(daily_projection, category, target, current_bal
     today = datetime.now().date()
     applied_months = set()
 
-    # Haal doelmaand en herhalingsfrequentie op, als doelmaand niet bestaat, gebruik alternatieve logica
+    # Retrieve goal information
     goal_target_month = target.get("goal_target_month")
-    goal_cadence_frequency = target.get("goal_cadence_frequency") or 1  # Gebruik standaardwaarde 1 als None
-    goal_day = target.get("goal_day")  # Specifieke dag als dat nodig is
+    goal_cadence = target.get("goal_cadence", 1)  # Default cadence to monthly
+    cadence_config = CADENCE_CONFIG.get(goal_cadence, {"type": "monthly", "interval": 1})  # Default to monthly
 
     if goal_target_month:
         goal_target_month = datetime.strptime(goal_target_month, '%Y-%m-%d').date()
 
     for month_offset in range((days_ahead // 30) + 1):
-        # Bepaal de doelmaand
+        # Determine target year and month
         target_year = today.year + ((today.month - 1 + month_offset) // 12)
         target_month = ((today.month - 1 + month_offset) % 12) + 1
         target_date = datetime(target_year, target_month, 1).date()
 
-        # Bereken het laatste moment in de doelperiode
+        # Calculate spending date (end of the month by default)
         days_in_month = calendar.monthrange(target_year, target_month)[1]
         spending_date = datetime(target_year, target_month, days_in_month).date()
-
-        # Als er een specifieke dag is, gebruik die
-        if goal_day and goal_day <= days_in_month:
-            spending_date = datetime(target_year, target_month, goal_day).date()
-
         date_str = spending_date.isoformat()
 
-        # Controleer of de huidige maand is
+        # Skip if already applied for this cadence period
         is_current_month = today.year == target_year and today.month == target_month
+        if target_date in applied_months:
+            continue
 
-        # Verwerk huidige maand
+        # Process current month
         if is_current_month:
             if current_balance > 0 and not scheduled_dates_by_category.get(category["name"]):
-                # Geen geplande transactie => haal huidig toegewezen bedrag eraf
                 apply_transaction(daily_projection, date_str, current_balance, category["name"], "Assigned Spending")
             continue
 
-        # Verwerk doelmaand (laatste maand in de huidige cyclus)
+        # Process target month
         if goal_target_month and target_date == goal_target_month:
             remaining_amount = target_amount - current_balance
             if remaining_amount > 0:
                 apply_transaction(daily_projection, date_str, remaining_amount, category["name"], "Remaining Spending (Goal Target)")
             continue
 
-        # Verwerk herhalingen na de doelmaand
+        # Process recurrences based on cadence interval
         if goal_target_month and target_date > goal_target_month:
             months_since_goal = (target_date.year - goal_target_month.year) * 12 + (target_date.month - goal_target_month.month)
-            if months_since_goal % goal_cadence_frequency == 0:
-                apply_transaction(daily_projection, date_str, target_amount, category["name"], "Recurring Spending")
+            if months_since_goal % cadence_config["interval"] == 0:
+                apply_transaction(daily_projection, date_str, target_amount, category["name"], f"Recurring Spending ({cadence_config['type'].capitalize()})")
             continue
 
-        # Als er geen doelmaand is, gebruik laatste dag van de maand
+        # If no goal_target_month is provided, apply spending at the end of the month
         if not goal_target_month:
             apply_transaction(daily_projection, date_str, target_amount, category["name"], "Spending (No Target Month)")
             continue
+
 
 def apply_transaction(daily_projection, date_str, amount, category_name, reason):
     """Hulpfunctie om transacties toe te voegen aan daily_projection."""
