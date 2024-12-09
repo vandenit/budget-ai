@@ -116,9 +116,10 @@ def apply_need_category_spending(daily_projection, category, target, current_bal
     applied_months = set()
     cadence_interval = None
     cadence_config = None
+
     # Retrieve goal information
     goal_target_month = target.get("goal_target_month")
-    goal_cadence_frequency = target.get("goal_cadence_frequency")  
+    goal_cadence_frequency = target.get("goal_cadence_frequency")
     if goal_cadence_frequency:
         cadence_config = CADENCE_CONFIG.get(target.get("goal_cadence", 1), {"type": "monthly", "interval": 1})  # Default to monthly
         cadence_interval = cadence_config["interval"] * goal_cadence_frequency  # Apply multiplier to interval
@@ -142,11 +143,19 @@ def apply_need_category_spending(daily_projection, category, target, current_bal
         if target_date in applied_months:
             continue
 
+        # Handle current month with no `goal_target_month` or `goal_day`
+        is_current_month = today.year == target_year and today.month == target_month
+        if is_current_month and not goal_target_month and not target.get("goal_day"):
+            remaining_amount = current_balance
+            if remaining_amount > 0:
+                apply_transaction(daily_projection, date_str, remaining_amount, category["name"], "Remaining Spending (Current Month)")
+            continue
+
         # Handle goal_target_month logic
         if goal_target_month and target_date == goal_target_month:
-            remaining_amount = target_amount - current_balance
+            remaining_amount =  current_balance
             if remaining_amount > 0:
-                apply_transaction(daily_projection, date_str, remaining_amount, category["name"], "Remaining Spending (Goal Target)")
+                apply_transaction(daily_projection, date_str, target_amount, category["name"], "Remaining Spending (Goal Target)")
             continue
 
         # Process recurrences based on cadence interval
