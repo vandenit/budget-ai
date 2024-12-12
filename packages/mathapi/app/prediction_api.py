@@ -99,7 +99,10 @@ def process_need_categories(daily_projection, categories, scheduled_dates_by_cat
 def process_need_category(daily_projection, category, target, scheduled_dates_by_category, days_ahead):
     target_amount = target.get("goal_target", 0) / 1000  # Convert to thousands
     current_balance = category.get("balance", 0) / 1000  # Convert to thousands
-
+    global_overall_left = target.get("goal_overall_left")  # This could be None
+    if global_overall_left is None:  # Explicitly handle None
+        global_overall_left = 0
+    global_overall_left /= 1000  # Convert to thousands
     apply_need_category_spending(
         daily_projection,
         category,
@@ -107,11 +110,12 @@ def process_need_category(daily_projection, category, target, scheduled_dates_by
         current_balance,
         target_amount,
         days_ahead,
-        scheduled_dates_by_category
+        global_overall_left
     )
 
 
-def apply_need_category_spending(daily_projection, category, target, current_balance, target_amount, days_ahead, scheduled_dates_by_category):
+def apply_need_category_spending(daily_projection, category, target, current_balance, target_amount, days_ahead,
+                                 global_overal_left):
     today = datetime.now().date()
     applied_months = set()
     cadence_interval = None
@@ -143,7 +147,7 @@ def apply_need_category_spending(daily_projection, category, target, current_bal
         if target_date in applied_months:
             continue
 
-        # Handle current month with no `goal_target_month` or `goal_day`
+        # Handle current month with no goal_target_month or goal_day
         is_current_month = today.year == target_year and today.month == target_month
         if is_current_month and not goal_target_month and not target.get("goal_day"):
             remaining_amount = current_balance
@@ -153,11 +157,15 @@ def apply_need_category_spending(daily_projection, category, target, current_bal
 
         # Handle goal_target_month logic
         if goal_target_month and target_date == goal_target_month:
-            remaining_amount =  current_balance
+            remaining_amount =  global_overal_left
             if remaining_amount > 0:
-                apply_transaction(daily_projection, date_str, target_amount, category["name"], "Remaining Spending (Goal Target)")
+                apply_transaction(daily_projection, date_str, remaining_amount, category["name"], "Remaining Spending (Goal Target)")
             continue
-
+        if goal_target_month and target_date != goal_target_month and is_current_month:
+            # apply current balance to transactions
+            remaining_amount = current_balance
+            if remaining_amount > 0:
+                apply_transaction(daily_projection, date_str, remaining_amount, category["name"], "Budgeted Spending (Current Month)")
         # Process recurrences based on cadence interval
         if goal_target_month and target_date > goal_target_month and cadence_interval:
             months_since_goal = (target_date.year - goal_target_month.year) * 12 + (target_date.month - goal_target_month.month)
@@ -167,26 +175,24 @@ def apply_need_category_spending(daily_projection, category, target, current_bal
 
         # If no goal_target_month is provided, apply spending at the end of the month
         if not goal_target_month:
-            apply_transaction(daily_projection, date_str, target_amount, category["name"], "Spending (No Target Month)")
-            continue
+            if is_current_month:
+                remaining_amount = current_balance
+                apply_transaction(daily_projection, date_str, remaining_amount, category["name"], "Spending (No Target Month, current month)")
+            else:
+                apply_transaction(daily_projection, date_str, target_amount, category["name"], "No Target Month, future month)")
 
 def apply_transaction(daily_projection, date_str, amount, category_name, reason):
     """Hulpfunctie om transacties toe te voegen aan daily_projection."""
     if date_str in daily_projection:
+        logging.warning(f"Adding transaction to date {date_str} with amount {amount} for category {category_name} and reason {reason}")
         daily_projection[date_str]["changes"].append({
             "reason": reason,
-            "amount": -amount,  # Negatief voor uitgaven
+            "amount": -amount,  # Negative for expesens
             "category": category_name
         })
     else:
-        daily_projection[date_str] = {
-            "balance": 0.0,  # Initieer saldo
-            "changes": [{
-                "reason": reason,
-                "amount": -amount,
-                "category": category_name
-            }]
-        }
+        logging.warning(f"no date {date_str} in daily_projection")
+        
 
 
 def add_simulations_to_projection(daily_projection, simulations):

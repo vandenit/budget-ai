@@ -116,7 +116,6 @@ def balance_prediction_interactive():
         })
 
     # Convert plot data to JSON for the template
-    print(json.dumps(plot_data))
     sanitized_plot_data = json.dumps(plot_data)
 
     # Render HTML template with plot data
