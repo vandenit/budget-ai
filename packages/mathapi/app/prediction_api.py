@@ -114,8 +114,7 @@ def process_need_category(daily_projection, category, target, scheduled_dates_by
     )
 
 
-def apply_need_category_spending(daily_projection, category, target, current_balance, target_amount, days_ahead,
-                                 global_overal_left):
+def apply_need_category_spending(daily_projection, category, target, current_balance, target_amount, days_ahead, global_overal_left):
     today = datetime.now().date()
     applied_months = set()
     cadence_interval = None
@@ -124,6 +123,8 @@ def apply_need_category_spending(daily_projection, category, target, current_bal
     # Retrieve goal information
     goal_target_month = target.get("goal_target_month")
     goal_cadence_frequency = target.get("goal_cadence_frequency")
+    goal_day = target.get("goal_day")  # Retrieve goal_day if available
+
     if goal_cadence_frequency:
         cadence_config = CADENCE_CONFIG.get(target.get("goal_cadence", 1), {"type": "monthly", "interval": 1})  # Default to monthly
         cadence_interval = cadence_config["interval"] * goal_cadence_frequency  # Apply multiplier to interval
@@ -138,16 +139,17 @@ def apply_need_category_spending(daily_projection, category, target, current_bal
         target_month = ((today.month - 1 + month_offset) % 12) + 1
         target_date = datetime(target_year, target_month, 1).date()
 
-        # Calculate spending date (end of the month by default)
+        # Determine spending date
         days_in_month = calendar.monthrange(target_year, target_month)[1]
-        spending_date = datetime(target_year, target_month, days_in_month).date()
+        spending_day = goal_day if goal_day and 1 <= goal_day <= days_in_month else days_in_month
+        spending_date = datetime(target_year, target_month, spending_day).date()
         date_str = spending_date.isoformat()
 
         # Skip if already applied for this cadence period
         if target_date in applied_months:
             continue
 
-        # Handle current month with no goal_target_month or goal_day
+        # Handle current month with no `goal_target_month` or `goal_day`
         is_current_month = today.year == target_year and today.month == target_month
         if is_current_month and not goal_target_month and not target.get("goal_day"):
             remaining_amount = current_balance
@@ -157,15 +159,17 @@ def apply_need_category_spending(daily_projection, category, target, current_bal
 
         # Handle goal_target_month logic
         if goal_target_month and target_date == goal_target_month:
-            remaining_amount =  global_overal_left
+            remaining_amount = global_overal_left
             if remaining_amount > 0:
                 apply_transaction(daily_projection, date_str, remaining_amount, category["name"], "Remaining Spending (Goal Target)")
             continue
+
         if goal_target_month and target_date != goal_target_month and is_current_month:
-            # apply current balance to transactions
+            # Apply current balance to transactions
             remaining_amount = current_balance
             if remaining_amount > 0:
                 apply_transaction(daily_projection, date_str, remaining_amount, category["name"], "Budgeted Spending (Current Month)")
+
         # Process recurrences based on cadence interval
         if goal_target_month and target_date > goal_target_month and cadence_interval:
             months_since_goal = (target_date.year - goal_target_month.year) * 12 + (target_date.month - goal_target_month.month)
@@ -173,7 +177,7 @@ def apply_need_category_spending(daily_projection, category, target, current_bal
                 apply_transaction(daily_projection, date_str, target_amount, category["name"], f"Recurring Spending ({cadence_config['type'].capitalize()} every {goal_cadence_frequency})")
             continue
 
-        # If no goal_target_month is provided, apply spending at the end of the month
+        # If no goal_target_month is provided, apply spending at the specific day or end of the month
         if not goal_target_month:
             if is_current_month:
                 remaining_amount = current_balance

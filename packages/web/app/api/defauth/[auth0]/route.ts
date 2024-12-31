@@ -1,14 +1,11 @@
 import {
   handleAuth,
   handleCallback,
-  AfterCallback,
   Session,
-  GetLoginState,
-  CallbackOptions,
   AfterCallbackAppRoute,
 } from "@auth0/nextjs-auth0";
 import { createOrUpdateUser } from "../../user/user.client";
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 
 const afterCallback: AfterCallbackAppRoute = async (
   req: NextRequest,
