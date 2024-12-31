@@ -75,7 +75,7 @@ export const connectUserWithYnab = async (
   user: UserType
 ) => {
   await connectDb();
-  console.log(`connecting user with ynab: ${JSON.stringify(connection)}`);
+  console.log(`connecting user with ynab: ${JSON.stringify(user.authId)}`);
   const authId = user?.authId;
   if (!authId) {
     throw new Error("User not set");

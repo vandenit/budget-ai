@@ -30,7 +30,6 @@ export const refreshUserToken = async (user: UserType) => {
   }
   try {
     const refreshedToken = await refreshAccessToken(refreshToken);
-    console.log("refreshed token:" + JSON.stringify(refreshedToken));
     await connectUserWithYnab(
       {
         accessToken: refreshedToken.access_token,
