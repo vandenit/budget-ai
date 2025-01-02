@@ -4,3 +4,4 @@ requests
 python-dotenv
 pymongo
 dnspython  # Required if you're using MongoDB Atlas or a connection string with DNS
+openai>=1.58.1

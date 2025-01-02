@@ -37,3 +37,20 @@ def get_local_transactions_last_x_days(uuid, x_days):
     for transaction in transactions:
         transactions_list.append(convert_objectid_to_str(transaction))
     return transactions_list
+
+def get_scheduled_transactions(budget_id):
+    """Fetches scheduled transactions for a given budget ID from the YNAB API."""
+    
+    if not budget_id:
+        raise ValueError("A budget ID is required")
+
+    # Define the path for scheduled transactions and use the fetch function
+    path = f"/budgets/{budget_id}/scheduled_transactions"
+    result = fetch("GET", path)
+    
+    # Extract only the scheduled transactions data if no error occurred
+    if "error" not in result:
+        return result.get("data", {}).get("scheduled_transactions", [])
+    else:
+        return result
+    
