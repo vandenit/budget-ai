@@ -41,3 +41,7 @@ http://127.0.0.1:5000/balance-prediction/data?budget_id=1b443ebf-ea07-4ab7-8fd5-
 ## sheduled transactions
 
 http://127.0.0.1:5000/sheduled-transactions?budget_id=1b443ebf-ea07-4ab7-8fd5-9330bf80608c
+
+# category suggestions
+
+http://127.0.0.1:5000/unscheduled-transactions/suggest-categories?budget_id=1b443ebf-ea07-4ab7-8fd5-9330bf80608c

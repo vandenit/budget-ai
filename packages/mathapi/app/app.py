@@ -1,11 +1,13 @@
 import os
 import itertools
 from flask import Flask, jsonify, request, render_template
-from ynab_api import get_scheduled_transactions
+from ynab_api import get_scheduled_transactions, get_uncategorized_transactions
 from categories_api import get_categories_for_budget
 from budget_api import get_objectid_for_budget
 from accounts_api import get_accounts_for_budget
 from prediction_api import project_daily_balances_with_reasons
+from categories_api import get_categories_for_budget
+from ai_api import suggest_category
 import logging
 import json
 
@@ -183,6 +185,43 @@ def get_scheduled_transactions_route():
     except Exception as e:
         return f"Error fetching scheduled transactions: {str(e)}", 500
     
+@app.route('/unscheduled-transactions/suggest-categories', methods=['GET'])
+def suggest_categories_for_unscheduled_transactions():
+    budget_uuid = request.args.get('budget_id')
+    if not budget_uuid:
+        return jsonify({"error": "budget_id query parameter is required"}), 400
+
+    try:
+        # Fetch budget ID and data
+        budget_id = get_objectid_for_budget(budget_uuid)
+        uncategorized_transactions = get_uncategorized_transactions(budget_uuid)
+        categories = get_categories_for_budget(budget_id)
+    except Exception as e:
+        return jsonify({"error": f"Error fetching data: {str(e)}"}), 500
+
+    if not uncategorized_transactions:
+        return jsonify([])  # No uncategorized transactions found
+
+    # Suggest categories for each uncategorized transaction
+    suggested_transactions = []
+    for transaction in uncategorized_transactions:
+        try:
+            suggested_category_name = suggest_category(transaction, categories)
+            suggested_category = next(
+                (cat for cat in categories if cat["name"] == suggested_category_name), None
+            )
+            suggested_transactions.append({
+                "transaction_id": transaction["id"],
+                "payee_name": transaction["payee_name"],
+                "amount": transaction["amount"],
+                "date": transaction["date"],
+                "suggested_category_id": suggested_category["id"] if suggested_category else None,
+                "suggested_category_name": suggested_category_name
+            })
+        except Exception as e:
+             return jsonify({"error": f"Error fetching data: {str(e)}"}), 500
+
+    return jsonify(suggested_transactions)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
