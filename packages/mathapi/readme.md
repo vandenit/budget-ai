@@ -44,4 +44,8 @@ http://127.0.0.1:5000/sheduled-transactions?budget_id=1b443ebf-ea07-4ab7-8fd5-93
 
 # category suggestions
 
-http://127.0.0.1:5000/unscheduled-transactions/suggest-categories?budget_id=1b443ebf-ea07-4ab7-8fd5-9330bf80608c
+http://127.0.0.1:5000/uncategorised-transactions/suggest-categories?budget_id=1b443ebf-ea07-4ab7-8fd5-9330bf80608c
+
+# apply suggestions
+
+POST http://127.0.0.1:5000/uncategorised-transactions/apply-categories?budget_id=1b443ebf-ea07-4ab7-8fd5-9330bf80608c

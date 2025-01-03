@@ -10,7 +10,7 @@ load_dotenv()
 YNAB_ACCESS_TOKEN = os.getenv("YNAB_ACCESS_TOKEN")
 YNAB_BASE_URL = os.getenv("YNAB_BASE_URL")
 
-def fetch(method, path):
+def fetch(method, path, body=None):
     """Performs an HTTP request to the YNAB API with the specified method and path."""
     
     # Define the full URL by combining the base URL and path
@@ -21,10 +21,8 @@ def fetch(method, path):
 
     try:
         # Send the request using the specified HTTP method
-        # todo remove print statements
         print(f"Fetching data from {url} using method: {method}")
-        print(f"Headers: {headers}")
-        response = requests.request(method, url, headers=headers)
+        response = requests.request(method, url, headers=headers, json=body)
         response.raise_for_status()  # Raise an HTTPError for bad responses
 
         # Return the parsed JSON response
@@ -61,9 +59,6 @@ def get_uncategorized_transactions(budget_id):
     # Define the path for uncategorized transactions
     path = f"budgets/{budget_id}/transactions?type=uncategorized"
     result = fetch("GET", path)
-
-    # Return uncategorized transactions directly from the API response
-    if "error" not in result:
-        return result.get("data", {}).get("transactions", [])
-    else:
-        return result
+    # filter out tranfers with Pyaee name "Transfer :"
+    return [transaction for transaction in result.get("data", {}).get("transactions", []) if not transaction["payee_name"].startswith("Transfer :")]
+    

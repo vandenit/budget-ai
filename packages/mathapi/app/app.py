@@ -1,6 +1,7 @@
 import os
 import itertools
 from flask import Flask, jsonify, request, render_template
+from ynab_service import apply_suggested_categories_service
 from ynab_api import get_scheduled_transactions, get_uncategorized_transactions
 from categories_api import get_categories_for_budget
 from budget_api import get_objectid_for_budget
@@ -185,7 +186,7 @@ def get_scheduled_transactions_route():
     except Exception as e:
         return f"Error fetching scheduled transactions: {str(e)}", 500
     
-@app.route('/unscheduled-transactions/suggest-categories', methods=['GET'])
+@app.route('/uncategorised-transactions/suggest-categories', methods=['GET'])
 def suggest_categories_for_unscheduled_transactions():
     budget_uuid = request.args.get('budget_id')
     if not budget_uuid:
@@ -207,21 +208,32 @@ def suggest_categories_for_unscheduled_transactions():
     for transaction in uncategorized_transactions:
         try:
             suggested_category_name = suggest_category(transaction, categories)
-            suggested_category = next(
-                (cat for cat in categories if cat["name"] == suggested_category_name), None
-            )
             suggested_transactions.append({
                 "transaction_id": transaction["id"],
                 "payee_name": transaction["payee_name"],
                 "amount": transaction["amount"],
                 "date": transaction["date"],
-                "suggested_category_id": suggested_category["id"] if suggested_category else None,
                 "suggested_category_name": suggested_category_name
             })
         except Exception as e:
              return jsonify({"error": f"Error fetching data: {str(e)}"}), 500
 
     return jsonify(suggested_transactions)
+
+@app.route('/uncategorised-transactions/apply-categories', methods=['POST'])
+def apply_suggested_categories():
+    """Fetch transactions, suggest categories, and apply them."""
+    budget_uuid = request.args.get('budget_id')
+    if not budget_uuid:
+        return jsonify({"error": "budget_id query parameter is required"}), 400
+
+    try:
+        # Delegate business logic to the service layer
+        result = apply_suggested_categories_service(budget_uuid)
+        return jsonify(result)
+    except Exception as e:
+        logging.error(f"Error applying categories: {e}")
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
