@@ -9,5 +9,8 @@
     "build:web": "npm run build --workspace web",
     "build:api": "npm run build --workspace api",
     "postbuild": "echo Build completed successfully!"
+  },
+  "dependencies": {
+    "next": "^14.2.23"
   }
 }
