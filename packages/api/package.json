@@ -26,6 +26,7 @@
     "mongodb": "^6.3.0",
     "mongoose": "^8.8.3",
     "openai": "^4.20.1",
+    "path-to-regexp": "^0.1.12",
     "prom-client": "^15.1.2",
     "ramda": "^0.29.1",
     "ynab": "^2.0.0"
