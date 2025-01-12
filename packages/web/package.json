@@ -43,6 +43,6 @@
     "postcss": "latest",
     "tailwindcss": "latest",
     "typescript": "latest",
-    "vitest": "^0.34.6"
+    "vitest": "^2.1.8"
   }
 }

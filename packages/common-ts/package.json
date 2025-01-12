@@ -11,11 +11,11 @@
         "ramda": "^0.29.1"
     },
     "devDependencies": {
-        "rollup": "^2.79.2",
+        "@types/ramda": "^0.29.9",
+        "rimraf": "^3.0.2",
+        "rollup": "^3.29.5",
         "rollup-plugin-typescript2": "^0.31.1",
         "typescript": "^5.4.5",
-        "rimraf": "^3.0.2",
-        "vitest": "^0.34.6",
-        "@types/ramda": "^0.29.9"
+        "vitest": "^2.1.8"
     }
 }
