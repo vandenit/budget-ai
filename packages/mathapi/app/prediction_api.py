@@ -49,10 +49,22 @@ def calculate_initial_balance(accounts):
 
 def initialize_daily_projection(initial_balance, days_ahead):
     daily_projection = {}
-    for day in range(days_ahead + 1):
-        date = (datetime.now().date() + timedelta(days=day)).isoformat()
+    # Start with current day (day 0) up to days_ahead
+    current_date = datetime.now().date()
+    daily_projection[current_date.isoformat()] = {
+        "balance": initial_balance,
+        "changes": [{
+            "reason": "Initial Balance",
+            "amount": initial_balance,
+            "category": "Starting Balance"
+        }]
+    }
+    
+    # Add the following days
+    for day in range(1, days_ahead + 1):
+        date = (current_date + timedelta(days=day)).isoformat()
         daily_projection[date] = {
-            "balance": initial_balance,  # Keep raw numeric value
+            "balance": initial_balance,
             "changes": []
         }
     return daily_projection
