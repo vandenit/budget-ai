@@ -1,33 +1,114 @@
 # Budget AI
 
-I started this project for my personal use. I love ynab but I found that it still didn't answer easily questions like: where does my money go every month. I have budgets, but still it is hard to predict that with my current spending trend I will make it or not at the end of the month.
-Also I lacked a clear overview of the historic spending of each category.
-I created this project to give a clear graphical overview of my budget and where my money goes.
+## 🎯 About this project
 
-I called it Budget-AI because my goal is to integrate AI budget advice. But my first focus will be on the graphical presentation. If that is very clear, less AI advice will be needed, and the advice we get will be really to the point. If you have any suggestions or idea feel free to contact me.
+Budget AI is a modern, intelligent budgeting application that goes beyond traditional tools like YNAB. It provides clear visual analysis of your spending patterns and leverages AI to support your financial decisions.
 
-I didn't share the dev url yet since the financial data is not encrypted yet. When it is encrypted end to end I will share it, since I don't want anyone's data be exposed in my database. Even when I would not take advantage of it.
+### Why Budget AI?
+- 📊 Detailed insights into your monthly spending patterns
+- 🔮 Predictive analysis for your monthly budgets
+- 📈 Historical trends per spending category
+- 🤖 AI-driven budget advice (in development)
 
-# Features
+## ✨ Key Features
 
-# Architecture
+- Seamless YNAB integration for data synchronization
+- Advanced spending pattern visualizations
+- User-friendly interface with modern design
+- Secure authentication via Auth0
 
-## web
+## 🔒 Privacy & Security
 
-Nextjs app with daisyui and tailwind.
-User authenticate with nextjs-auth0. For this we use the api/defauth endpoint.
-A user can then connect its ynab account. Here we use the api/auth endpoint. This one uses the next-auth library.
+Privacy is paramount at Budget AI. We are currently implementing end-to-end encryption to ensure the highest level of data protection. Public release will follow once this crucial security feature is implemented.
 
-## api
+## 🏗 Architecture
 
-expressjs app. All the web requests go through the api. It also has a sync endpoint to keep ynab data up to date for each user.
-Data is cached in a mongodb to avoid ynab rate limits. This is not encrypted end to end yet however, and will be an important feature before this app can go live.
+Budget AI is built using a microservices architecture, consisting of several independent services:
 
-# most urgent features:
+### Web Frontend
+- Next.js application with DaisyUI and Tailwind CSS
+- Authentication via NextJS-Auth0
+- YNAB connection through dedicated auth endpoints
+- Runs on port 3000
 
-- end to end encryption
-- integration of prediction app in main app
+### Backend API
+- Express.js application
+- MongoDB caching for optimal performance
+- Automated YNAB synchronization
+- Runs on port 4000
 
-# how to run
+### AI Service
+- Dedicated service for AI predictions and analysis
+- Java/Spring Boot based application
+- Runs on port 8080
 
-- docker-comppose
+### Math API
+- Specialized service for mathematical calculations
+- Flask-based Python service
+- Runs on port 5000
+
+### Common TypeScript
+- Shared TypeScript library
+- Contains common types and utilities
+- Used across web and API services
+
+## 🚀 Roadmap
+
+Development priorities:
+1. End-to-end encryption implementation
+2. Integration of AI prediction module
+3. Expansion of analytical capabilities
+
+## 🛠 Development Setup
+
+### Requirements
+- Docker and Docker Compose
+- Node.js 20+ (for local development)
+- Java 17+ (for AI service development)
+- Python 3.8+ (for Math API development)
+
+### Environment Setup
+1. Copy the example environment files:
+```bash
+cp packages/web/.env.example packages/web/.env
+cp packages/api/.env.example packages/api/.env
+cp packages/ai/.env.example packages/ai/.env
+```
+
+2. Configure the required environment variables:
+- YNAB API credentials
+- Auth0 configuration
+- MongoDB connection details
+
+### Installation
+
+#### Using Docker (recommended)
+```bash
+# Build and start all services
+docker-compose up --build
+
+# Start specific services
+docker-compose up web api
+```
+
+#### Local Development
+```bash
+# Install dependencies
+npm install
+
+# Start services individually
+cd packages/web && npm run dev
+cd packages/api && npm run dev
+cd packages/ai && ./mvnw spring-boot:run
+cd packages/mathapi && flask run
+```
+
+### Available Services
+- Web UI: http://localhost:3000
+- API: http://localhost:4000
+- AI Service: http://localhost:8080
+- Math API: http://localhost:5000
+
+## 🤝 Contributing
+
+Suggestions and ideas are welcome! Feel free to reach out if you'd like to contribute to the development of Budget AI.
