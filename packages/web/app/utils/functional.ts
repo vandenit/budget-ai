@@ -1,4 +1,4 @@
-import R from "types-ramda";
+import * as R from "ramda";
 
 type AsyncFunction<T, R> = (input: T) => Promise<R>;
 
