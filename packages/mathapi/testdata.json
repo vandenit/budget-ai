@@ -1,0 +1,95 @@
+[
+    {
+        "_id": {
+            "$oid": "66ab697ff9292fc9e1e030ed"
+        },
+        "uuid": "627bf469-136d-4a4e-a636-7b34ab176d0b",
+        "name": "Boekhouding",
+        "balance": 99510,
+        "budgeted": -1229490,
+        "activity": 0,
+        "targetAmount": 1321090,
+        "historicalAverage": 11000,
+        "typicalSpendingPattern": 0.13333333333333333,
+        "budgetId": {
+            "$oid": "66ab697ef9292fc9e1e03024"
+        },
+        "__v": 0,
+        "target": {
+            "goal_type": "NEED",
+            "goal_day": null,
+            "goal_cadence": 0,
+            "goal_cadence_frequency": null,
+            "goal_creation_month": "2024-06-01",
+            "goal_target": 1321090,
+            "goal_target_month": "2025-01-31",
+            "goal_percentage_complete": 100,
+            "goal_months_to_budget": 1,
+            "goal_under_funded": 0,
+            "goal_overall_funded": 5064990,
+            "goal_overall_left": 0
+        }
+    },
+    {
+        "_id": {
+            "$oid": "66ab697ff9292fc9e1e03107"
+        },
+        "uuid": "bfbbca9d-d845-44aa-822d-b8008c774a1b",
+        "name": "Sociale Bijdrage",
+        "balance": 55740,
+        "budgeted": -1254900,
+        "activity": 0,
+        "targetAmount": 2621280,
+        "historicalAverage": 26720,
+        "typicalSpendingPattern": 0.45161290322580644,
+        "budgetId": {
+            "$oid": "66ab697ef9292fc9e1e03024"
+        },
+        "__v": 0,
+        "target": {
+            "goal_type": "NEED",
+            "goal_day": null,
+            "goal_cadence": 1,
+            "goal_cadence_frequency": 3,
+            "goal_creation_month": "2024-11-01",
+            "goal_target": 2621280,
+            "goal_target_month": "2025-01-31",
+            "goal_percentage_complete": 2,
+            "goal_months_to_budget": 1,
+            "goal_under_funded": 2565540,
+            "goal_overall_funded": 55740,
+            "goal_overall_left": 2565540
+        }
+    },
+    {
+        "_id": {
+            "$oid": "66ab697ff9292fc9e1e03113"
+        },
+        "uuid": "bfc0e6e7-110b-4dd0-a022-72a6b3604ea5",
+        "name": "Car Insurance",
+        "balance": 0,
+        "budgeted": 15520,
+        "activity": -15520,
+        "targetAmount": 1338240,
+        "historicalAverage": 6180,
+        "typicalSpendingPattern": 0.4193548387096774,
+        "budgetId": {
+            "$oid": "66ab697ef9292fc9e1e03024"
+        },
+        "__v": 0,
+        "target": {
+            "goal_type": "NEED",
+            "goal_day": null,
+            "goal_cadence": 13,
+            "goal_cadence_frequency": 1,
+            "goal_creation_month": "2023-07-01",
+            "goal_target": 1338240,
+            "goal_target_month": "2024-07-23",
+            "goal_percentage_complete": 1,
+            "goal_months_to_budget": 7,
+            "goal_under_funded": 175660,
+            "goal_overall_funded": 15520,
+            "goal_overall_left": 1322720
+        }
+    }
+]

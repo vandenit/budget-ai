@@ -126,7 +126,7 @@ def process_need_category(daily_projection, category, target, scheduled_dates_by
     )
 
 
-def apply_need_category_spending(daily_projection, category, target, current_balance, target_amount, days_ahead, global_overal_left):
+def apply_need_category_spending(daily_projection, category, target, current_balance, target_amount, days_ahead, global_overall_left):
     today = datetime.now().date()
     applied_months = set()
     cadence_interval = None
@@ -164,21 +164,21 @@ def apply_need_category_spending(daily_projection, category, target, current_bal
         # Handle current month with no `goal_target_month` or `goal_day`
         is_current_month = today.year == target_year and today.month == target_month
         if is_current_month and not goal_target_month and not target.get("goal_day"):
-            remaining_amount = current_balance
+            remaining_amount = global_overall_left
             if remaining_amount > 0:
                 apply_transaction(daily_projection, date_str, remaining_amount, category["name"], "Remaining Spending (Current Month)")
             continue
 
         # Handle goal_target_month logic
         if goal_target_month and target_date == goal_target_month:
-            remaining_amount = global_overal_left
+            remaining_amount = global_overall_left
             if remaining_amount > 0:
                 apply_transaction(daily_projection, date_str, remaining_amount, category["name"], "Remaining Spending (Goal Target)")
             continue
 
         if goal_target_month and target_date != goal_target_month and is_current_month:
-            # Apply current balance to transactions
-            remaining_amount = current_balance
+            # Apply remaining amount to transactions
+            remaining_amount = global_overall_left
             if remaining_amount > 0:
                 apply_transaction(daily_projection, date_str, remaining_amount, category["name"], "Budgeted Spending (Current Month)")
 
@@ -192,7 +192,7 @@ def apply_need_category_spending(daily_projection, category, target, current_bal
         # If no goal_target_month is provided, apply spending at the specific day or end of the month
         if not goal_target_month:
             if is_current_month:
-                remaining_amount = current_balance
+                remaining_amount = global_overall_left
                 apply_transaction(daily_projection, date_str, remaining_amount, category["name"], "Spending (No Target Month, current month)")
             else:
                 apply_transaction(daily_projection, date_str, target_amount, category["name"], "No Target Month, future month)")
