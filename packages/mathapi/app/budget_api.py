@@ -1,4 +1,4 @@
-from db import get_DB
+from app.db import get_DB
 from bson import ObjectId
 
 def convert_objectid_to_str(doc):
@@ -10,7 +10,7 @@ def convert_objectid_to_str(doc):
             convert_objectid_to_str(value)
     return doc
 
-def get_objectid_for_budget(uuid):
+def get_objectid_for_budget(budget_uuid):
     """
     Fetches the ObjectId for a given budget UUID in the localBudgets collection.
 
@@ -20,5 +20,5 @@ def get_objectid_for_budget(uuid):
     Returns:
         ObjectId or None: The ObjectId associated with the budget UUID, or None if not found.
     """
-    budget = get_DB().localbudgets.find_one({"uuid": uuid})
+    budget = get_DB().localbudgets.find_one({"uuid": budget_uuid})
     return budget["_id"] if budget else None

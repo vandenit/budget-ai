@@ -1,0 +1,29 @@
+{
+    "2024-01-31": {
+        "balance": -2787.35,
+        "balance_diff": -3887.35,
+        "changes": [
+            {
+                "reason": "Target Due This Month",
+                "amount": -1321.09,
+                "category": "Boekhouding"
+            },
+            {
+                "reason": "Remaining Target Amount",
+                "amount": -2565.54,
+                "category": "Sociale Bijdrage"
+            }
+        ]
+    },
+    "2024-07-23": {
+        "balance": -4110.07,
+        "balance_diff": -1322.72,
+        "changes": [
+            {
+                "reason": "Yearly Payment",
+                "amount": -1322.72,
+                "category": "Car Insurance"
+            }
+        ]
+    }
+}
