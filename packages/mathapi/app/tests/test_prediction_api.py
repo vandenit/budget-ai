@@ -3,10 +3,14 @@ from datetime import datetime, date
 from unittest.mock import patch
 import json
 import os
+from dotenv import load_dotenv
 from app.prediction_api import projected_balances_for_budget
 
 class TestPredictionApi(unittest.TestCase):
     def setUp(self):
+        # Load environment variables
+        load_dotenv()
+        
         # Load test fixtures
         fixtures_dir = os.path.join(os.path.dirname(__file__), 'fixtures')
         

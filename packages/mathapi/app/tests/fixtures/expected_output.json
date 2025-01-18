@@ -1,8 +1,70 @@
 {
-    "2024-01-31": {
-        "balance": -2787.35,
-        "balance_diff": -3887.35,
+    "2025-01-18": {
+        "balance": 1899.54,
         "changes": [
+            {
+                "reason": "Initial Balance",
+                "amount": 949.77,
+                "category": "Starting Balance"
+            }
+        ],
+        "balance_diff": 949.77
+    },
+    "2025-01-23": {
+        "balance": 3170.24,
+        "changes": [
+            {
+                "reason": "Scheduled Transaction",
+                "amount": -6.7,
+                "category": "Internet Tools",
+                "account": "Kredietcard",
+                "payee": null,
+                "memo": "Docker.io"
+            },
+            {
+                "reason": "Scheduled Transaction",
+                "amount": -29.4,
+                "category": "Internet Tools",
+                "account": "Kredietcard",
+                "payee": null,
+                "memo": "Adobe "
+            },
+            {
+                "reason": "Scheduled Transaction",
+                "amount": 1306.8,
+                "category": "Inflow: Ready to Assign",
+                "account": "Vanden IT checking account",
+                "payee": null,
+                "memo": "Teletask factuur"
+            }
+        ],
+        "balance_diff": 1270.7
+    },
+    "2025-01-29": {
+        "balance": 2760.24,
+        "changes": [
+            {
+                "reason": "Scheduled Transaction",
+                "amount": -410.0,
+                "category": "Sociale bijdrage Afbetaling",
+                "account": "Vanden IT checking account",
+                "payee": null,
+                "memo": "Xerius "
+            }
+        ],
+        "balance_diff": -410.0
+    },
+    "2025-01-31": {
+        "balance": -9306.460000000001,
+        "changes": [
+            {
+                "reason": "Scheduled Transaction",
+                "amount": 3932.5,
+                "category": "Inflow: Ready to Assign",
+                "account": "Vanden IT checking account",
+                "payee": null,
+                "memo": "Ixor"
+            },
             {
                 "reason": "Target Due This Month",
                 "amount": -1321.09,
@@ -10,20 +72,1425 @@
             },
             {
                 "reason": "Remaining Target Amount",
-                "amount": -2565.54,
+                "amount": -356.85,
+                "category": "Eating Out"
+            },
+            {
+                "reason": "Target Due This Month",
+                "amount": -2621.28,
                 "category": "Sociale Bijdrage"
+            },
+            {
+                "reason": "Target Due This Month",
+                "amount": -3604.54,
+                "category": "Taxes"
+            },
+            {
+                "reason": "Remaining Target Amount",
+                "amount": -57.8,
+                "category": "Internet Tools"
+            },
+            {
+                "reason": "Target Due This Month",
+                "amount": -8037.64,
+                "category": "BTW kwartaal"
             }
-        ]
+        ],
+        "balance_diff": -12066.7
     },
-    "2024-07-23": {
-        "balance": -4110.07,
-        "balance_diff": -1322.72,
+    "2025-02-01": {
+        "balance": -10071.410000000002,
         "changes": [
+            {
+                "reason": "Scheduled Transaction",
+                "amount": -4.95,
+                "category": "Credit Card",
+                "account": "Vanden IT checking account",
+                "payee": null,
+                "memo": "Fastmail"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -760.0,
+                "category": "Sociale bijdrage Afbetaling"
+            }
+        ],
+        "balance_diff": -764.95
+    },
+    "2025-02-02": {
+        "balance": -17880.95,
+        "changes": [
+            {
+                "reason": "Scheduled Transaction",
+                "amount": -27.76,
+                "category": "Internet Tools",
+                "account": "Kredietcard",
+                "payee": null,
+                "memo": "Digital ocean "
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -433.57,
+                "category": "Groepsverzekering"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -7348.21,
+                "category": "Salery"
+            }
+        ],
+        "balance_diff": -7809.54
+    },
+    "2025-02-05": {
+        "balance": -18565.45,
+        "changes": [
+            {
+                "reason": "Scheduled Transaction",
+                "amount": -335.0,
+                "category": "Sociale bijdrage Afbetaling",
+                "account": "Wachtrekening",
+                "payee": null,
+                "memo": null
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -349.5,
+                "category": "Maaltijdvoucher"
+            }
+        ],
+        "balance_diff": -684.5
+    },
+    "2025-02-06": {
+        "balance": -18565.45,
+        "changes": [
+            {
+                "reason": "Future Month Target",
+                "amount": -0.0,
+                "category": "Entertainment"
+            }
+        ],
+        "balance_diff": 0.0
+    },
+    "2025-02-08": {
+        "balance": -18575.3,
+        "changes": [
+            {
+                "reason": "Scheduled Transaction",
+                "amount": -9.85,
+                "category": "Internet Tools",
+                "account": "Kredietcard",
+                "payee": null,
+                "memo": "github inc"
+            }
+        ],
+        "balance_diff": -9.85
+    },
+    "2025-02-22": {
+        "balance": -19358.829999999998,
+        "changes": [
+            {
+                "reason": "Future Month Target",
+                "amount": -270.0,
+                "category": "Internet"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -513.53,
+                "category": "Car Leasing"
+            }
+        ],
+        "balance_diff": -783.53
+    },
+    "2025-02-28": {
+        "balance": -4464.899999999998,
+        "changes": [
+            {
+                "reason": "Scheduled Transaction",
+                "amount": 16516.5,
+                "category": "Inflow: Ready to Assign",
+                "account": "Vanden IT checking account",
+                "payee": null,
+                "memo": "Ixof"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -200.0,
+                "category": "Unexpected"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -267.52,
+                "category": "Bike Leasing"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -600.0,
+                "category": "Eating Out"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -239.0,
+                "category": "Transportation"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -116.05,
+                "category": "Internet Tools"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -200.0,
+                "category": "Terug Te Betalen Van Persoonlijk"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -0.0,
+                "category": "Hobbies"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -0.0,
+                "category": "Health & Wellness"
+            }
+        ],
+        "balance_diff": 14893.93
+    },
+    "2025-03-01": {
+        "balance": -11927.899999999998,
+        "changes": [
+            {
+                "reason": "Scheduled Transaction",
+                "amount": -6703.0,
+                "category": "BTW kwartaal",
+                "account": "Vanden IT checking account",
+                "payee": "BTW ONTVANGSTEN - BRUSSEL",
+                "memo": "btw kwartaal K4"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -760.0,
+                "category": "Sociale bijdrage Afbetaling"
+            }
+        ],
+        "balance_diff": -7463.0
+    },
+    "2025-03-02": {
+        "balance": -19709.679999999997,
+        "changes": [
+            {
+                "reason": "Future Month Target",
+                "amount": -433.57,
+                "category": "Groepsverzekering"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -7348.21,
+                "category": "Salery"
+            }
+        ],
+        "balance_diff": -7781.78
+    },
+    "2025-03-05": {
+        "balance": -20059.179999999997,
+        "changes": [
+            {
+                "reason": "Future Month Target",
+                "amount": -349.5,
+                "category": "Maaltijdvoucher"
+            }
+        ],
+        "balance_diff": -349.5
+    },
+    "2025-03-06": {
+        "balance": -20059.179999999997,
+        "changes": [
+            {
+                "reason": "Future Month Target",
+                "amount": -0.0,
+                "category": "Entertainment"
+            }
+        ],
+        "balance_diff": 0.0
+    },
+    "2025-03-22": {
+        "balance": -20842.709999999995,
+        "changes": [
+            {
+                "reason": "Future Month Target",
+                "amount": -270.0,
+                "category": "Internet"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -513.53,
+                "category": "Car Leasing"
+            }
+        ],
+        "balance_diff": -783.53
+    },
+    "2025-03-28": {
+        "balance": -4628.099999999995,
+        "changes": [
+            {
+                "reason": "Scheduled Transaction",
+                "amount": 16214.61,
+                "category": "Inflow: Ready to Assign",
+                "account": "Vanden IT checking account",
+                "payee": null,
+                "memo": null
+            }
+        ],
+        "balance_diff": 16214.61
+    },
+    "2025-03-31": {
+        "balance": -6250.669999999995,
+        "changes": [
+            {
+                "reason": "Future Month Target",
+                "amount": -200.0,
+                "category": "Unexpected"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -267.52,
+                "category": "Bike Leasing"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -600.0,
+                "category": "Eating Out"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -239.0,
+                "category": "Transportation"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -116.05,
+                "category": "Internet Tools"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -200.0,
+                "category": "Terug Te Betalen Van Persoonlijk"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -0.0,
+                "category": "Hobbies"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -0.0,
+                "category": "Health & Wellness"
+            }
+        ],
+        "balance_diff": -1622.57
+    },
+    "2025-04-01": {
+        "balance": -7010.669999999995,
+        "changes": [
+            {
+                "reason": "Future Month Target",
+                "amount": -760.0,
+                "category": "Sociale bijdrage Afbetaling"
+            }
+        ],
+        "balance_diff": -760.0
+    },
+    "2025-04-02": {
+        "balance": -14792.449999999993,
+        "changes": [
+            {
+                "reason": "Future Month Target",
+                "amount": -433.57,
+                "category": "Groepsverzekering"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -7348.21,
+                "category": "Salery"
+            }
+        ],
+        "balance_diff": -7781.78
+    },
+    "2025-04-05": {
+        "balance": -15141.949999999993,
+        "changes": [
+            {
+                "reason": "Future Month Target",
+                "amount": -349.5,
+                "category": "Maaltijdvoucher"
+            }
+        ],
+        "balance_diff": -349.5
+    },
+    "2025-04-06": {
+        "balance": -15141.949999999993,
+        "changes": [
+            {
+                "reason": "Future Month Target",
+                "amount": -0.0,
+                "category": "Entertainment"
+            }
+        ],
+        "balance_diff": 0.0
+    },
+    "2025-04-22": {
+        "balance": -15925.479999999994,
+        "changes": [
+            {
+                "reason": "Future Month Target",
+                "amount": -270.0,
+                "category": "Internet"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -513.53,
+                "category": "Car Leasing"
+            }
+        ],
+        "balance_diff": -783.53
+    },
+    "2025-04-30": {
+        "balance": -12114.579999999994,
+        "changes": [
+            {
+                "reason": "Scheduled Transaction",
+                "amount": 16092.39,
+                "category": "Inflow: Ready to Assign",
+                "account": "Vanden IT checking account",
+                "payee": null,
+                "memo": null
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -200.0,
+                "category": "Unexpected"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -267.52,
+                "category": "Bike Leasing"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -600.0,
+                "category": "Eating Out"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -239.0,
+                "category": "Transportation"
+            },
+            {
+                "reason": "Recurring Spending (Monthly every 3)",
+                "amount": -2621.28,
+                "category": "Sociale Bijdrage"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -116.05,
+                "category": "Internet Tools"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -200.0,
+                "category": "Terug Te Betalen Van Persoonlijk"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -0.0,
+                "category": "Hobbies"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -0.0,
+                "category": "Health & Wellness"
+            },
+            {
+                "reason": "Recurring Spending (Monthly every 3)",
+                "amount": -8037.64,
+                "category": "BTW kwartaal"
+            }
+        ],
+        "balance_diff": 3810.8999999999987
+    },
+    "2025-05-01": {
+        "balance": -12874.579999999994,
+        "changes": [
+            {
+                "reason": "Future Month Target",
+                "amount": -760.0,
+                "category": "Sociale bijdrage Afbetaling"
+            }
+        ],
+        "balance_diff": -760.0
+    },
+    "2025-05-02": {
+        "balance": -20656.359999999993,
+        "changes": [
+            {
+                "reason": "Future Month Target",
+                "amount": -433.57,
+                "category": "Groepsverzekering"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -7348.21,
+                "category": "Salery"
+            }
+        ],
+        "balance_diff": -7781.78
+    },
+    "2025-05-05": {
+        "balance": -21005.859999999993,
+        "changes": [
+            {
+                "reason": "Future Month Target",
+                "amount": -349.5,
+                "category": "Maaltijdvoucher"
+            }
+        ],
+        "balance_diff": -349.5
+    },
+    "2025-05-06": {
+        "balance": -21005.859999999993,
+        "changes": [
+            {
+                "reason": "Future Month Target",
+                "amount": -0.0,
+                "category": "Entertainment"
+            }
+        ],
+        "balance_diff": 0.0
+    },
+    "2025-05-22": {
+        "balance": -21789.389999999992,
+        "changes": [
+            {
+                "reason": "Future Month Target",
+                "amount": -270.0,
+                "category": "Internet"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -513.53,
+                "category": "Car Leasing"
+            }
+        ],
+        "balance_diff": -783.53
+    },
+    "2025-05-30": {
+        "balance": -6789.389999999992,
+        "changes": [
+            {
+                "reason": "Scheduled Transaction",
+                "amount": 15000.0,
+                "category": "Inflow: Ready to Assign",
+                "account": "Vanden IT checking account",
+                "payee": null,
+                "memo": null
+            }
+        ],
+        "balance_diff": 15000.0
+    },
+    "2025-05-31": {
+        "balance": -8411.959999999992,
+        "changes": [
+            {
+                "reason": "Future Month Target",
+                "amount": -200.0,
+                "category": "Unexpected"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -267.52,
+                "category": "Bike Leasing"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -600.0,
+                "category": "Eating Out"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -239.0,
+                "category": "Transportation"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -116.05,
+                "category": "Internet Tools"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -200.0,
+                "category": "Terug Te Betalen Van Persoonlijk"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -0.0,
+                "category": "Hobbies"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -0.0,
+                "category": "Health & Wellness"
+            }
+        ],
+        "balance_diff": -1622.57
+    },
+    "2025-06-01": {
+        "balance": -9171.959999999992,
+        "changes": [
+            {
+                "reason": "Future Month Target",
+                "amount": -760.0,
+                "category": "Sociale bijdrage Afbetaling"
+            }
+        ],
+        "balance_diff": -760.0
+    },
+    "2025-06-02": {
+        "balance": -16953.73999999999,
+        "changes": [
+            {
+                "reason": "Future Month Target",
+                "amount": -433.57,
+                "category": "Groepsverzekering"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -7348.21,
+                "category": "Salery"
+            }
+        ],
+        "balance_diff": -7781.78
+    },
+    "2025-06-05": {
+        "balance": -17303.23999999999,
+        "changes": [
+            {
+                "reason": "Future Month Target",
+                "amount": -349.5,
+                "category": "Maaltijdvoucher"
+            }
+        ],
+        "balance_diff": -349.5
+    },
+    "2025-06-06": {
+        "balance": -17303.23999999999,
+        "changes": [
+            {
+                "reason": "Future Month Target",
+                "amount": -0.0,
+                "category": "Entertainment"
+            }
+        ],
+        "balance_diff": 0.0
+    },
+    "2025-06-22": {
+        "balance": -18086.76999999999,
+        "changes": [
+            {
+                "reason": "Future Month Target",
+                "amount": -270.0,
+                "category": "Internet"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -513.53,
+                "category": "Car Leasing"
+            }
+        ],
+        "balance_diff": -783.53
+    },
+    "2025-06-30": {
+        "balance": -19709.33999999999,
+        "changes": [
+            {
+                "reason": "Future Month Target",
+                "amount": -200.0,
+                "category": "Unexpected"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -267.52,
+                "category": "Bike Leasing"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -600.0,
+                "category": "Eating Out"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -239.0,
+                "category": "Transportation"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -116.05,
+                "category": "Internet Tools"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -200.0,
+                "category": "Terug Te Betalen Van Persoonlijk"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -0.0,
+                "category": "Hobbies"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -0.0,
+                "category": "Health & Wellness"
+            }
+        ],
+        "balance_diff": -1622.57
+    },
+    "2025-07-01": {
+        "balance": -20469.33999999999,
+        "changes": [
+            {
+                "reason": "Future Month Target",
+                "amount": -760.0,
+                "category": "Sociale bijdrage Afbetaling"
+            }
+        ],
+        "balance_diff": -760.0
+    },
+    "2025-07-02": {
+        "balance": -28251.119999999988,
+        "changes": [
+            {
+                "reason": "Future Month Target",
+                "amount": -433.57,
+                "category": "Groepsverzekering"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -7348.21,
+                "category": "Salery"
+            }
+        ],
+        "balance_diff": -7781.78
+    },
+    "2025-07-05": {
+        "balance": -28600.619999999988,
+        "changes": [
+            {
+                "reason": "Future Month Target",
+                "amount": -349.5,
+                "category": "Maaltijdvoucher"
+            }
+        ],
+        "balance_diff": -349.5
+    },
+    "2025-07-06": {
+        "balance": -28600.619999999988,
+        "changes": [
+            {
+                "reason": "Future Month Target",
+                "amount": -0.0,
+                "category": "Entertainment"
+            }
+        ],
+        "balance_diff": 0.0
+    },
+    "2025-07-22": {
+        "balance": -29384.149999999987,
+        "changes": [
+            {
+                "reason": "Future Month Target",
+                "amount": -270.0,
+                "category": "Internet"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -513.53,
+                "category": "Car Leasing"
+            }
+        ],
+        "balance_diff": -783.53
+    },
+    "2025-07-31": {
+        "balance": -42988.359999999986,
+        "changes": [
+            {
+                "reason": "Future Month Target",
+                "amount": -200.0,
+                "category": "Unexpected"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -267.52,
+                "category": "Bike Leasing"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -600.0,
+                "category": "Eating Out"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -239.0,
+                "category": "Transportation"
+            },
+            {
+                "reason": "Recurring Spending (Monthly every 3)",
+                "amount": -2621.28,
+                "category": "Sociale Bijdrage"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -116.05,
+                "category": "Internet Tools"
+            },
             {
                 "reason": "Yearly Payment",
                 "amount": -1322.72,
                 "category": "Car Insurance"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -200.0,
+                "category": "Terug Te Betalen Van Persoonlijk"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -0.0,
+                "category": "Hobbies"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -0.0,
+                "category": "Health & Wellness"
+            },
+            {
+                "reason": "Recurring Spending (Monthly every 3)",
+                "amount": -8037.64,
+                "category": "BTW kwartaal"
             }
-        ]
+        ],
+        "balance_diff": -13604.210000000001
+    },
+    "2025-08-01": {
+        "balance": -43748.359999999986,
+        "changes": [
+            {
+                "reason": "Future Month Target",
+                "amount": -760.0,
+                "category": "Sociale bijdrage Afbetaling"
+            }
+        ],
+        "balance_diff": -760.0
+    },
+    "2025-08-02": {
+        "balance": -51530.139999999985,
+        "changes": [
+            {
+                "reason": "Future Month Target",
+                "amount": -433.57,
+                "category": "Groepsverzekering"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -7348.21,
+                "category": "Salery"
+            }
+        ],
+        "balance_diff": -7781.78
+    },
+    "2025-08-05": {
+        "balance": -51879.639999999985,
+        "changes": [
+            {
+                "reason": "Future Month Target",
+                "amount": -349.5,
+                "category": "Maaltijdvoucher"
+            }
+        ],
+        "balance_diff": -349.5
+    },
+    "2025-08-06": {
+        "balance": -51879.639999999985,
+        "changes": [
+            {
+                "reason": "Future Month Target",
+                "amount": -0.0,
+                "category": "Entertainment"
+            }
+        ],
+        "balance_diff": 0.0
+    },
+    "2025-08-22": {
+        "balance": -52663.169999999984,
+        "changes": [
+            {
+                "reason": "Future Month Target",
+                "amount": -270.0,
+                "category": "Internet"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -513.53,
+                "category": "Car Leasing"
+            }
+        ],
+        "balance_diff": -783.53
+    },
+    "2025-08-31": {
+        "balance": -54285.73999999998,
+        "changes": [
+            {
+                "reason": "Future Month Target",
+                "amount": -200.0,
+                "category": "Unexpected"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -267.52,
+                "category": "Bike Leasing"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -600.0,
+                "category": "Eating Out"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -239.0,
+                "category": "Transportation"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -116.05,
+                "category": "Internet Tools"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -200.0,
+                "category": "Terug Te Betalen Van Persoonlijk"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -0.0,
+                "category": "Hobbies"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -0.0,
+                "category": "Health & Wellness"
+            }
+        ],
+        "balance_diff": -1622.57
+    },
+    "2025-09-01": {
+        "balance": -55045.73999999998,
+        "changes": [
+            {
+                "reason": "Future Month Target",
+                "amount": -760.0,
+                "category": "Sociale bijdrage Afbetaling"
+            }
+        ],
+        "balance_diff": -760.0
+    },
+    "2025-09-02": {
+        "balance": -62827.51999999998,
+        "changes": [
+            {
+                "reason": "Future Month Target",
+                "amount": -433.57,
+                "category": "Groepsverzekering"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -7348.21,
+                "category": "Salery"
+            }
+        ],
+        "balance_diff": -7781.78
+    },
+    "2025-09-05": {
+        "balance": -63177.01999999998,
+        "changes": [
+            {
+                "reason": "Future Month Target",
+                "amount": -349.5,
+                "category": "Maaltijdvoucher"
+            }
+        ],
+        "balance_diff": -349.5
+    },
+    "2025-09-06": {
+        "balance": -63177.01999999998,
+        "changes": [
+            {
+                "reason": "Future Month Target",
+                "amount": -0.0,
+                "category": "Entertainment"
+            }
+        ],
+        "balance_diff": 0.0
+    },
+    "2025-09-22": {
+        "balance": -63960.54999999998,
+        "changes": [
+            {
+                "reason": "Future Month Target",
+                "amount": -270.0,
+                "category": "Internet"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -513.53,
+                "category": "Car Leasing"
+            }
+        ],
+        "balance_diff": -783.53
+    },
+    "2025-09-30": {
+        "balance": -65583.11999999998,
+        "changes": [
+            {
+                "reason": "Future Month Target",
+                "amount": -200.0,
+                "category": "Unexpected"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -267.52,
+                "category": "Bike Leasing"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -600.0,
+                "category": "Eating Out"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -239.0,
+                "category": "Transportation"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -116.05,
+                "category": "Internet Tools"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -200.0,
+                "category": "Terug Te Betalen Van Persoonlijk"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -0.0,
+                "category": "Hobbies"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -0.0,
+                "category": "Health & Wellness"
+            }
+        ],
+        "balance_diff": -1622.57
+    },
+    "2025-10-01": {
+        "balance": -66343.11999999998,
+        "changes": [
+            {
+                "reason": "Future Month Target",
+                "amount": -760.0,
+                "category": "Sociale bijdrage Afbetaling"
+            }
+        ],
+        "balance_diff": -760.0
+    },
+    "2025-10-02": {
+        "balance": -74124.89999999998,
+        "changes": [
+            {
+                "reason": "Future Month Target",
+                "amount": -433.57,
+                "category": "Groepsverzekering"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -7348.21,
+                "category": "Salery"
+            }
+        ],
+        "balance_diff": -7781.78
+    },
+    "2025-10-05": {
+        "balance": -74474.39999999998,
+        "changes": [
+            {
+                "reason": "Future Month Target",
+                "amount": -349.5,
+                "category": "Maaltijdvoucher"
+            }
+        ],
+        "balance_diff": -349.5
+    },
+    "2025-10-06": {
+        "balance": -74474.39999999998,
+        "changes": [
+            {
+                "reason": "Future Month Target",
+                "amount": -0.0,
+                "category": "Entertainment"
+            }
+        ],
+        "balance_diff": 0.0
+    },
+    "2025-10-22": {
+        "balance": -75257.92999999998,
+        "changes": [
+            {
+                "reason": "Future Month Target",
+                "amount": -270.0,
+                "category": "Internet"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -513.53,
+                "category": "Car Leasing"
+            }
+        ],
+        "balance_diff": -783.53
+    },
+    "2025-10-31": {
+        "balance": -87539.41999999998,
+        "changes": [
+            {
+                "reason": "Future Month Target",
+                "amount": -200.0,
+                "category": "Unexpected"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -267.52,
+                "category": "Bike Leasing"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -600.0,
+                "category": "Eating Out"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -239.0,
+                "category": "Transportation"
+            },
+            {
+                "reason": "Recurring Spending (Monthly every 3)",
+                "amount": -2621.28,
+                "category": "Sociale Bijdrage"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -116.05,
+                "category": "Internet Tools"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -200.0,
+                "category": "Terug Te Betalen Van Persoonlijk"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -0.0,
+                "category": "Hobbies"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -0.0,
+                "category": "Health & Wellness"
+            },
+            {
+                "reason": "Recurring Spending (Monthly every 3)",
+                "amount": -8037.64,
+                "category": "BTW kwartaal"
+            }
+        ],
+        "balance_diff": -12281.49
+    },
+    "2025-11-01": {
+        "balance": -88299.41999999998,
+        "changes": [
+            {
+                "reason": "Future Month Target",
+                "amount": -760.0,
+                "category": "Sociale bijdrage Afbetaling"
+            }
+        ],
+        "balance_diff": -760.0
+    },
+    "2025-11-02": {
+        "balance": -96081.19999999998,
+        "changes": [
+            {
+                "reason": "Future Month Target",
+                "amount": -433.57,
+                "category": "Groepsverzekering"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -7348.21,
+                "category": "Salery"
+            }
+        ],
+        "balance_diff": -7781.78
+    },
+    "2025-11-05": {
+        "balance": -96430.69999999998,
+        "changes": [
+            {
+                "reason": "Future Month Target",
+                "amount": -349.5,
+                "category": "Maaltijdvoucher"
+            }
+        ],
+        "balance_diff": -349.5
+    },
+    "2025-11-06": {
+        "balance": -96430.69999999998,
+        "changes": [
+            {
+                "reason": "Future Month Target",
+                "amount": -0.0,
+                "category": "Entertainment"
+            }
+        ],
+        "balance_diff": 0.0
+    },
+    "2025-11-22": {
+        "balance": -97214.22999999998,
+        "changes": [
+            {
+                "reason": "Future Month Target",
+                "amount": -270.0,
+                "category": "Internet"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -513.53,
+                "category": "Car Leasing"
+            }
+        ],
+        "balance_diff": -783.53
+    },
+    "2025-11-30": {
+        "balance": -98836.79999999999,
+        "changes": [
+            {
+                "reason": "Future Month Target",
+                "amount": -200.0,
+                "category": "Unexpected"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -267.52,
+                "category": "Bike Leasing"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -600.0,
+                "category": "Eating Out"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -239.0,
+                "category": "Transportation"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -116.05,
+                "category": "Internet Tools"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -200.0,
+                "category": "Terug Te Betalen Van Persoonlijk"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -0.0,
+                "category": "Hobbies"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -0.0,
+                "category": "Health & Wellness"
+            }
+        ],
+        "balance_diff": -1622.57
+    },
+    "2025-12-01": {
+        "balance": -99596.79999999999,
+        "changes": [
+            {
+                "reason": "Future Month Target",
+                "amount": -760.0,
+                "category": "Sociale bijdrage Afbetaling"
+            }
+        ],
+        "balance_diff": -760.0
+    },
+    "2025-12-02": {
+        "balance": -107378.57999999999,
+        "changes": [
+            {
+                "reason": "Future Month Target",
+                "amount": -433.57,
+                "category": "Groepsverzekering"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -7348.21,
+                "category": "Salery"
+            }
+        ],
+        "balance_diff": -7781.78
+    },
+    "2025-12-05": {
+        "balance": -107728.07999999999,
+        "changes": [
+            {
+                "reason": "Future Month Target",
+                "amount": -349.5,
+                "category": "Maaltijdvoucher"
+            }
+        ],
+        "balance_diff": -349.5
+    },
+    "2025-12-06": {
+        "balance": -107728.07999999999,
+        "changes": [
+            {
+                "reason": "Future Month Target",
+                "amount": -0.0,
+                "category": "Entertainment"
+            }
+        ],
+        "balance_diff": 0.0
+    },
+    "2025-12-22": {
+        "balance": -108511.60999999999,
+        "changes": [
+            {
+                "reason": "Future Month Target",
+                "amount": -270.0,
+                "category": "Internet"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -513.53,
+                "category": "Car Leasing"
+            }
+        ],
+        "balance_diff": -783.53
+    },
+    "2025-12-31": {
+        "balance": -110134.18,
+        "changes": [
+            {
+                "reason": "Future Month Target",
+                "amount": -200.0,
+                "category": "Unexpected"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -267.52,
+                "category": "Bike Leasing"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -600.0,
+                "category": "Eating Out"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -239.0,
+                "category": "Transportation"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -116.05,
+                "category": "Internet Tools"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -200.0,
+                "category": "Terug Te Betalen Van Persoonlijk"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -0.0,
+                "category": "Hobbies"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -0.0,
+                "category": "Health & Wellness"
+            }
+        ],
+        "balance_diff": -1622.57
+    },
+    "2026-01-01": {
+        "balance": -110894.18,
+        "changes": [
+            {
+                "reason": "Future Month Target",
+                "amount": -760.0,
+                "category": "Sociale bijdrage Afbetaling"
+            }
+        ],
+        "balance_diff": -760.0
+    },
+    "2026-01-02": {
+        "balance": -118675.95999999999,
+        "changes": [
+            {
+                "reason": "Future Month Target",
+                "amount": -433.57,
+                "category": "Groepsverzekering"
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -7348.21,
+                "category": "Salery"
+            }
+        ],
+        "balance_diff": -7781.78
+    },
+    "2026-01-05": {
+        "balance": -119025.45999999999,
+        "changes": [
+            {
+                "reason": "Future Month Target",
+                "amount": -349.5,
+                "category": "Maaltijdvoucher"
+            }
+        ],
+        "balance_diff": -349.5
+    },
+    "2026-01-06": {
+        "balance": -119025.45999999999,
+        "changes": [
+            {
+                "reason": "Future Month Target",
+                "amount": -0.0,
+                "category": "Entertainment"
+            }
+        ],
+        "balance_diff": 0.0
     }
 }

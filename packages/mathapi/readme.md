@@ -49,3 +49,63 @@ http://127.0.0.1:5000/uncategorised-transactions/suggest-categories?budget_id=1b
 # apply suggestions
 
 POST http://127.0.0.1:5000/uncategorised-transactions/apply-categories?budget_id=1b443ebf-ea07-4ab7-8fd5-9330bf80608c
+
+# Math API
+
+This API provides mathematical calculations and predictions for budgeting purposes.
+
+## Installation
+
+```bash
+pip install -r requirements.txt
+```
+
+## Running Tests
+
+To run all tests:
+```bash
+PYTHONPATH=. python -m pytest
+```
+
+### Test Fixtures
+
+The tests use fixtures stored in `app/tests/fixtures/`:
+- `input_data.json`: Contains test data (categories, accounts, scheduled transactions)
+- `expected_output.json`: Contains expected prediction results
+
+To update the test fixtures with real data:
+```bash
+# Make sure you're in the mathapi directory
+cd packages/mathapi
+
+# Record new fixtures (this will use real API data)
+PYTHONPATH=. RECORD_FIXTURES=1 python -m pytest app/tests/test_prediction_api.py::TestPredictionApi::test_record_new_fixtures -v
+
+# Verify the tests pass with new fixtures
+PYTHONPATH=. python -m pytest app/tests/test_prediction_api.py -v
+```
+
+Note: Recording new fixtures will use real data from your YNAB budget and MongoDB database. Make sure your `.env` file is properly configured.
+
+### Anonimiseren van Test Fixtures
+
+Om de test fixtures te anonimiseren voor een publieke repository:
+
+1. Vervang gevoelige data in `input_data.json`:
+```bash
+# Gebruik sed om gevoelige data te vervangen (pas commands aan naar behoefte)
+sed -i '' 's/echte_naam/Bedrijf X/g' app/tests/fixtures/input_data.json
+sed -i '' 's/specifiek_bedrag/1000.00/g' app/tests/fixtures/input_data.json
+```
+
+Aanbevolen vervangingen:
+- Bedrijfsnaam → "Bedrijf X"
+- Persoonlijke namen → "Persoon A", "Persoon B"
+- Rekeningnummers → "REKENING123"
+- Specifieke bedragen → Rond af of vermenigvuldig met een factor
+- Gevoelige category namen → Algemene termen zoals "Verzekering", "Abonnement"
+- Budget IDs → "budget-id-123"
+
+2. Pas dezelfde vervangingen toe in `expected_output.json`
+
+Let op: Zorg dat de data consistent blijft tussen beide files om de tests werkend te houden.
