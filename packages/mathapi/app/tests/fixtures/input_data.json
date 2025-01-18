@@ -1,0 +1,64 @@
+{
+    "scheduled_transactions": [],
+    "categories": [
+        {
+            "name": "Boekhouding",
+            "balance": 99510,
+            "target": {
+                "goal_type": "NEED",
+                "goal_day": null,
+                "goal_cadence": 0,
+                "goal_cadence_frequency": null,
+                "goal_creation_month": "2024-06-01",
+                "goal_target": 1321090,
+                "goal_target_month": "2025-01-31",
+                "goal_percentage_complete": 100,
+                "goal_months_to_budget": 1,
+                "goal_under_funded": 0,
+                "goal_overall_funded": 5064990,
+                "goal_overall_left": 0
+            }
+        },
+        {
+            "name": "Sociale Bijdrage",
+            "balance": 55740,
+            "target": {
+                "goal_type": "NEED",
+                "goal_day": null,
+                "goal_cadence": 1,
+                "goal_cadence_frequency": 3,
+                "goal_creation_month": "2024-11-01",
+                "goal_target": 2621280,
+                "goal_target_month": "2025-01-31",
+                "goal_percentage_complete": 2,
+                "goal_months_to_budget": 1,
+                "goal_under_funded": 2565540,
+                "goal_overall_funded": 55740,
+                "goal_overall_left": 2565540
+            }
+        },
+        {
+            "name": "Car Insurance",
+            "balance": 0,
+            "target": {
+                "goal_type": "NEED",
+                "goal_day": null,
+                "goal_cadence": 13,
+                "goal_cadence_frequency": 1,
+                "goal_creation_month": "2023-07-01",
+                "goal_target": 1338240,
+                "goal_target_month": "2024-07-23",
+                "goal_percentage_complete": 1,
+                "goal_months_to_budget": 7,
+                "goal_under_funded": 175660,
+                "goal_overall_funded": 15520,
+                "goal_overall_left": 1322720
+            }
+        }
+    ],
+    "accounts": [
+        {
+            "balance": 1000000
+        }
+    ]
+}
