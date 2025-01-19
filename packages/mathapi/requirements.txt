@@ -1,7 +1,9 @@
 Flask>=2.2.2
 Werkzeug>=2.2.2
 requests
-python-dotenv
-pymongo
+python-dotenv==0.19.0
+pymongo==3.12.0
 dnspython  # Required if you're using MongoDB Atlas or a connection string with DNS
 openai>=1.58.1
+pytest==6.2.5
+cryptography==41.0.7

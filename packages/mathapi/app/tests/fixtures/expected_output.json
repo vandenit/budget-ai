@@ -1,11 +1,11 @@
 {
-    "2025-01-18": {
+    "2025-01-19": {
         "balance": 1899.54,
         "changes": [
             {
                 "reason": "Initial Balance",
                 "amount": 949.77,
-                "category": "Starting Balance"
+                "category": "yCoXWITWxZC9XsQn5hFQPuYC3Xa4IQI6j7xZnEwB9hc="
             }
         ],
         "balance_diff": 949.77
@@ -16,24 +16,24 @@
             {
                 "reason": "Scheduled Transaction",
                 "amount": -6.7,
-                "category": "Internet Tools",
-                "account": "Kredietcard",
+                "category": "S1VVrrv6pC8msbIhrGrf7Rxl77ocazCHn7D7USthu7I=",
+                "account": "7hzhbi+OmetQIF33NjsJHmvxmcuHN7CeB9mX0U6yf0c=",
                 "payee": null,
                 "memo": "Docker.io"
             },
             {
                 "reason": "Scheduled Transaction",
                 "amount": -29.4,
-                "category": "Internet Tools",
-                "account": "Kredietcard",
+                "category": "S1VVrrv6pC8msbIhrGrf7Rxl77ocazCHn7D7USthu7I=",
+                "account": "7hzhbi+OmetQIF33NjsJHmvxmcuHN7CeB9mX0U6yf0c=",
                 "payee": null,
                 "memo": "Adobe "
             },
             {
                 "reason": "Scheduled Transaction",
                 "amount": 1306.8,
-                "category": "Inflow: Ready to Assign",
-                "account": "Vanden IT checking account",
+                "category": "cZWLPFvQUr1PMCFvcx521g/o2bJNTIzwV3qbzsofgTo=",
+                "account": "LtFWVU+JIsTH4mUoOCRPZG6hFueaNbZ08EGY759a7/o=",
                 "payee": null,
                 "memo": "Teletask factuur"
             }
@@ -46,8 +46,8 @@
             {
                 "reason": "Scheduled Transaction",
                 "amount": -410.0,
-                "category": "Sociale bijdrage Afbetaling",
-                "account": "Vanden IT checking account",
+                "category": "bhsWvl5G/ZDjhlSdg7s3aM3BOrPOy/J+ZIGWSN+UQII=",
+                "account": "LtFWVU+JIsTH4mUoOCRPZG6hFueaNbZ08EGY759a7/o=",
                 "payee": null,
                 "memo": "Xerius "
             }
@@ -60,40 +60,40 @@
             {
                 "reason": "Scheduled Transaction",
                 "amount": 3932.5,
-                "category": "Inflow: Ready to Assign",
-                "account": "Vanden IT checking account",
+                "category": "cZWLPFvQUr1PMCFvcx521g/o2bJNTIzwV3qbzsofgTo=",
+                "account": "LtFWVU+JIsTH4mUoOCRPZG6hFueaNbZ08EGY759a7/o=",
                 "payee": null,
                 "memo": "Ixor"
             },
             {
                 "reason": "Target Due This Month",
                 "amount": -1321.09,
-                "category": "Boekhouding"
+                "category": "jrzwyCA4i0z0jpWjC//E++Fd1RQ2Ar5MVJ+eycANI3k="
             },
             {
                 "reason": "Remaining Target Amount",
                 "amount": -356.85,
-                "category": "Eating Out"
+                "category": "I6j4IbaSe3Th3LvEzBGLv05LunvQskOLuUHOc67EhlQ="
             },
             {
                 "reason": "Target Due This Month",
                 "amount": -2621.28,
-                "category": "Sociale Bijdrage"
+                "category": "OnpQS37j6RDmmTz2PwoDe6i/aL9veFWKx4cRQsqKLX0="
             },
             {
                 "reason": "Target Due This Month",
                 "amount": -3604.54,
-                "category": "Taxes"
+                "category": "c/iTgHT3lEAYZ4WJfSoN8VA0OjNQhjU2AHk6Q2zF0FY="
             },
             {
                 "reason": "Remaining Target Amount",
                 "amount": -57.8,
-                "category": "Internet Tools"
+                "category": "S1VVrrv6pC8msbIhrGrf7Rxl77ocazCHn7D7USthu7I="
             },
             {
                 "reason": "Target Due This Month",
                 "amount": -8037.64,
-                "category": "BTW kwartaal"
+                "category": "o0oJ+hHBZiyRMnK056UxmTP99VE4sJXAi0eU4LikfLg="
             }
         ],
         "balance_diff": -12066.7
@@ -104,15 +104,15 @@
             {
                 "reason": "Scheduled Transaction",
                 "amount": -4.95,
-                "category": "Credit Card",
-                "account": "Vanden IT checking account",
+                "category": "n2KfV7fQKTaou6IQmxZ+cIP4DZnQTqzFHxazsK2tHIY=",
+                "account": "LtFWVU+JIsTH4mUoOCRPZG6hFueaNbZ08EGY759a7/o=",
                 "payee": null,
                 "memo": "Fastmail"
             },
             {
                 "reason": "Future Month Target",
                 "amount": -760.0,
-                "category": "Sociale bijdrage Afbetaling"
+                "category": "bhsWvl5G/ZDjhlSdg7s3aM3BOrPOy/J+ZIGWSN+UQII="
             }
         ],
         "balance_diff": -764.95
@@ -123,20 +123,20 @@
             {
                 "reason": "Scheduled Transaction",
                 "amount": -27.76,
-                "category": "Internet Tools",
-                "account": "Kredietcard",
+                "category": "S1VVrrv6pC8msbIhrGrf7Rxl77ocazCHn7D7USthu7I=",
+                "account": "7hzhbi+OmetQIF33NjsJHmvxmcuHN7CeB9mX0U6yf0c=",
                 "payee": null,
                 "memo": "Digital ocean "
             },
             {
                 "reason": "Future Month Target",
                 "amount": -433.57,
-                "category": "Groepsverzekering"
+                "category": "g/k+deYES5s2EiX/hPPi7Rcmj0Abzqc4+eaXP8XkVB4="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -7348.21,
-                "category": "Salery"
+                "category": "4HeqbfkySAguYNdsbhVmpkltl5C+AgoJilSg3r89xTQ="
             }
         ],
         "balance_diff": -7809.54
@@ -147,15 +147,15 @@
             {
                 "reason": "Scheduled Transaction",
                 "amount": -335.0,
-                "category": "Sociale bijdrage Afbetaling",
-                "account": "Wachtrekening",
+                "category": "bhsWvl5G/ZDjhlSdg7s3aM3BOrPOy/J+ZIGWSN+UQII=",
+                "account": "zPV5+fzT15gIsDsfYCbphM1Gfy2mdUob+eraYmTCdK0=",
                 "payee": null,
                 "memo": null
             },
             {
                 "reason": "Future Month Target",
                 "amount": -349.5,
-                "category": "Maaltijdvoucher"
+                "category": "2h9VEjLGNlNbKMSc8TbjkIazbJteCyKosCLWBITP1Z4="
             }
         ],
         "balance_diff": -684.5
@@ -166,7 +166,7 @@
             {
                 "reason": "Future Month Target",
                 "amount": -0.0,
-                "category": "Entertainment"
+                "category": "zqpVPoOPufEuPkc+xqj+DFMykEHN7ocYdKPksnaeNuo="
             }
         ],
         "balance_diff": 0.0
@@ -177,8 +177,8 @@
             {
                 "reason": "Scheduled Transaction",
                 "amount": -9.85,
-                "category": "Internet Tools",
-                "account": "Kredietcard",
+                "category": "S1VVrrv6pC8msbIhrGrf7Rxl77ocazCHn7D7USthu7I=",
+                "account": "7hzhbi+OmetQIF33NjsJHmvxmcuHN7CeB9mX0U6yf0c=",
                 "payee": null,
                 "memo": "github inc"
             }
@@ -191,12 +191,12 @@
             {
                 "reason": "Future Month Target",
                 "amount": -270.0,
-                "category": "Internet"
+                "category": "V+ikMd7sDXDaCibqM5LlloixG3nt/QTp2oI7FrzR1Nc="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -513.53,
-                "category": "Car Leasing"
+                "category": "vii1saeP0BmX8VpuAsttojQ7s2yRpcnrVXR80sNJShw="
             }
         ],
         "balance_diff": -783.53
@@ -207,50 +207,50 @@
             {
                 "reason": "Scheduled Transaction",
                 "amount": 16516.5,
-                "category": "Inflow: Ready to Assign",
-                "account": "Vanden IT checking account",
+                "category": "cZWLPFvQUr1PMCFvcx521g/o2bJNTIzwV3qbzsofgTo=",
+                "account": "LtFWVU+JIsTH4mUoOCRPZG6hFueaNbZ08EGY759a7/o=",
                 "payee": null,
                 "memo": "Ixof"
             },
             {
                 "reason": "Future Month Target",
                 "amount": -200.0,
-                "category": "Unexpected"
+                "category": "dwRgvrdJD3DEfY7gIPLLmILiRJMvGMo8W6N7qrx/NOk="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -267.52,
-                "category": "Bike Leasing"
+                "category": "S5ZYK25uRWlU1/hgp2YVazlrTqdR9ZZlA4yIApGODYk="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -600.0,
-                "category": "Eating Out"
+                "category": "I6j4IbaSe3Th3LvEzBGLv05LunvQskOLuUHOc67EhlQ="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -239.0,
-                "category": "Transportation"
+                "category": "5f/W5lQk3WQ55e8sfk3cvB7WEMJC+wwc2dqFzTgsIvQ="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -116.05,
-                "category": "Internet Tools"
+                "category": "S1VVrrv6pC8msbIhrGrf7Rxl77ocazCHn7D7USthu7I="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -200.0,
-                "category": "Terug Te Betalen Van Persoonlijk"
+                "category": "pofsM5oUI9FNfclXQqYZjZm6wqYUTHnGUnrLJieSheY="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -0.0,
-                "category": "Hobbies"
+                "category": "Km9KxicIS8eIV42GP5CaLSIM3rzwX6Xd0dVRAXDmwyw="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -0.0,
-                "category": "Health & Wellness"
+                "category": "V1bc00iPg2y3CWBeI/5oITUsgj6/wrJ2sfMVcA++EnM="
             }
         ],
         "balance_diff": 14893.93
@@ -261,15 +261,15 @@
             {
                 "reason": "Scheduled Transaction",
                 "amount": -6703.0,
-                "category": "BTW kwartaal",
-                "account": "Vanden IT checking account",
-                "payee": "BTW ONTVANGSTEN - BRUSSEL",
+                "category": "o0oJ+hHBZiyRMnK056UxmTP99VE4sJXAi0eU4LikfLg=",
+                "account": "LtFWVU+JIsTH4mUoOCRPZG6hFueaNbZ08EGY759a7/o=",
+                "payee": "WSYL9je2ZUX3ErgP741fLkCb9V1zsjzHd1m8lNWa8Ds=",
                 "memo": "btw kwartaal K4"
             },
             {
                 "reason": "Future Month Target",
                 "amount": -760.0,
-                "category": "Sociale bijdrage Afbetaling"
+                "category": "bhsWvl5G/ZDjhlSdg7s3aM3BOrPOy/J+ZIGWSN+UQII="
             }
         ],
         "balance_diff": -7463.0
@@ -280,12 +280,12 @@
             {
                 "reason": "Future Month Target",
                 "amount": -433.57,
-                "category": "Groepsverzekering"
+                "category": "g/k+deYES5s2EiX/hPPi7Rcmj0Abzqc4+eaXP8XkVB4="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -7348.21,
-                "category": "Salery"
+                "category": "4HeqbfkySAguYNdsbhVmpkltl5C+AgoJilSg3r89xTQ="
             }
         ],
         "balance_diff": -7781.78
@@ -296,7 +296,7 @@
             {
                 "reason": "Future Month Target",
                 "amount": -349.5,
-                "category": "Maaltijdvoucher"
+                "category": "2h9VEjLGNlNbKMSc8TbjkIazbJteCyKosCLWBITP1Z4="
             }
         ],
         "balance_diff": -349.5
@@ -307,7 +307,7 @@
             {
                 "reason": "Future Month Target",
                 "amount": -0.0,
-                "category": "Entertainment"
+                "category": "zqpVPoOPufEuPkc+xqj+DFMykEHN7ocYdKPksnaeNuo="
             }
         ],
         "balance_diff": 0.0
@@ -318,12 +318,12 @@
             {
                 "reason": "Future Month Target",
                 "amount": -270.0,
-                "category": "Internet"
+                "category": "V+ikMd7sDXDaCibqM5LlloixG3nt/QTp2oI7FrzR1Nc="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -513.53,
-                "category": "Car Leasing"
+                "category": "vii1saeP0BmX8VpuAsttojQ7s2yRpcnrVXR80sNJShw="
             }
         ],
         "balance_diff": -783.53
@@ -334,8 +334,8 @@
             {
                 "reason": "Scheduled Transaction",
                 "amount": 16214.61,
-                "category": "Inflow: Ready to Assign",
-                "account": "Vanden IT checking account",
+                "category": "cZWLPFvQUr1PMCFvcx521g/o2bJNTIzwV3qbzsofgTo=",
+                "account": "LtFWVU+JIsTH4mUoOCRPZG6hFueaNbZ08EGY759a7/o=",
                 "payee": null,
                 "memo": null
             }
@@ -348,42 +348,42 @@
             {
                 "reason": "Future Month Target",
                 "amount": -200.0,
-                "category": "Unexpected"
+                "category": "dwRgvrdJD3DEfY7gIPLLmILiRJMvGMo8W6N7qrx/NOk="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -267.52,
-                "category": "Bike Leasing"
+                "category": "S5ZYK25uRWlU1/hgp2YVazlrTqdR9ZZlA4yIApGODYk="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -600.0,
-                "category": "Eating Out"
+                "category": "I6j4IbaSe3Th3LvEzBGLv05LunvQskOLuUHOc67EhlQ="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -239.0,
-                "category": "Transportation"
+                "category": "5f/W5lQk3WQ55e8sfk3cvB7WEMJC+wwc2dqFzTgsIvQ="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -116.05,
-                "category": "Internet Tools"
+                "category": "S1VVrrv6pC8msbIhrGrf7Rxl77ocazCHn7D7USthu7I="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -200.0,
-                "category": "Terug Te Betalen Van Persoonlijk"
+                "category": "pofsM5oUI9FNfclXQqYZjZm6wqYUTHnGUnrLJieSheY="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -0.0,
-                "category": "Hobbies"
+                "category": "Km9KxicIS8eIV42GP5CaLSIM3rzwX6Xd0dVRAXDmwyw="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -0.0,
-                "category": "Health & Wellness"
+                "category": "V1bc00iPg2y3CWBeI/5oITUsgj6/wrJ2sfMVcA++EnM="
             }
         ],
         "balance_diff": -1622.57
@@ -394,7 +394,7 @@
             {
                 "reason": "Future Month Target",
                 "amount": -760.0,
-                "category": "Sociale bijdrage Afbetaling"
+                "category": "bhsWvl5G/ZDjhlSdg7s3aM3BOrPOy/J+ZIGWSN+UQII="
             }
         ],
         "balance_diff": -760.0
@@ -405,12 +405,12 @@
             {
                 "reason": "Future Month Target",
                 "amount": -433.57,
-                "category": "Groepsverzekering"
+                "category": "g/k+deYES5s2EiX/hPPi7Rcmj0Abzqc4+eaXP8XkVB4="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -7348.21,
-                "category": "Salery"
+                "category": "4HeqbfkySAguYNdsbhVmpkltl5C+AgoJilSg3r89xTQ="
             }
         ],
         "balance_diff": -7781.78
@@ -421,7 +421,7 @@
             {
                 "reason": "Future Month Target",
                 "amount": -349.5,
-                "category": "Maaltijdvoucher"
+                "category": "2h9VEjLGNlNbKMSc8TbjkIazbJteCyKosCLWBITP1Z4="
             }
         ],
         "balance_diff": -349.5
@@ -432,7 +432,7 @@
             {
                 "reason": "Future Month Target",
                 "amount": -0.0,
-                "category": "Entertainment"
+                "category": "zqpVPoOPufEuPkc+xqj+DFMykEHN7ocYdKPksnaeNuo="
             }
         ],
         "balance_diff": 0.0
@@ -443,12 +443,12 @@
             {
                 "reason": "Future Month Target",
                 "amount": -270.0,
-                "category": "Internet"
+                "category": "V+ikMd7sDXDaCibqM5LlloixG3nt/QTp2oI7FrzR1Nc="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -513.53,
-                "category": "Car Leasing"
+                "category": "vii1saeP0BmX8VpuAsttojQ7s2yRpcnrVXR80sNJShw="
             }
         ],
         "balance_diff": -783.53
@@ -459,60 +459,60 @@
             {
                 "reason": "Scheduled Transaction",
                 "amount": 16092.39,
-                "category": "Inflow: Ready to Assign",
-                "account": "Vanden IT checking account",
+                "category": "cZWLPFvQUr1PMCFvcx521g/o2bJNTIzwV3qbzsofgTo=",
+                "account": "LtFWVU+JIsTH4mUoOCRPZG6hFueaNbZ08EGY759a7/o=",
                 "payee": null,
                 "memo": null
             },
             {
                 "reason": "Future Month Target",
                 "amount": -200.0,
-                "category": "Unexpected"
+                "category": "dwRgvrdJD3DEfY7gIPLLmILiRJMvGMo8W6N7qrx/NOk="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -267.52,
-                "category": "Bike Leasing"
+                "category": "S5ZYK25uRWlU1/hgp2YVazlrTqdR9ZZlA4yIApGODYk="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -600.0,
-                "category": "Eating Out"
+                "category": "I6j4IbaSe3Th3LvEzBGLv05LunvQskOLuUHOc67EhlQ="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -239.0,
-                "category": "Transportation"
+                "category": "5f/W5lQk3WQ55e8sfk3cvB7WEMJC+wwc2dqFzTgsIvQ="
             },
             {
                 "reason": "Recurring Spending (Monthly every 3)",
                 "amount": -2621.28,
-                "category": "Sociale Bijdrage"
+                "category": "OnpQS37j6RDmmTz2PwoDe6i/aL9veFWKx4cRQsqKLX0="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -116.05,
-                "category": "Internet Tools"
+                "category": "S1VVrrv6pC8msbIhrGrf7Rxl77ocazCHn7D7USthu7I="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -200.0,
-                "category": "Terug Te Betalen Van Persoonlijk"
+                "category": "pofsM5oUI9FNfclXQqYZjZm6wqYUTHnGUnrLJieSheY="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -0.0,
-                "category": "Hobbies"
+                "category": "Km9KxicIS8eIV42GP5CaLSIM3rzwX6Xd0dVRAXDmwyw="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -0.0,
-                "category": "Health & Wellness"
+                "category": "V1bc00iPg2y3CWBeI/5oITUsgj6/wrJ2sfMVcA++EnM="
             },
             {
                 "reason": "Recurring Spending (Monthly every 3)",
                 "amount": -8037.64,
-                "category": "BTW kwartaal"
+                "category": "o0oJ+hHBZiyRMnK056UxmTP99VE4sJXAi0eU4LikfLg="
             }
         ],
         "balance_diff": 3810.8999999999987
@@ -523,7 +523,7 @@
             {
                 "reason": "Future Month Target",
                 "amount": -760.0,
-                "category": "Sociale bijdrage Afbetaling"
+                "category": "bhsWvl5G/ZDjhlSdg7s3aM3BOrPOy/J+ZIGWSN+UQII="
             }
         ],
         "balance_diff": -760.0
@@ -534,12 +534,12 @@
             {
                 "reason": "Future Month Target",
                 "amount": -433.57,
-                "category": "Groepsverzekering"
+                "category": "g/k+deYES5s2EiX/hPPi7Rcmj0Abzqc4+eaXP8XkVB4="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -7348.21,
-                "category": "Salery"
+                "category": "4HeqbfkySAguYNdsbhVmpkltl5C+AgoJilSg3r89xTQ="
             }
         ],
         "balance_diff": -7781.78
@@ -550,7 +550,7 @@
             {
                 "reason": "Future Month Target",
                 "amount": -349.5,
-                "category": "Maaltijdvoucher"
+                "category": "2h9VEjLGNlNbKMSc8TbjkIazbJteCyKosCLWBITP1Z4="
             }
         ],
         "balance_diff": -349.5
@@ -561,7 +561,7 @@
             {
                 "reason": "Future Month Target",
                 "amount": -0.0,
-                "category": "Entertainment"
+                "category": "zqpVPoOPufEuPkc+xqj+DFMykEHN7ocYdKPksnaeNuo="
             }
         ],
         "balance_diff": 0.0
@@ -572,12 +572,12 @@
             {
                 "reason": "Future Month Target",
                 "amount": -270.0,
-                "category": "Internet"
+                "category": "V+ikMd7sDXDaCibqM5LlloixG3nt/QTp2oI7FrzR1Nc="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -513.53,
-                "category": "Car Leasing"
+                "category": "vii1saeP0BmX8VpuAsttojQ7s2yRpcnrVXR80sNJShw="
             }
         ],
         "balance_diff": -783.53
@@ -588,8 +588,8 @@
             {
                 "reason": "Scheduled Transaction",
                 "amount": 15000.0,
-                "category": "Inflow: Ready to Assign",
-                "account": "Vanden IT checking account",
+                "category": "cZWLPFvQUr1PMCFvcx521g/o2bJNTIzwV3qbzsofgTo=",
+                "account": "LtFWVU+JIsTH4mUoOCRPZG6hFueaNbZ08EGY759a7/o=",
                 "payee": null,
                 "memo": null
             }
@@ -602,42 +602,42 @@
             {
                 "reason": "Future Month Target",
                 "amount": -200.0,
-                "category": "Unexpected"
+                "category": "dwRgvrdJD3DEfY7gIPLLmILiRJMvGMo8W6N7qrx/NOk="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -267.52,
-                "category": "Bike Leasing"
+                "category": "S5ZYK25uRWlU1/hgp2YVazlrTqdR9ZZlA4yIApGODYk="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -600.0,
-                "category": "Eating Out"
+                "category": "I6j4IbaSe3Th3LvEzBGLv05LunvQskOLuUHOc67EhlQ="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -239.0,
-                "category": "Transportation"
+                "category": "5f/W5lQk3WQ55e8sfk3cvB7WEMJC+wwc2dqFzTgsIvQ="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -116.05,
-                "category": "Internet Tools"
+                "category": "S1VVrrv6pC8msbIhrGrf7Rxl77ocazCHn7D7USthu7I="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -200.0,
-                "category": "Terug Te Betalen Van Persoonlijk"
+                "category": "pofsM5oUI9FNfclXQqYZjZm6wqYUTHnGUnrLJieSheY="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -0.0,
-                "category": "Hobbies"
+                "category": "Km9KxicIS8eIV42GP5CaLSIM3rzwX6Xd0dVRAXDmwyw="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -0.0,
-                "category": "Health & Wellness"
+                "category": "V1bc00iPg2y3CWBeI/5oITUsgj6/wrJ2sfMVcA++EnM="
             }
         ],
         "balance_diff": -1622.57
@@ -648,7 +648,7 @@
             {
                 "reason": "Future Month Target",
                 "amount": -760.0,
-                "category": "Sociale bijdrage Afbetaling"
+                "category": "bhsWvl5G/ZDjhlSdg7s3aM3BOrPOy/J+ZIGWSN+UQII="
             }
         ],
         "balance_diff": -760.0
@@ -659,12 +659,12 @@
             {
                 "reason": "Future Month Target",
                 "amount": -433.57,
-                "category": "Groepsverzekering"
+                "category": "g/k+deYES5s2EiX/hPPi7Rcmj0Abzqc4+eaXP8XkVB4="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -7348.21,
-                "category": "Salery"
+                "category": "4HeqbfkySAguYNdsbhVmpkltl5C+AgoJilSg3r89xTQ="
             }
         ],
         "balance_diff": -7781.78
@@ -675,7 +675,7 @@
             {
                 "reason": "Future Month Target",
                 "amount": -349.5,
-                "category": "Maaltijdvoucher"
+                "category": "2h9VEjLGNlNbKMSc8TbjkIazbJteCyKosCLWBITP1Z4="
             }
         ],
         "balance_diff": -349.5
@@ -686,7 +686,7 @@
             {
                 "reason": "Future Month Target",
                 "amount": -0.0,
-                "category": "Entertainment"
+                "category": "zqpVPoOPufEuPkc+xqj+DFMykEHN7ocYdKPksnaeNuo="
             }
         ],
         "balance_diff": 0.0
@@ -697,12 +697,12 @@
             {
                 "reason": "Future Month Target",
                 "amount": -270.0,
-                "category": "Internet"
+                "category": "V+ikMd7sDXDaCibqM5LlloixG3nt/QTp2oI7FrzR1Nc="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -513.53,
-                "category": "Car Leasing"
+                "category": "vii1saeP0BmX8VpuAsttojQ7s2yRpcnrVXR80sNJShw="
             }
         ],
         "balance_diff": -783.53
@@ -713,42 +713,42 @@
             {
                 "reason": "Future Month Target",
                 "amount": -200.0,
-                "category": "Unexpected"
+                "category": "dwRgvrdJD3DEfY7gIPLLmILiRJMvGMo8W6N7qrx/NOk="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -267.52,
-                "category": "Bike Leasing"
+                "category": "S5ZYK25uRWlU1/hgp2YVazlrTqdR9ZZlA4yIApGODYk="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -600.0,
-                "category": "Eating Out"
+                "category": "I6j4IbaSe3Th3LvEzBGLv05LunvQskOLuUHOc67EhlQ="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -239.0,
-                "category": "Transportation"
+                "category": "5f/W5lQk3WQ55e8sfk3cvB7WEMJC+wwc2dqFzTgsIvQ="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -116.05,
-                "category": "Internet Tools"
+                "category": "S1VVrrv6pC8msbIhrGrf7Rxl77ocazCHn7D7USthu7I="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -200.0,
-                "category": "Terug Te Betalen Van Persoonlijk"
+                "category": "pofsM5oUI9FNfclXQqYZjZm6wqYUTHnGUnrLJieSheY="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -0.0,
-                "category": "Hobbies"
+                "category": "Km9KxicIS8eIV42GP5CaLSIM3rzwX6Xd0dVRAXDmwyw="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -0.0,
-                "category": "Health & Wellness"
+                "category": "V1bc00iPg2y3CWBeI/5oITUsgj6/wrJ2sfMVcA++EnM="
             }
         ],
         "balance_diff": -1622.57
@@ -759,7 +759,7 @@
             {
                 "reason": "Future Month Target",
                 "amount": -760.0,
-                "category": "Sociale bijdrage Afbetaling"
+                "category": "bhsWvl5G/ZDjhlSdg7s3aM3BOrPOy/J+ZIGWSN+UQII="
             }
         ],
         "balance_diff": -760.0
@@ -770,12 +770,12 @@
             {
                 "reason": "Future Month Target",
                 "amount": -433.57,
-                "category": "Groepsverzekering"
+                "category": "g/k+deYES5s2EiX/hPPi7Rcmj0Abzqc4+eaXP8XkVB4="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -7348.21,
-                "category": "Salery"
+                "category": "4HeqbfkySAguYNdsbhVmpkltl5C+AgoJilSg3r89xTQ="
             }
         ],
         "balance_diff": -7781.78
@@ -786,7 +786,7 @@
             {
                 "reason": "Future Month Target",
                 "amount": -349.5,
-                "category": "Maaltijdvoucher"
+                "category": "2h9VEjLGNlNbKMSc8TbjkIazbJteCyKosCLWBITP1Z4="
             }
         ],
         "balance_diff": -349.5
@@ -797,7 +797,7 @@
             {
                 "reason": "Future Month Target",
                 "amount": -0.0,
-                "category": "Entertainment"
+                "category": "zqpVPoOPufEuPkc+xqj+DFMykEHN7ocYdKPksnaeNuo="
             }
         ],
         "balance_diff": 0.0
@@ -808,12 +808,12 @@
             {
                 "reason": "Future Month Target",
                 "amount": -270.0,
-                "category": "Internet"
+                "category": "V+ikMd7sDXDaCibqM5LlloixG3nt/QTp2oI7FrzR1Nc="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -513.53,
-                "category": "Car Leasing"
+                "category": "vii1saeP0BmX8VpuAsttojQ7s2yRpcnrVXR80sNJShw="
             }
         ],
         "balance_diff": -783.53
@@ -824,57 +824,57 @@
             {
                 "reason": "Future Month Target",
                 "amount": -200.0,
-                "category": "Unexpected"
+                "category": "dwRgvrdJD3DEfY7gIPLLmILiRJMvGMo8W6N7qrx/NOk="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -267.52,
-                "category": "Bike Leasing"
+                "category": "S5ZYK25uRWlU1/hgp2YVazlrTqdR9ZZlA4yIApGODYk="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -600.0,
-                "category": "Eating Out"
+                "category": "I6j4IbaSe3Th3LvEzBGLv05LunvQskOLuUHOc67EhlQ="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -239.0,
-                "category": "Transportation"
+                "category": "5f/W5lQk3WQ55e8sfk3cvB7WEMJC+wwc2dqFzTgsIvQ="
             },
             {
                 "reason": "Recurring Spending (Monthly every 3)",
                 "amount": -2621.28,
-                "category": "Sociale Bijdrage"
+                "category": "OnpQS37j6RDmmTz2PwoDe6i/aL9veFWKx4cRQsqKLX0="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -116.05,
-                "category": "Internet Tools"
+                "category": "S1VVrrv6pC8msbIhrGrf7Rxl77ocazCHn7D7USthu7I="
             },
             {
                 "reason": "Yearly Payment",
                 "amount": -1322.72,
-                "category": "Car Insurance"
+                "category": "1Xj14T3Si55PHxRBm1lgP/T9EV5OBbDjQ3T8BrggCUA="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -200.0,
-                "category": "Terug Te Betalen Van Persoonlijk"
+                "category": "pofsM5oUI9FNfclXQqYZjZm6wqYUTHnGUnrLJieSheY="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -0.0,
-                "category": "Hobbies"
+                "category": "Km9KxicIS8eIV42GP5CaLSIM3rzwX6Xd0dVRAXDmwyw="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -0.0,
-                "category": "Health & Wellness"
+                "category": "V1bc00iPg2y3CWBeI/5oITUsgj6/wrJ2sfMVcA++EnM="
             },
             {
                 "reason": "Recurring Spending (Monthly every 3)",
                 "amount": -8037.64,
-                "category": "BTW kwartaal"
+                "category": "o0oJ+hHBZiyRMnK056UxmTP99VE4sJXAi0eU4LikfLg="
             }
         ],
         "balance_diff": -13604.210000000001
@@ -885,7 +885,7 @@
             {
                 "reason": "Future Month Target",
                 "amount": -760.0,
-                "category": "Sociale bijdrage Afbetaling"
+                "category": "bhsWvl5G/ZDjhlSdg7s3aM3BOrPOy/J+ZIGWSN+UQII="
             }
         ],
         "balance_diff": -760.0
@@ -896,12 +896,12 @@
             {
                 "reason": "Future Month Target",
                 "amount": -433.57,
-                "category": "Groepsverzekering"
+                "category": "g/k+deYES5s2EiX/hPPi7Rcmj0Abzqc4+eaXP8XkVB4="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -7348.21,
-                "category": "Salery"
+                "category": "4HeqbfkySAguYNdsbhVmpkltl5C+AgoJilSg3r89xTQ="
             }
         ],
         "balance_diff": -7781.78
@@ -912,7 +912,7 @@
             {
                 "reason": "Future Month Target",
                 "amount": -349.5,
-                "category": "Maaltijdvoucher"
+                "category": "2h9VEjLGNlNbKMSc8TbjkIazbJteCyKosCLWBITP1Z4="
             }
         ],
         "balance_diff": -349.5
@@ -923,7 +923,7 @@
             {
                 "reason": "Future Month Target",
                 "amount": -0.0,
-                "category": "Entertainment"
+                "category": "zqpVPoOPufEuPkc+xqj+DFMykEHN7ocYdKPksnaeNuo="
             }
         ],
         "balance_diff": 0.0
@@ -934,12 +934,12 @@
             {
                 "reason": "Future Month Target",
                 "amount": -270.0,
-                "category": "Internet"
+                "category": "V+ikMd7sDXDaCibqM5LlloixG3nt/QTp2oI7FrzR1Nc="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -513.53,
-                "category": "Car Leasing"
+                "category": "vii1saeP0BmX8VpuAsttojQ7s2yRpcnrVXR80sNJShw="
             }
         ],
         "balance_diff": -783.53
@@ -950,42 +950,42 @@
             {
                 "reason": "Future Month Target",
                 "amount": -200.0,
-                "category": "Unexpected"
+                "category": "dwRgvrdJD3DEfY7gIPLLmILiRJMvGMo8W6N7qrx/NOk="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -267.52,
-                "category": "Bike Leasing"
+                "category": "S5ZYK25uRWlU1/hgp2YVazlrTqdR9ZZlA4yIApGODYk="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -600.0,
-                "category": "Eating Out"
+                "category": "I6j4IbaSe3Th3LvEzBGLv05LunvQskOLuUHOc67EhlQ="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -239.0,
-                "category": "Transportation"
+                "category": "5f/W5lQk3WQ55e8sfk3cvB7WEMJC+wwc2dqFzTgsIvQ="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -116.05,
-                "category": "Internet Tools"
+                "category": "S1VVrrv6pC8msbIhrGrf7Rxl77ocazCHn7D7USthu7I="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -200.0,
-                "category": "Terug Te Betalen Van Persoonlijk"
+                "category": "pofsM5oUI9FNfclXQqYZjZm6wqYUTHnGUnrLJieSheY="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -0.0,
-                "category": "Hobbies"
+                "category": "Km9KxicIS8eIV42GP5CaLSIM3rzwX6Xd0dVRAXDmwyw="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -0.0,
-                "category": "Health & Wellness"
+                "category": "V1bc00iPg2y3CWBeI/5oITUsgj6/wrJ2sfMVcA++EnM="
             }
         ],
         "balance_diff": -1622.57
@@ -996,7 +996,7 @@
             {
                 "reason": "Future Month Target",
                 "amount": -760.0,
-                "category": "Sociale bijdrage Afbetaling"
+                "category": "bhsWvl5G/ZDjhlSdg7s3aM3BOrPOy/J+ZIGWSN+UQII="
             }
         ],
         "balance_diff": -760.0
@@ -1007,12 +1007,12 @@
             {
                 "reason": "Future Month Target",
                 "amount": -433.57,
-                "category": "Groepsverzekering"
+                "category": "g/k+deYES5s2EiX/hPPi7Rcmj0Abzqc4+eaXP8XkVB4="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -7348.21,
-                "category": "Salery"
+                "category": "4HeqbfkySAguYNdsbhVmpkltl5C+AgoJilSg3r89xTQ="
             }
         ],
         "balance_diff": -7781.78
@@ -1023,7 +1023,7 @@
             {
                 "reason": "Future Month Target",
                 "amount": -349.5,
-                "category": "Maaltijdvoucher"
+                "category": "2h9VEjLGNlNbKMSc8TbjkIazbJteCyKosCLWBITP1Z4="
             }
         ],
         "balance_diff": -349.5
@@ -1034,7 +1034,7 @@
             {
                 "reason": "Future Month Target",
                 "amount": -0.0,
-                "category": "Entertainment"
+                "category": "zqpVPoOPufEuPkc+xqj+DFMykEHN7ocYdKPksnaeNuo="
             }
         ],
         "balance_diff": 0.0
@@ -1045,12 +1045,12 @@
             {
                 "reason": "Future Month Target",
                 "amount": -270.0,
-                "category": "Internet"
+                "category": "V+ikMd7sDXDaCibqM5LlloixG3nt/QTp2oI7FrzR1Nc="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -513.53,
-                "category": "Car Leasing"
+                "category": "vii1saeP0BmX8VpuAsttojQ7s2yRpcnrVXR80sNJShw="
             }
         ],
         "balance_diff": -783.53
@@ -1061,42 +1061,42 @@
             {
                 "reason": "Future Month Target",
                 "amount": -200.0,
-                "category": "Unexpected"
+                "category": "dwRgvrdJD3DEfY7gIPLLmILiRJMvGMo8W6N7qrx/NOk="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -267.52,
-                "category": "Bike Leasing"
+                "category": "S5ZYK25uRWlU1/hgp2YVazlrTqdR9ZZlA4yIApGODYk="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -600.0,
-                "category": "Eating Out"
+                "category": "I6j4IbaSe3Th3LvEzBGLv05LunvQskOLuUHOc67EhlQ="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -239.0,
-                "category": "Transportation"
+                "category": "5f/W5lQk3WQ55e8sfk3cvB7WEMJC+wwc2dqFzTgsIvQ="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -116.05,
-                "category": "Internet Tools"
+                "category": "S1VVrrv6pC8msbIhrGrf7Rxl77ocazCHn7D7USthu7I="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -200.0,
-                "category": "Terug Te Betalen Van Persoonlijk"
+                "category": "pofsM5oUI9FNfclXQqYZjZm6wqYUTHnGUnrLJieSheY="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -0.0,
-                "category": "Hobbies"
+                "category": "Km9KxicIS8eIV42GP5CaLSIM3rzwX6Xd0dVRAXDmwyw="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -0.0,
-                "category": "Health & Wellness"
+                "category": "V1bc00iPg2y3CWBeI/5oITUsgj6/wrJ2sfMVcA++EnM="
             }
         ],
         "balance_diff": -1622.57
@@ -1107,7 +1107,7 @@
             {
                 "reason": "Future Month Target",
                 "amount": -760.0,
-                "category": "Sociale bijdrage Afbetaling"
+                "category": "bhsWvl5G/ZDjhlSdg7s3aM3BOrPOy/J+ZIGWSN+UQII="
             }
         ],
         "balance_diff": -760.0
@@ -1118,12 +1118,12 @@
             {
                 "reason": "Future Month Target",
                 "amount": -433.57,
-                "category": "Groepsverzekering"
+                "category": "g/k+deYES5s2EiX/hPPi7Rcmj0Abzqc4+eaXP8XkVB4="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -7348.21,
-                "category": "Salery"
+                "category": "4HeqbfkySAguYNdsbhVmpkltl5C+AgoJilSg3r89xTQ="
             }
         ],
         "balance_diff": -7781.78
@@ -1134,7 +1134,7 @@
             {
                 "reason": "Future Month Target",
                 "amount": -349.5,
-                "category": "Maaltijdvoucher"
+                "category": "2h9VEjLGNlNbKMSc8TbjkIazbJteCyKosCLWBITP1Z4="
             }
         ],
         "balance_diff": -349.5
@@ -1145,7 +1145,7 @@
             {
                 "reason": "Future Month Target",
                 "amount": -0.0,
-                "category": "Entertainment"
+                "category": "zqpVPoOPufEuPkc+xqj+DFMykEHN7ocYdKPksnaeNuo="
             }
         ],
         "balance_diff": 0.0
@@ -1156,12 +1156,12 @@
             {
                 "reason": "Future Month Target",
                 "amount": -270.0,
-                "category": "Internet"
+                "category": "V+ikMd7sDXDaCibqM5LlloixG3nt/QTp2oI7FrzR1Nc="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -513.53,
-                "category": "Car Leasing"
+                "category": "vii1saeP0BmX8VpuAsttojQ7s2yRpcnrVXR80sNJShw="
             }
         ],
         "balance_diff": -783.53
@@ -1172,52 +1172,52 @@
             {
                 "reason": "Future Month Target",
                 "amount": -200.0,
-                "category": "Unexpected"
+                "category": "dwRgvrdJD3DEfY7gIPLLmILiRJMvGMo8W6N7qrx/NOk="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -267.52,
-                "category": "Bike Leasing"
+                "category": "S5ZYK25uRWlU1/hgp2YVazlrTqdR9ZZlA4yIApGODYk="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -600.0,
-                "category": "Eating Out"
+                "category": "I6j4IbaSe3Th3LvEzBGLv05LunvQskOLuUHOc67EhlQ="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -239.0,
-                "category": "Transportation"
+                "category": "5f/W5lQk3WQ55e8sfk3cvB7WEMJC+wwc2dqFzTgsIvQ="
             },
             {
                 "reason": "Recurring Spending (Monthly every 3)",
                 "amount": -2621.28,
-                "category": "Sociale Bijdrage"
+                "category": "OnpQS37j6RDmmTz2PwoDe6i/aL9veFWKx4cRQsqKLX0="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -116.05,
-                "category": "Internet Tools"
+                "category": "S1VVrrv6pC8msbIhrGrf7Rxl77ocazCHn7D7USthu7I="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -200.0,
-                "category": "Terug Te Betalen Van Persoonlijk"
+                "category": "pofsM5oUI9FNfclXQqYZjZm6wqYUTHnGUnrLJieSheY="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -0.0,
-                "category": "Hobbies"
+                "category": "Km9KxicIS8eIV42GP5CaLSIM3rzwX6Xd0dVRAXDmwyw="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -0.0,
-                "category": "Health & Wellness"
+                "category": "V1bc00iPg2y3CWBeI/5oITUsgj6/wrJ2sfMVcA++EnM="
             },
             {
                 "reason": "Recurring Spending (Monthly every 3)",
                 "amount": -8037.64,
-                "category": "BTW kwartaal"
+                "category": "o0oJ+hHBZiyRMnK056UxmTP99VE4sJXAi0eU4LikfLg="
             }
         ],
         "balance_diff": -12281.49
@@ -1228,7 +1228,7 @@
             {
                 "reason": "Future Month Target",
                 "amount": -760.0,
-                "category": "Sociale bijdrage Afbetaling"
+                "category": "bhsWvl5G/ZDjhlSdg7s3aM3BOrPOy/J+ZIGWSN+UQII="
             }
         ],
         "balance_diff": -760.0
@@ -1239,12 +1239,12 @@
             {
                 "reason": "Future Month Target",
                 "amount": -433.57,
-                "category": "Groepsverzekering"
+                "category": "g/k+deYES5s2EiX/hPPi7Rcmj0Abzqc4+eaXP8XkVB4="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -7348.21,
-                "category": "Salery"
+                "category": "4HeqbfkySAguYNdsbhVmpkltl5C+AgoJilSg3r89xTQ="
             }
         ],
         "balance_diff": -7781.78
@@ -1255,7 +1255,7 @@
             {
                 "reason": "Future Month Target",
                 "amount": -349.5,
-                "category": "Maaltijdvoucher"
+                "category": "2h9VEjLGNlNbKMSc8TbjkIazbJteCyKosCLWBITP1Z4="
             }
         ],
         "balance_diff": -349.5
@@ -1266,7 +1266,7 @@
             {
                 "reason": "Future Month Target",
                 "amount": -0.0,
-                "category": "Entertainment"
+                "category": "zqpVPoOPufEuPkc+xqj+DFMykEHN7ocYdKPksnaeNuo="
             }
         ],
         "balance_diff": 0.0
@@ -1277,12 +1277,12 @@
             {
                 "reason": "Future Month Target",
                 "amount": -270.0,
-                "category": "Internet"
+                "category": "V+ikMd7sDXDaCibqM5LlloixG3nt/QTp2oI7FrzR1Nc="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -513.53,
-                "category": "Car Leasing"
+                "category": "vii1saeP0BmX8VpuAsttojQ7s2yRpcnrVXR80sNJShw="
             }
         ],
         "balance_diff": -783.53
@@ -1293,42 +1293,42 @@
             {
                 "reason": "Future Month Target",
                 "amount": -200.0,
-                "category": "Unexpected"
+                "category": "dwRgvrdJD3DEfY7gIPLLmILiRJMvGMo8W6N7qrx/NOk="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -267.52,
-                "category": "Bike Leasing"
+                "category": "S5ZYK25uRWlU1/hgp2YVazlrTqdR9ZZlA4yIApGODYk="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -600.0,
-                "category": "Eating Out"
+                "category": "I6j4IbaSe3Th3LvEzBGLv05LunvQskOLuUHOc67EhlQ="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -239.0,
-                "category": "Transportation"
+                "category": "5f/W5lQk3WQ55e8sfk3cvB7WEMJC+wwc2dqFzTgsIvQ="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -116.05,
-                "category": "Internet Tools"
+                "category": "S1VVrrv6pC8msbIhrGrf7Rxl77ocazCHn7D7USthu7I="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -200.0,
-                "category": "Terug Te Betalen Van Persoonlijk"
+                "category": "pofsM5oUI9FNfclXQqYZjZm6wqYUTHnGUnrLJieSheY="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -0.0,
-                "category": "Hobbies"
+                "category": "Km9KxicIS8eIV42GP5CaLSIM3rzwX6Xd0dVRAXDmwyw="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -0.0,
-                "category": "Health & Wellness"
+                "category": "V1bc00iPg2y3CWBeI/5oITUsgj6/wrJ2sfMVcA++EnM="
             }
         ],
         "balance_diff": -1622.57
@@ -1339,7 +1339,7 @@
             {
                 "reason": "Future Month Target",
                 "amount": -760.0,
-                "category": "Sociale bijdrage Afbetaling"
+                "category": "bhsWvl5G/ZDjhlSdg7s3aM3BOrPOy/J+ZIGWSN+UQII="
             }
         ],
         "balance_diff": -760.0
@@ -1350,12 +1350,12 @@
             {
                 "reason": "Future Month Target",
                 "amount": -433.57,
-                "category": "Groepsverzekering"
+                "category": "g/k+deYES5s2EiX/hPPi7Rcmj0Abzqc4+eaXP8XkVB4="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -7348.21,
-                "category": "Salery"
+                "category": "4HeqbfkySAguYNdsbhVmpkltl5C+AgoJilSg3r89xTQ="
             }
         ],
         "balance_diff": -7781.78
@@ -1366,7 +1366,7 @@
             {
                 "reason": "Future Month Target",
                 "amount": -349.5,
-                "category": "Maaltijdvoucher"
+                "category": "2h9VEjLGNlNbKMSc8TbjkIazbJteCyKosCLWBITP1Z4="
             }
         ],
         "balance_diff": -349.5
@@ -1377,7 +1377,7 @@
             {
                 "reason": "Future Month Target",
                 "amount": -0.0,
-                "category": "Entertainment"
+                "category": "zqpVPoOPufEuPkc+xqj+DFMykEHN7ocYdKPksnaeNuo="
             }
         ],
         "balance_diff": 0.0
@@ -1388,12 +1388,12 @@
             {
                 "reason": "Future Month Target",
                 "amount": -270.0,
-                "category": "Internet"
+                "category": "V+ikMd7sDXDaCibqM5LlloixG3nt/QTp2oI7FrzR1Nc="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -513.53,
-                "category": "Car Leasing"
+                "category": "vii1saeP0BmX8VpuAsttojQ7s2yRpcnrVXR80sNJShw="
             }
         ],
         "balance_diff": -783.53
@@ -1404,42 +1404,42 @@
             {
                 "reason": "Future Month Target",
                 "amount": -200.0,
-                "category": "Unexpected"
+                "category": "dwRgvrdJD3DEfY7gIPLLmILiRJMvGMo8W6N7qrx/NOk="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -267.52,
-                "category": "Bike Leasing"
+                "category": "S5ZYK25uRWlU1/hgp2YVazlrTqdR9ZZlA4yIApGODYk="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -600.0,
-                "category": "Eating Out"
+                "category": "I6j4IbaSe3Th3LvEzBGLv05LunvQskOLuUHOc67EhlQ="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -239.0,
-                "category": "Transportation"
+                "category": "5f/W5lQk3WQ55e8sfk3cvB7WEMJC+wwc2dqFzTgsIvQ="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -116.05,
-                "category": "Internet Tools"
+                "category": "S1VVrrv6pC8msbIhrGrf7Rxl77ocazCHn7D7USthu7I="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -200.0,
-                "category": "Terug Te Betalen Van Persoonlijk"
+                "category": "pofsM5oUI9FNfclXQqYZjZm6wqYUTHnGUnrLJieSheY="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -0.0,
-                "category": "Hobbies"
+                "category": "Km9KxicIS8eIV42GP5CaLSIM3rzwX6Xd0dVRAXDmwyw="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -0.0,
-                "category": "Health & Wellness"
+                "category": "V1bc00iPg2y3CWBeI/5oITUsgj6/wrJ2sfMVcA++EnM="
             }
         ],
         "balance_diff": -1622.57
@@ -1450,7 +1450,7 @@
             {
                 "reason": "Future Month Target",
                 "amount": -760.0,
-                "category": "Sociale bijdrage Afbetaling"
+                "category": "bhsWvl5G/ZDjhlSdg7s3aM3BOrPOy/J+ZIGWSN+UQII="
             }
         ],
         "balance_diff": -760.0
@@ -1461,12 +1461,12 @@
             {
                 "reason": "Future Month Target",
                 "amount": -433.57,
-                "category": "Groepsverzekering"
+                "category": "g/k+deYES5s2EiX/hPPi7Rcmj0Abzqc4+eaXP8XkVB4="
             },
             {
                 "reason": "Future Month Target",
                 "amount": -7348.21,
-                "category": "Salery"
+                "category": "4HeqbfkySAguYNdsbhVmpkltl5C+AgoJilSg3r89xTQ="
             }
         ],
         "balance_diff": -7781.78
@@ -1477,7 +1477,7 @@
             {
                 "reason": "Future Month Target",
                 "amount": -349.5,
-                "category": "Maaltijdvoucher"
+                "category": "2h9VEjLGNlNbKMSc8TbjkIazbJteCyKosCLWBITP1Z4="
             }
         ],
         "balance_diff": -349.5
@@ -1488,7 +1488,7 @@
             {
                 "reason": "Future Month Target",
                 "amount": -0.0,
-                "category": "Entertainment"
+                "category": "zqpVPoOPufEuPkc+xqj+DFMykEHN7ocYdKPksnaeNuo="
             }
         ],
         "balance_diff": 0.0
