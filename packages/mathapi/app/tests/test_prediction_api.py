@@ -24,6 +24,16 @@ class TestPredictionApi(unittest.TestCase):
         with open(os.path.join(fixtures_dir, 'expected_output.json'), 'r') as f:
             self.expected_output = json.load(f)
 
+        # Mock the current date to match the fixture generation date if it exists
+        if 'generation_date' in self.input_data:
+            self.generation_date = datetime.fromisoformat(self.input_data['generation_date'])
+            self.date_patcher = patch('app.prediction_api.datetime')
+            mock_datetime = self.date_patcher.start()
+            mock_datetime.now.return_value = self.generation_date
+            mock_datetime.strptime.side_effect = datetime.strptime
+            mock_datetime.fromisoformat.side_effect = datetime.fromisoformat
+            mock_datetime.side_effect = lambda *args, **kw: datetime(*args, **kw)
+
     @patch('app.prediction_api.get_scheduled_transactions')
     @patch('app.prediction_api.get_categories_for_budget')
     @patch('app.prediction_api.get_accounts_for_budget')
@@ -104,11 +114,12 @@ class TestPredictionApi(unittest.TestCase):
         budget_uuid = "1b443ebf-ea07-4ab7-8fd5-9330bf80608c"  # Use your test budget UUID
         budget_id = get_objectid_for_budget(budget_uuid)
 
-        # Record the API responses
+        # Record the API responses and generation date
         input_data = {
             "scheduled_transactions": get_scheduled_transactions(budget_uuid),
             "categories": get_categories_for_budget(budget_id),
-            "accounts": get_accounts_for_budget(budget_id)
+            "accounts": get_accounts_for_budget(budget_id),
+            "generation_date": datetime.now().isoformat()
         }
 
         # Encrypt sensitive data in input
@@ -145,6 +156,44 @@ class TestPredictionApi(unittest.TestCase):
 
         with open(os.path.join(fixtures_dir, 'expected_output.json'), 'w') as f:
             json.dump(encrypted_output, f, indent=4)
+
+    def test_date_mocking(self):
+        """Test of de datum correct wordt gemockt naar de generatie datum van de fixtures"""
+        from app.prediction_api import datetime as prediction_datetime
+        
+        # Controleer of we een generation_date hebben
+        self.assertIn('generation_date', self.input_data, "Geen generation_date gevonden in fixtures")
+        
+        # Controleer of de huidige datum in prediction_api overeenkomt met de fixture datum
+        current_date = prediction_datetime.now()
+        self.assertEqual(
+            current_date,
+            self.generation_date,
+            f"Datum mock werkt niet correct. Verwacht: {self.generation_date}, Kreeg: {current_date}"
+        )
+
+        # Test strptime
+        test_date = "2025-01-01"
+        parsed_date = prediction_datetime.strptime(test_date, "%Y-%m-%d")
+        self.assertEqual(
+            parsed_date,
+            datetime.strptime(test_date, "%Y-%m-%d"),
+            "strptime mock werkt niet correct"
+        )
+
+        # Test fromisoformat
+        test_iso = "2025-01-01T12:00:00"
+        parsed_iso = prediction_datetime.fromisoformat(test_iso)
+        self.assertEqual(
+            parsed_iso,
+            datetime.fromisoformat(test_iso),
+            "fromisoformat mock werkt niet correct"
+        )
+
+    def tearDown(self):
+        # Stop the datetime mock if it exists
+        if hasattr(self, 'date_patcher'):
+            self.date_patcher.stop()
 
 if __name__ == '__main__':
     unittest.main() 
