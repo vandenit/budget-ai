@@ -86,26 +86,3 @@ PYTHONPATH=. python -m pytest app/tests/test_prediction_api.py -v
 ```
 
 Note: Recording new fixtures will use real data from your YNAB budget and MongoDB database. Make sure your `.env` file is properly configured.
-
-### Anonimiseren van Test Fixtures
-
-Om de test fixtures te anonimiseren voor een publieke repository:
-
-1. Vervang gevoelige data in `input_data.json`:
-```bash
-# Gebruik sed om gevoelige data te vervangen (pas commands aan naar behoefte)
-sed -i '' 's/echte_naam/Bedrijf X/g' app/tests/fixtures/input_data.json
-sed -i '' 's/specifiek_bedrag/1000.00/g' app/tests/fixtures/input_data.json
-```
-
-Aanbevolen vervangingen:
-- Bedrijfsnaam → "Bedrijf X"
-- Persoonlijke namen → "Persoon A", "Persoon B"
-- Rekeningnummers → "REKENING123"
-- Specifieke bedragen → Rond af of vermenigvuldig met een factor
-- Gevoelige category namen → Algemene termen zoals "Verzekering", "Abonnement"
-- Budget IDs → "budget-id-123"
-
-2. Pas dezelfde vervangingen toe in `expected_output.json`
-
-Let op: Zorg dat de data consistent blijft tussen beide files om de tests werkend te houden.
