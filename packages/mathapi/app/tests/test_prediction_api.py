@@ -75,8 +75,17 @@ class TestPredictionApi(unittest.TestCase):
 
             for actual, expected in zip(actual_changes, expected_changes):
                 # Compare amounts and reasons, but not categories since they're encrypted
-                self.assertAlmostEqual(actual['amount'], expected['amount'], places=2)
-                self.assertEqual(actual['reason'], expected['reason'])
+                self.assertAlmostEqual(
+                    actual['amount'], 
+                    expected['amount'], 
+                    places=2,
+                    msg=f"\nDate: {date_str}\nExpected amount: {expected['amount']}\nActual amount: {actual['amount']}\nReason: {actual['reason']}"
+                )
+                self.assertEqual(
+                    actual['reason'],
+                    expected['reason'],
+                    f"\nDate: {date_str}\nExpected reason: {expected['reason']}\nActual reason: {actual['reason']}"
+                )
 
     def test_record_new_fixtures(self):
         """
