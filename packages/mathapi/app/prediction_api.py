@@ -214,8 +214,6 @@ def apply_transaction(daily_projection, date_str, amount, category_name, reason)
             "amount": -amount,  # Negative for expesens
             "category": category_name
         })
-    else:
-        logging.warning(f"no date {date_str} in daily_projection")
         
 
 
