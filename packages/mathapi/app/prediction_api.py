@@ -209,7 +209,6 @@ def apply_need_category_spending(daily_projection, category, target, current_bal
 def apply_transaction(daily_projection, date_str, amount, category_name, reason):
     """Hulpfunctie om transacties toe te voegen aan daily_projection."""
     if date_str in daily_projection:
-        logging.warning(f"Adding transaction to date {date_str} with amount {amount} for category {category_name} and reason {reason}")
         daily_projection[date_str]["changes"].append({
             "reason": reason,
             "amount": -amount,  # Negative for expesens
