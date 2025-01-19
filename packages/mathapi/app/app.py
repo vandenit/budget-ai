@@ -1,14 +1,14 @@
 import os
 import itertools
 from flask import Flask, jsonify, request, render_template
-from ynab_service import apply_suggested_categories_service
-from ynab_api import get_scheduled_transactions, get_uncategorized_transactions
-from categories_api import get_categories_for_budget
-from budget_api import get_objectid_for_budget
-from accounts_api import get_accounts_for_budget
-from prediction_api import project_daily_balances_with_reasons
-from categories_api import get_categories_for_budget
-from ai_api import suggest_category
+from .ynab_service import apply_suggested_categories_service
+from .ynab_api import get_scheduled_transactions, get_uncategorized_transactions
+from .categories_api import get_categories_for_budget
+from .budget_api import get_objectid_for_budget
+from .accounts_api import get_accounts_for_budget
+from .prediction_api import project_daily_balances_with_reasons
+from .categories_api import get_categories_for_budget
+from .ai_api import suggest_category
 import logging
 import json
 
