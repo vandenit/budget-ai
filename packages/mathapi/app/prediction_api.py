@@ -52,7 +52,7 @@ def initialize_daily_projection(initial_balance, days_ahead):
     # Start with current day (day 0) up to days_ahead
     current_date = datetime.now().date()
     daily_projection[current_date.isoformat()] = {
-        "balance": initial_balance,
+        "balance": 0,  # Start met 0, balance wordt later berekend
         "changes": [{
             "reason": "Initial Balance",
             "amount": initial_balance,
@@ -64,7 +64,7 @@ def initialize_daily_projection(initial_balance, days_ahead):
     for day in range(1, days_ahead + 1):
         date = (current_date + timedelta(days=day)).isoformat()
         daily_projection[date] = {
-            "balance": initial_balance,
+            "balance": 0,  # Start met 0, balance wordt later berekend
             "changes": []
         }
     return daily_projection
@@ -247,7 +247,7 @@ def add_simulations_to_projection(daily_projection, simulations):
 
 
 def calculate_running_balance(daily_projection, initial_balance, days_ahead):
-    running_balance = initial_balance
+    running_balance = 0  # Start met 0 omdat initial_balance al als change is toegevoegd
     for day in range(days_ahead + 1):
         current_date = (datetime.now().date() + timedelta(days=day)).isoformat()
         day_entry = daily_projection[current_date]

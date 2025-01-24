@@ -1,6 +1,6 @@
 {
-    "2025-01-19": {
-        "balance": 4653.86,
+    "2025-01-24": {
+        "balance": 2326.93,
         "changes": [
             {
                 "reason": "Initial Balance",
@@ -11,7 +11,7 @@
         "balance_diff": 2326.93
     },
     "2025-01-27": {
-        "balance": 5447.129999999999,
+        "balance": 3120.2,
         "changes": [
             {
                 "reason": "Scheduled Transaction",
@@ -30,7 +30,7 @@
         "balance_diff": 793.27
     },
     "2025-01-29": {
-        "balance": 5037.129999999999,
+        "balance": 2710.2,
         "changes": [
             {
                 "reason": "Scheduled Transaction",
@@ -44,7 +44,7 @@
         "balance_diff": -410.0
     },
     "2025-01-30": {
-        "balance": 4767.129999999999,
+        "balance": 2440.2,
         "changes": [
             {
                 "reason": "Current Month Balance",
@@ -55,7 +55,7 @@
         "balance_diff": -270.0
     },
     "2025-01-31": {
-        "balance": 8450.579999999998,
+        "balance": 6123.65,
         "changes": [
             {
                 "reason": "Scheduled Transaction",
@@ -79,7 +79,7 @@
         "balance_diff": 3683.45
     },
     "2025-02-01": {
-        "balance": 7685.629999999998,
+        "balance": 5358.7,
         "changes": [
             {
                 "reason": "Scheduled Transaction",
@@ -98,7 +98,7 @@
         "balance_diff": -764.95
     },
     "2025-02-02": {
-        "balance": -123.91000000000167,
+        "balance": -2450.84,
         "changes": [
             {
                 "reason": "Scheduled Transaction",
@@ -122,7 +122,7 @@
         "balance_diff": -7809.54
     },
     "2025-02-05": {
-        "balance": -808.4100000000017,
+        "balance": -3135.34,
         "changes": [
             {
                 "reason": "Scheduled Transaction",
@@ -141,7 +141,7 @@
         "balance_diff": -684.5
     },
     "2025-02-06": {
-        "balance": -808.4100000000017,
+        "balance": -3135.34,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -152,7 +152,7 @@
         "balance_diff": 0.0
     },
     "2025-02-08": {
-        "balance": -818.2600000000017,
+        "balance": -3145.19,
         "changes": [
             {
                 "reason": "Scheduled Transaction",
@@ -166,7 +166,7 @@
         "balance_diff": -9.85
     },
     "2025-02-23": {
-        "balance": -854.3600000000017,
+        "balance": -3181.29,
         "changes": [
             {
                 "reason": "Scheduled Transaction",
@@ -188,7 +188,7 @@
         "balance_diff": -36.1
     },
     "2025-02-27": {
-        "balance": -1367.8900000000017,
+        "balance": -3694.8199999999997,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -199,7 +199,7 @@
         "balance_diff": -513.53
     },
     "2025-02-28": {
-        "balance": 13256.039999999999,
+        "balance": 10929.11,
         "changes": [
             {
                 "reason": "Scheduled Transaction",
@@ -258,7 +258,7 @@
         "balance_diff": 14623.93
     },
     "2025-03-01": {
-        "balance": 5793.039999999999,
+        "balance": 3466.1100000000006,
         "changes": [
             {
                 "reason": "Scheduled Transaction",
@@ -277,7 +277,7 @@
         "balance_diff": -7463.0
     },
     "2025-03-02": {
-        "balance": -1988.7400000000007,
+        "balance": -4315.669999999999,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -293,7 +293,7 @@
         "balance_diff": -7781.78
     },
     "2025-03-05": {
-        "balance": -2338.2400000000007,
+        "balance": -4665.169999999999,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -304,7 +304,7 @@
         "balance_diff": -349.5
     },
     "2025-03-06": {
-        "balance": -2338.2400000000007,
+        "balance": -4665.169999999999,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -315,7 +315,7 @@
         "balance_diff": 0.0
     },
     "2025-03-27": {
-        "balance": -2851.7700000000004,
+        "balance": -5178.699999999999,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -326,7 +326,7 @@
         "balance_diff": -513.53
     },
     "2025-03-28": {
-        "balance": 13362.84,
+        "balance": 11035.910000000002,
         "changes": [
             {
                 "reason": "Scheduled Transaction",
@@ -340,7 +340,7 @@
         "balance_diff": 16214.61
     },
     "2025-03-30": {
-        "balance": 13092.84,
+        "balance": 10765.910000000002,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -351,7 +351,7 @@
         "balance_diff": -270.0
     },
     "2025-03-31": {
-        "balance": 11470.27,
+        "balance": 9143.340000000002,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -397,7 +397,7 @@
         "balance_diff": -1622.57
     },
     "2025-04-01": {
-        "balance": 10710.27,
+        "balance": 8383.340000000002,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -408,7 +408,7 @@
         "balance_diff": -760.0
     },
     "2025-04-02": {
-        "balance": 2928.4900000000007,
+        "balance": 601.5600000000022,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -424,7 +424,7 @@
         "balance_diff": -7781.78
     },
     "2025-04-05": {
-        "balance": 2578.9900000000007,
+        "balance": 252.06000000000222,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -435,7 +435,7 @@
         "balance_diff": -349.5
     },
     "2025-04-06": {
-        "balance": 2578.9900000000007,
+        "balance": 252.06000000000222,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -446,7 +446,7 @@
         "balance_diff": 0.0
     },
     "2025-04-27": {
-        "balance": 2065.460000000001,
+        "balance": -261.46999999999775,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -457,7 +457,7 @@
         "balance_diff": -513.53
     },
     "2025-04-30": {
-        "balance": 5606.36,
+        "balance": 3279.430000000001,
         "changes": [
             {
                 "reason": "Scheduled Transaction",
@@ -526,7 +526,7 @@
         "balance_diff": 3540.8999999999987
     },
     "2025-05-01": {
-        "balance": 4846.36,
+        "balance": 2519.430000000001,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -537,7 +537,7 @@
         "balance_diff": -760.0
     },
     "2025-05-02": {
-        "balance": -2935.42,
+        "balance": -5262.3499999999985,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -553,7 +553,7 @@
         "balance_diff": -7781.78
     },
     "2025-05-05": {
-        "balance": -3284.92,
+        "balance": -5611.8499999999985,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -564,7 +564,7 @@
         "balance_diff": -349.5
     },
     "2025-05-06": {
-        "balance": -3284.92,
+        "balance": -5611.8499999999985,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -575,7 +575,7 @@
         "balance_diff": 0.0
     },
     "2025-05-27": {
-        "balance": -3798.45,
+        "balance": -6125.379999999998,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -586,7 +586,7 @@
         "balance_diff": -513.53
     },
     "2025-05-30": {
-        "balance": 10931.55,
+        "balance": 8604.620000000003,
         "changes": [
             {
                 "reason": "Scheduled Transaction",
@@ -605,7 +605,7 @@
         "balance_diff": 14730.0
     },
     "2025-05-31": {
-        "balance": 9308.98,
+        "balance": 6982.050000000003,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -651,7 +651,7 @@
         "balance_diff": -1622.57
     },
     "2025-06-01": {
-        "balance": 8548.98,
+        "balance": 6222.050000000003,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -662,7 +662,7 @@
         "balance_diff": -760.0
     },
     "2025-06-02": {
-        "balance": 767.1999999999998,
+        "balance": -1559.7299999999968,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -678,7 +678,7 @@
         "balance_diff": -7781.78
     },
     "2025-06-05": {
-        "balance": 417.6999999999998,
+        "balance": -1909.2299999999968,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -689,7 +689,7 @@
         "balance_diff": -349.5
     },
     "2025-06-06": {
-        "balance": 417.6999999999998,
+        "balance": -1909.2299999999968,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -700,7 +700,7 @@
         "balance_diff": 0.0
     },
     "2025-06-27": {
-        "balance": -95.83000000000015,
+        "balance": -2422.7599999999966,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -711,7 +711,7 @@
         "balance_diff": -513.53
     },
     "2025-06-30": {
-        "balance": -1988.4,
+        "balance": -4315.329999999996,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -762,7 +762,7 @@
         "balance_diff": -1892.57
     },
     "2025-07-01": {
-        "balance": -2748.4,
+        "balance": -5075.329999999996,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -773,7 +773,7 @@
         "balance_diff": -760.0
     },
     "2025-07-02": {
-        "balance": -10530.18,
+        "balance": -12857.109999999997,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -789,7 +789,7 @@
         "balance_diff": -7781.78
     },
     "2025-07-05": {
-        "balance": -10879.68,
+        "balance": -13206.609999999997,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -800,7 +800,7 @@
         "balance_diff": -349.5
     },
     "2025-07-06": {
-        "balance": -10879.68,
+        "balance": -13206.609999999997,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -811,7 +811,7 @@
         "balance_diff": 0.0
     },
     "2025-07-27": {
-        "balance": -11393.210000000001,
+        "balance": -13720.139999999998,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -822,7 +822,7 @@
         "balance_diff": -513.53
     },
     "2025-07-30": {
-        "balance": -11663.210000000001,
+        "balance": -13990.139999999998,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -833,7 +833,7 @@
         "balance_diff": -270.0
     },
     "2025-07-31": {
-        "balance": -25267.420000000002,
+        "balance": -27594.35,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -894,7 +894,7 @@
         "balance_diff": -13604.210000000001
     },
     "2025-08-01": {
-        "balance": -26027.420000000002,
+        "balance": -28354.35,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -905,7 +905,7 @@
         "balance_diff": -760.0
     },
     "2025-08-02": {
-        "balance": -33809.200000000004,
+        "balance": -36136.13,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -921,7 +921,7 @@
         "balance_diff": -7781.78
     },
     "2025-08-05": {
-        "balance": -34158.700000000004,
+        "balance": -36485.63,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -932,7 +932,7 @@
         "balance_diff": -349.5
     },
     "2025-08-06": {
-        "balance": -34158.700000000004,
+        "balance": -36485.63,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -943,7 +943,7 @@
         "balance_diff": 0.0
     },
     "2025-08-27": {
-        "balance": -34672.23,
+        "balance": -36999.159999999996,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -954,7 +954,7 @@
         "balance_diff": -513.53
     },
     "2025-08-30": {
-        "balance": -34942.23,
+        "balance": -37269.159999999996,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -965,7 +965,7 @@
         "balance_diff": -270.0
     },
     "2025-08-31": {
-        "balance": -36564.8,
+        "balance": -38891.729999999996,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -1011,7 +1011,7 @@
         "balance_diff": -1622.57
     },
     "2025-09-01": {
-        "balance": -37324.8,
+        "balance": -39651.729999999996,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -1022,7 +1022,7 @@
         "balance_diff": -760.0
     },
     "2025-09-02": {
-        "balance": -45106.58,
+        "balance": -47433.509999999995,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -1038,7 +1038,7 @@
         "balance_diff": -7781.78
     },
     "2025-09-05": {
-        "balance": -45456.08,
+        "balance": -47783.009999999995,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -1049,7 +1049,7 @@
         "balance_diff": -349.5
     },
     "2025-09-06": {
-        "balance": -45456.08,
+        "balance": -47783.009999999995,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -1060,7 +1060,7 @@
         "balance_diff": 0.0
     },
     "2025-09-27": {
-        "balance": -45969.61,
+        "balance": -48296.53999999999,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -1071,7 +1071,7 @@
         "balance_diff": -513.53
     },
     "2025-09-30": {
-        "balance": -47862.18,
+        "balance": -50189.10999999999,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -1122,7 +1122,7 @@
         "balance_diff": -1892.57
     },
     "2025-10-01": {
-        "balance": -48622.18,
+        "balance": -50949.10999999999,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -1133,7 +1133,7 @@
         "balance_diff": -760.0
     },
     "2025-10-02": {
-        "balance": -56403.96,
+        "balance": -58730.88999999999,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -1149,7 +1149,7 @@
         "balance_diff": -7781.78
     },
     "2025-10-05": {
-        "balance": -56753.46,
+        "balance": -59080.38999999999,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -1160,7 +1160,7 @@
         "balance_diff": -349.5
     },
     "2025-10-06": {
-        "balance": -56753.46,
+        "balance": -59080.38999999999,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -1171,7 +1171,7 @@
         "balance_diff": 0.0
     },
     "2025-10-27": {
-        "balance": -57266.99,
+        "balance": -59593.91999999999,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -1182,7 +1182,7 @@
         "balance_diff": -513.53
     },
     "2025-10-30": {
-        "balance": -57536.99,
+        "balance": -59863.91999999999,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -1193,7 +1193,7 @@
         "balance_diff": -270.0
     },
     "2025-10-31": {
-        "balance": -69818.48,
+        "balance": -72145.40999999999,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -1249,7 +1249,7 @@
         "balance_diff": -12281.49
     },
     "2025-11-01": {
-        "balance": -70578.48,
+        "balance": -72905.40999999999,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -1260,7 +1260,7 @@
         "balance_diff": -760.0
     },
     "2025-11-02": {
-        "balance": -78360.26,
+        "balance": -80687.18999999999,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -1276,7 +1276,7 @@
         "balance_diff": -7781.78
     },
     "2025-11-05": {
-        "balance": -78709.76,
+        "balance": -81036.68999999999,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -1287,7 +1287,7 @@
         "balance_diff": -349.5
     },
     "2025-11-06": {
-        "balance": -78709.76,
+        "balance": -81036.68999999999,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -1298,7 +1298,7 @@
         "balance_diff": 0.0
     },
     "2025-11-27": {
-        "balance": -79223.29,
+        "balance": -81550.21999999999,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -1309,7 +1309,7 @@
         "balance_diff": -513.53
     },
     "2025-11-30": {
-        "balance": -81115.86,
+        "balance": -83442.79,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -1360,7 +1360,7 @@
         "balance_diff": -1892.57
     },
     "2025-12-01": {
-        "balance": -81875.86,
+        "balance": -84202.79,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -1371,7 +1371,7 @@
         "balance_diff": -760.0
     },
     "2025-12-02": {
-        "balance": -89657.64,
+        "balance": -91984.56999999999,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -1387,7 +1387,7 @@
         "balance_diff": -7781.78
     },
     "2025-12-05": {
-        "balance": -90007.14,
+        "balance": -92334.06999999999,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -1398,7 +1398,7 @@
         "balance_diff": -349.5
     },
     "2025-12-06": {
-        "balance": -90007.14,
+        "balance": -92334.06999999999,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -1409,7 +1409,7 @@
         "balance_diff": 0.0
     },
     "2025-12-27": {
-        "balance": -90520.67,
+        "balance": -92847.59999999999,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -1420,7 +1420,7 @@
         "balance_diff": -513.53
     },
     "2025-12-30": {
-        "balance": -90790.67,
+        "balance": -93117.59999999999,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -1431,7 +1431,7 @@
         "balance_diff": -270.0
     },
     "2025-12-31": {
-        "balance": -92413.24,
+        "balance": -94740.17,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -1477,7 +1477,7 @@
         "balance_diff": -1622.57
     },
     "2026-01-01": {
-        "balance": -93173.24,
+        "balance": -95500.17,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -1488,7 +1488,7 @@
         "balance_diff": -760.0
     },
     "2026-01-02": {
-        "balance": -100955.02,
+        "balance": -103281.95,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -1504,7 +1504,7 @@
         "balance_diff": -7781.78
     },
     "2026-01-05": {
-        "balance": -101304.52,
+        "balance": -103631.45,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -1515,7 +1515,7 @@
         "balance_diff": -349.5
     },
     "2026-01-06": {
-        "balance": -101304.52,
+        "balance": -103631.45,
         "changes": [
             {
                 "reason": "Future Month Target",
