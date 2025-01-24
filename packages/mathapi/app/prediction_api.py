@@ -115,6 +115,9 @@ def process_need_category(daily_projection, category, target, scheduled_dates_by
     if global_overall_left is None:  # Explicitly handle None
         global_overall_left = 0
     global_overall_left /= 1000  # Convert to thousands
+
+    # We geven het huidige saldo door aan apply_need_category_spending
+    # Die functie zal bepalen of het saldo moet worden gebruikt (alleen voor huidige maand)
     apply_need_category_spending(
         daily_projection,
         category,
@@ -176,13 +179,9 @@ def apply_need_category_spending(daily_projection, category, target, current_bal
 
         # Handle current month targets
         if is_current_month:
-            # For current month, use target_amount if it's due this month, otherwise use global_overall_left
-            if goal_target_month and goal_target_month.year == today.year and goal_target_month.month == today.month:
-                # If target is due this month, use target_amount
-                apply_transaction(daily_projection, date_str, target_amount, category["name"], "Target Due This Month")
-            elif global_overall_left > 0:
-                # If there's still an amount left to pay, use that
-                apply_transaction(daily_projection, date_str, global_overall_left, category["name"], "Remaining Target Amount")
+            # Voor de huidige maand, gebruik het huidige saldo als uitgave
+            if current_balance > 0:
+                apply_transaction(daily_projection, date_str, current_balance, category["name"], "Current Month Balance")
             continue
 
         # Handle goal_target_month logic for non-yearly cadences
@@ -202,7 +201,8 @@ def apply_need_category_spending(daily_projection, category, target, current_bal
         # If no goal_target_month is provided, apply spending at the specific day or end of the month
         if not goal_target_month:
             if is_current_month:
-                apply_transaction(daily_projection, date_str, target_amount, category["name"], "Current Month Target")
+                if current_balance > 0:
+                    apply_transaction(daily_projection, date_str, current_balance, category["name"], "Current Month Balance")
             else:
                 apply_transaction(daily_projection, date_str, target_amount, category["name"], "Future Month Target")
 
