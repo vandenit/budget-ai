@@ -1,34 +1,18 @@
 {
     "2025-01-19": {
-        "balance": 1899.54,
+        "balance": 4653.86,
         "changes": [
             {
                 "reason": "Initial Balance",
-                "amount": 949.77,
+                "amount": 2326.93,
                 "category": "yCoXWITWxZC9XsQn5hFQPuYC3Xa4IQI6j7xZnEwB9hc="
             }
         ],
-        "balance_diff": 949.77
+        "balance_diff": 2326.93
     },
-    "2025-01-23": {
-        "balance": 3170.24,
+    "2025-01-27": {
+        "balance": 5447.129999999999,
         "changes": [
-            {
-                "reason": "Scheduled Transaction",
-                "amount": -6.7,
-                "category": "S1VVrrv6pC8msbIhrGrf7Rxl77ocazCHn7D7USthu7I=",
-                "account": "7hzhbi+OmetQIF33NjsJHmvxmcuHN7CeB9mX0U6yf0c=",
-                "payee": null,
-                "memo": "Docker.io"
-            },
-            {
-                "reason": "Scheduled Transaction",
-                "amount": -29.4,
-                "category": "S1VVrrv6pC8msbIhrGrf7Rxl77ocazCHn7D7USthu7I=",
-                "account": "7hzhbi+OmetQIF33NjsJHmvxmcuHN7CeB9mX0U6yf0c=",
-                "payee": null,
-                "memo": "Adobe "
-            },
             {
                 "reason": "Scheduled Transaction",
                 "amount": 1306.8,
@@ -36,12 +20,17 @@
                 "account": "LtFWVU+JIsTH4mUoOCRPZG6hFueaNbZ08EGY759a7/o=",
                 "payee": null,
                 "memo": "Teletask factuur"
+            },
+            {
+                "reason": "Current Month Balance",
+                "amount": -513.53,
+                "category": "vii1saeP0BmX8VpuAsttojQ7s2yRpcnrVXR80sNJShw="
             }
         ],
-        "balance_diff": 1270.7
+        "balance_diff": 793.27
     },
     "2025-01-29": {
-        "balance": 2760.24,
+        "balance": 5037.129999999999,
         "changes": [
             {
                 "reason": "Scheduled Transaction",
@@ -54,8 +43,19 @@
         ],
         "balance_diff": -410.0
     },
+    "2025-01-30": {
+        "balance": 4767.129999999999,
+        "changes": [
+            {
+                "reason": "Current Month Balance",
+                "amount": -270.0,
+                "category": "V+ikMd7sDXDaCibqM5LlloixG3nt/QTp2oI7FrzR1Nc="
+            }
+        ],
+        "balance_diff": -270.0
+    },
     "2025-01-31": {
-        "balance": -9306.460000000001,
+        "balance": 8450.579999999998,
         "changes": [
             {
                 "reason": "Scheduled Transaction",
@@ -66,40 +66,20 @@
                 "memo": "Ixor"
             },
             {
-                "reason": "Target Due This Month",
-                "amount": -1321.09,
-                "category": "jrzwyCA4i0z0jpWjC//E++Fd1RQ2Ar5MVJ+eycANI3k="
+                "reason": "Current Month Balance",
+                "amount": -133.53,
+                "category": "dwRgvrdJD3DEfY7gIPLLmILiRJMvGMo8W6N7qrx/NOk="
             },
             {
-                "reason": "Remaining Target Amount",
-                "amount": -356.85,
+                "reason": "Current Month Balance",
+                "amount": -115.52,
                 "category": "I6j4IbaSe3Th3LvEzBGLv05LunvQskOLuUHOc67EhlQ="
-            },
-            {
-                "reason": "Target Due This Month",
-                "amount": -2621.28,
-                "category": "OnpQS37j6RDmmTz2PwoDe6i/aL9veFWKx4cRQsqKLX0="
-            },
-            {
-                "reason": "Target Due This Month",
-                "amount": -3604.54,
-                "category": "c/iTgHT3lEAYZ4WJfSoN8VA0OjNQhjU2AHk6Q2zF0FY="
-            },
-            {
-                "reason": "Remaining Target Amount",
-                "amount": -57.8,
-                "category": "S1VVrrv6pC8msbIhrGrf7Rxl77ocazCHn7D7USthu7I="
-            },
-            {
-                "reason": "Target Due This Month",
-                "amount": -8037.64,
-                "category": "o0oJ+hHBZiyRMnK056UxmTP99VE4sJXAi0eU4LikfLg="
             }
         ],
-        "balance_diff": -12066.7
+        "balance_diff": 3683.45
     },
     "2025-02-01": {
-        "balance": -10071.410000000002,
+        "balance": 7685.629999999998,
         "changes": [
             {
                 "reason": "Scheduled Transaction",
@@ -118,7 +98,7 @@
         "balance_diff": -764.95
     },
     "2025-02-02": {
-        "balance": -17880.95,
+        "balance": -123.91000000000167,
         "changes": [
             {
                 "reason": "Scheduled Transaction",
@@ -142,7 +122,7 @@
         "balance_diff": -7809.54
     },
     "2025-02-05": {
-        "balance": -18565.45,
+        "balance": -808.4100000000017,
         "changes": [
             {
                 "reason": "Scheduled Transaction",
@@ -161,7 +141,7 @@
         "balance_diff": -684.5
     },
     "2025-02-06": {
-        "balance": -18565.45,
+        "balance": -808.4100000000017,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -172,7 +152,7 @@
         "balance_diff": 0.0
     },
     "2025-02-08": {
-        "balance": -18575.3,
+        "balance": -818.2600000000017,
         "changes": [
             {
                 "reason": "Scheduled Transaction",
@@ -185,24 +165,41 @@
         ],
         "balance_diff": -9.85
     },
-    "2025-02-22": {
-        "balance": -19358.829999999998,
+    "2025-02-23": {
+        "balance": -854.3600000000017,
         "changes": [
             {
-                "reason": "Future Month Target",
-                "amount": -270.0,
-                "category": "V+ikMd7sDXDaCibqM5LlloixG3nt/QTp2oI7FrzR1Nc="
+                "reason": "Scheduled Transaction",
+                "amount": -6.7,
+                "category": "S1VVrrv6pC8msbIhrGrf7Rxl77ocazCHn7D7USthu7I=",
+                "account": "7hzhbi+OmetQIF33NjsJHmvxmcuHN7CeB9mX0U6yf0c=",
+                "payee": null,
+                "memo": "Docker.io"
             },
+            {
+                "reason": "Scheduled Transaction",
+                "amount": -29.4,
+                "category": "S1VVrrv6pC8msbIhrGrf7Rxl77ocazCHn7D7USthu7I=",
+                "account": "7hzhbi+OmetQIF33NjsJHmvxmcuHN7CeB9mX0U6yf0c=",
+                "payee": null,
+                "memo": "Adobe "
+            }
+        ],
+        "balance_diff": -36.1
+    },
+    "2025-02-27": {
+        "balance": -1367.8900000000017,
+        "changes": [
             {
                 "reason": "Future Month Target",
                 "amount": -513.53,
                 "category": "vii1saeP0BmX8VpuAsttojQ7s2yRpcnrVXR80sNJShw="
             }
         ],
-        "balance_diff": -783.53
+        "balance_diff": -513.53
     },
     "2025-02-28": {
-        "balance": -4464.899999999998,
+        "balance": 13256.039999999999,
         "changes": [
             {
                 "reason": "Scheduled Transaction",
@@ -221,6 +218,11 @@
                 "reason": "Future Month Target",
                 "amount": -267.52,
                 "category": "S5ZYK25uRWlU1/hgp2YVazlrTqdR9ZZlA4yIApGODYk="
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -270.0,
+                "category": "V+ikMd7sDXDaCibqM5LlloixG3nt/QTp2oI7FrzR1Nc="
             },
             {
                 "reason": "Future Month Target",
@@ -253,10 +255,10 @@
                 "category": "V1bc00iPg2y3CWBeI/5oITUsgj6/wrJ2sfMVcA++EnM="
             }
         ],
-        "balance_diff": 14893.93
+        "balance_diff": 14623.93
     },
     "2025-03-01": {
-        "balance": -11927.899999999998,
+        "balance": 5793.039999999999,
         "changes": [
             {
                 "reason": "Scheduled Transaction",
@@ -275,7 +277,7 @@
         "balance_diff": -7463.0
     },
     "2025-03-02": {
-        "balance": -19709.679999999997,
+        "balance": -1988.7400000000007,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -291,7 +293,7 @@
         "balance_diff": -7781.78
     },
     "2025-03-05": {
-        "balance": -20059.179999999997,
+        "balance": -2338.2400000000007,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -302,7 +304,7 @@
         "balance_diff": -349.5
     },
     "2025-03-06": {
-        "balance": -20059.179999999997,
+        "balance": -2338.2400000000007,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -312,24 +314,19 @@
         ],
         "balance_diff": 0.0
     },
-    "2025-03-22": {
-        "balance": -20842.709999999995,
+    "2025-03-27": {
+        "balance": -2851.7700000000004,
         "changes": [
-            {
-                "reason": "Future Month Target",
-                "amount": -270.0,
-                "category": "V+ikMd7sDXDaCibqM5LlloixG3nt/QTp2oI7FrzR1Nc="
-            },
             {
                 "reason": "Future Month Target",
                 "amount": -513.53,
                 "category": "vii1saeP0BmX8VpuAsttojQ7s2yRpcnrVXR80sNJShw="
             }
         ],
-        "balance_diff": -783.53
+        "balance_diff": -513.53
     },
     "2025-03-28": {
-        "balance": -4628.099999999995,
+        "balance": 13362.84,
         "changes": [
             {
                 "reason": "Scheduled Transaction",
@@ -342,8 +339,19 @@
         ],
         "balance_diff": 16214.61
     },
+    "2025-03-30": {
+        "balance": 13092.84,
+        "changes": [
+            {
+                "reason": "Future Month Target",
+                "amount": -270.0,
+                "category": "V+ikMd7sDXDaCibqM5LlloixG3nt/QTp2oI7FrzR1Nc="
+            }
+        ],
+        "balance_diff": -270.0
+    },
     "2025-03-31": {
-        "balance": -6250.669999999995,
+        "balance": 11470.27,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -389,7 +397,7 @@
         "balance_diff": -1622.57
     },
     "2025-04-01": {
-        "balance": -7010.669999999995,
+        "balance": 10710.27,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -400,7 +408,7 @@
         "balance_diff": -760.0
     },
     "2025-04-02": {
-        "balance": -14792.449999999993,
+        "balance": 2928.4900000000007,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -416,7 +424,7 @@
         "balance_diff": -7781.78
     },
     "2025-04-05": {
-        "balance": -15141.949999999993,
+        "balance": 2578.9900000000007,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -427,7 +435,7 @@
         "balance_diff": -349.5
     },
     "2025-04-06": {
-        "balance": -15141.949999999993,
+        "balance": 2578.9900000000007,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -437,24 +445,19 @@
         ],
         "balance_diff": 0.0
     },
-    "2025-04-22": {
-        "balance": -15925.479999999994,
+    "2025-04-27": {
+        "balance": 2065.460000000001,
         "changes": [
-            {
-                "reason": "Future Month Target",
-                "amount": -270.0,
-                "category": "V+ikMd7sDXDaCibqM5LlloixG3nt/QTp2oI7FrzR1Nc="
-            },
             {
                 "reason": "Future Month Target",
                 "amount": -513.53,
                 "category": "vii1saeP0BmX8VpuAsttojQ7s2yRpcnrVXR80sNJShw="
             }
         ],
-        "balance_diff": -783.53
+        "balance_diff": -513.53
     },
     "2025-04-30": {
-        "balance": -12114.579999999994,
+        "balance": 5606.36,
         "changes": [
             {
                 "reason": "Scheduled Transaction",
@@ -473,6 +476,11 @@
                 "reason": "Future Month Target",
                 "amount": -267.52,
                 "category": "S5ZYK25uRWlU1/hgp2YVazlrTqdR9ZZlA4yIApGODYk="
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -270.0,
+                "category": "V+ikMd7sDXDaCibqM5LlloixG3nt/QTp2oI7FrzR1Nc="
             },
             {
                 "reason": "Future Month Target",
@@ -515,10 +523,10 @@
                 "category": "o0oJ+hHBZiyRMnK056UxmTP99VE4sJXAi0eU4LikfLg="
             }
         ],
-        "balance_diff": 3810.8999999999987
+        "balance_diff": 3540.8999999999987
     },
     "2025-05-01": {
-        "balance": -12874.579999999994,
+        "balance": 4846.36,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -529,7 +537,7 @@
         "balance_diff": -760.0
     },
     "2025-05-02": {
-        "balance": -20656.359999999993,
+        "balance": -2935.42,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -545,7 +553,7 @@
         "balance_diff": -7781.78
     },
     "2025-05-05": {
-        "balance": -21005.859999999993,
+        "balance": -3284.92,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -556,7 +564,7 @@
         "balance_diff": -349.5
     },
     "2025-05-06": {
-        "balance": -21005.859999999993,
+        "balance": -3284.92,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -566,24 +574,19 @@
         ],
         "balance_diff": 0.0
     },
-    "2025-05-22": {
-        "balance": -21789.389999999992,
+    "2025-05-27": {
+        "balance": -3798.45,
         "changes": [
-            {
-                "reason": "Future Month Target",
-                "amount": -270.0,
-                "category": "V+ikMd7sDXDaCibqM5LlloixG3nt/QTp2oI7FrzR1Nc="
-            },
             {
                 "reason": "Future Month Target",
                 "amount": -513.53,
                 "category": "vii1saeP0BmX8VpuAsttojQ7s2yRpcnrVXR80sNJShw="
             }
         ],
-        "balance_diff": -783.53
+        "balance_diff": -513.53
     },
     "2025-05-30": {
-        "balance": -6789.389999999992,
+        "balance": 10931.55,
         "changes": [
             {
                 "reason": "Scheduled Transaction",
@@ -592,12 +595,17 @@
                 "account": "LtFWVU+JIsTH4mUoOCRPZG6hFueaNbZ08EGY759a7/o=",
                 "payee": null,
                 "memo": null
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -270.0,
+                "category": "V+ikMd7sDXDaCibqM5LlloixG3nt/QTp2oI7FrzR1Nc="
             }
         ],
-        "balance_diff": 15000.0
+        "balance_diff": 14730.0
     },
     "2025-05-31": {
-        "balance": -8411.959999999992,
+        "balance": 9308.98,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -643,7 +651,7 @@
         "balance_diff": -1622.57
     },
     "2025-06-01": {
-        "balance": -9171.959999999992,
+        "balance": 8548.98,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -654,7 +662,7 @@
         "balance_diff": -760.0
     },
     "2025-06-02": {
-        "balance": -16953.73999999999,
+        "balance": 767.1999999999998,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -670,7 +678,7 @@
         "balance_diff": -7781.78
     },
     "2025-06-05": {
-        "balance": -17303.23999999999,
+        "balance": 417.6999999999998,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -681,7 +689,7 @@
         "balance_diff": -349.5
     },
     "2025-06-06": {
-        "balance": -17303.23999999999,
+        "balance": 417.6999999999998,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -691,24 +699,19 @@
         ],
         "balance_diff": 0.0
     },
-    "2025-06-22": {
-        "balance": -18086.76999999999,
+    "2025-06-27": {
+        "balance": -95.83000000000015,
         "changes": [
-            {
-                "reason": "Future Month Target",
-                "amount": -270.0,
-                "category": "V+ikMd7sDXDaCibqM5LlloixG3nt/QTp2oI7FrzR1Nc="
-            },
             {
                 "reason": "Future Month Target",
                 "amount": -513.53,
                 "category": "vii1saeP0BmX8VpuAsttojQ7s2yRpcnrVXR80sNJShw="
             }
         ],
-        "balance_diff": -783.53
+        "balance_diff": -513.53
     },
     "2025-06-30": {
-        "balance": -19709.33999999999,
+        "balance": -1988.4,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -719,6 +722,11 @@
                 "reason": "Future Month Target",
                 "amount": -267.52,
                 "category": "S5ZYK25uRWlU1/hgp2YVazlrTqdR9ZZlA4yIApGODYk="
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -270.0,
+                "category": "V+ikMd7sDXDaCibqM5LlloixG3nt/QTp2oI7FrzR1Nc="
             },
             {
                 "reason": "Future Month Target",
@@ -751,10 +759,10 @@
                 "category": "V1bc00iPg2y3CWBeI/5oITUsgj6/wrJ2sfMVcA++EnM="
             }
         ],
-        "balance_diff": -1622.57
+        "balance_diff": -1892.57
     },
     "2025-07-01": {
-        "balance": -20469.33999999999,
+        "balance": -2748.4,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -765,7 +773,7 @@
         "balance_diff": -760.0
     },
     "2025-07-02": {
-        "balance": -28251.119999999988,
+        "balance": -10530.18,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -781,7 +789,7 @@
         "balance_diff": -7781.78
     },
     "2025-07-05": {
-        "balance": -28600.619999999988,
+        "balance": -10879.68,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -792,7 +800,7 @@
         "balance_diff": -349.5
     },
     "2025-07-06": {
-        "balance": -28600.619999999988,
+        "balance": -10879.68,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -802,24 +810,30 @@
         ],
         "balance_diff": 0.0
     },
-    "2025-07-22": {
-        "balance": -29384.149999999987,
+    "2025-07-27": {
+        "balance": -11393.210000000001,
         "changes": [
-            {
-                "reason": "Future Month Target",
-                "amount": -270.0,
-                "category": "V+ikMd7sDXDaCibqM5LlloixG3nt/QTp2oI7FrzR1Nc="
-            },
             {
                 "reason": "Future Month Target",
                 "amount": -513.53,
                 "category": "vii1saeP0BmX8VpuAsttojQ7s2yRpcnrVXR80sNJShw="
             }
         ],
-        "balance_diff": -783.53
+        "balance_diff": -513.53
+    },
+    "2025-07-30": {
+        "balance": -11663.210000000001,
+        "changes": [
+            {
+                "reason": "Future Month Target",
+                "amount": -270.0,
+                "category": "V+ikMd7sDXDaCibqM5LlloixG3nt/QTp2oI7FrzR1Nc="
+            }
+        ],
+        "balance_diff": -270.0
     },
     "2025-07-31": {
-        "balance": -42988.359999999986,
+        "balance": -25267.420000000002,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -880,7 +894,7 @@
         "balance_diff": -13604.210000000001
     },
     "2025-08-01": {
-        "balance": -43748.359999999986,
+        "balance": -26027.420000000002,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -891,7 +905,7 @@
         "balance_diff": -760.0
     },
     "2025-08-02": {
-        "balance": -51530.139999999985,
+        "balance": -33809.200000000004,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -907,7 +921,7 @@
         "balance_diff": -7781.78
     },
     "2025-08-05": {
-        "balance": -51879.639999999985,
+        "balance": -34158.700000000004,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -918,7 +932,7 @@
         "balance_diff": -349.5
     },
     "2025-08-06": {
-        "balance": -51879.639999999985,
+        "balance": -34158.700000000004,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -928,24 +942,30 @@
         ],
         "balance_diff": 0.0
     },
-    "2025-08-22": {
-        "balance": -52663.169999999984,
+    "2025-08-27": {
+        "balance": -34672.23,
         "changes": [
-            {
-                "reason": "Future Month Target",
-                "amount": -270.0,
-                "category": "V+ikMd7sDXDaCibqM5LlloixG3nt/QTp2oI7FrzR1Nc="
-            },
             {
                 "reason": "Future Month Target",
                 "amount": -513.53,
                 "category": "vii1saeP0BmX8VpuAsttojQ7s2yRpcnrVXR80sNJShw="
             }
         ],
-        "balance_diff": -783.53
+        "balance_diff": -513.53
+    },
+    "2025-08-30": {
+        "balance": -34942.23,
+        "changes": [
+            {
+                "reason": "Future Month Target",
+                "amount": -270.0,
+                "category": "V+ikMd7sDXDaCibqM5LlloixG3nt/QTp2oI7FrzR1Nc="
+            }
+        ],
+        "balance_diff": -270.0
     },
     "2025-08-31": {
-        "balance": -54285.73999999998,
+        "balance": -36564.8,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -991,7 +1011,7 @@
         "balance_diff": -1622.57
     },
     "2025-09-01": {
-        "balance": -55045.73999999998,
+        "balance": -37324.8,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -1002,7 +1022,7 @@
         "balance_diff": -760.0
     },
     "2025-09-02": {
-        "balance": -62827.51999999998,
+        "balance": -45106.58,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -1018,7 +1038,7 @@
         "balance_diff": -7781.78
     },
     "2025-09-05": {
-        "balance": -63177.01999999998,
+        "balance": -45456.08,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -1029,7 +1049,7 @@
         "balance_diff": -349.5
     },
     "2025-09-06": {
-        "balance": -63177.01999999998,
+        "balance": -45456.08,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -1039,24 +1059,19 @@
         ],
         "balance_diff": 0.0
     },
-    "2025-09-22": {
-        "balance": -63960.54999999998,
+    "2025-09-27": {
+        "balance": -45969.61,
         "changes": [
-            {
-                "reason": "Future Month Target",
-                "amount": -270.0,
-                "category": "V+ikMd7sDXDaCibqM5LlloixG3nt/QTp2oI7FrzR1Nc="
-            },
             {
                 "reason": "Future Month Target",
                 "amount": -513.53,
                 "category": "vii1saeP0BmX8VpuAsttojQ7s2yRpcnrVXR80sNJShw="
             }
         ],
-        "balance_diff": -783.53
+        "balance_diff": -513.53
     },
     "2025-09-30": {
-        "balance": -65583.11999999998,
+        "balance": -47862.18,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -1067,6 +1082,11 @@
                 "reason": "Future Month Target",
                 "amount": -267.52,
                 "category": "S5ZYK25uRWlU1/hgp2YVazlrTqdR9ZZlA4yIApGODYk="
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -270.0,
+                "category": "V+ikMd7sDXDaCibqM5LlloixG3nt/QTp2oI7FrzR1Nc="
             },
             {
                 "reason": "Future Month Target",
@@ -1099,10 +1119,10 @@
                 "category": "V1bc00iPg2y3CWBeI/5oITUsgj6/wrJ2sfMVcA++EnM="
             }
         ],
-        "balance_diff": -1622.57
+        "balance_diff": -1892.57
     },
     "2025-10-01": {
-        "balance": -66343.11999999998,
+        "balance": -48622.18,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -1113,7 +1133,7 @@
         "balance_diff": -760.0
     },
     "2025-10-02": {
-        "balance": -74124.89999999998,
+        "balance": -56403.96,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -1129,7 +1149,7 @@
         "balance_diff": -7781.78
     },
     "2025-10-05": {
-        "balance": -74474.39999999998,
+        "balance": -56753.46,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -1140,7 +1160,7 @@
         "balance_diff": -349.5
     },
     "2025-10-06": {
-        "balance": -74474.39999999998,
+        "balance": -56753.46,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -1150,24 +1170,30 @@
         ],
         "balance_diff": 0.0
     },
-    "2025-10-22": {
-        "balance": -75257.92999999998,
+    "2025-10-27": {
+        "balance": -57266.99,
         "changes": [
-            {
-                "reason": "Future Month Target",
-                "amount": -270.0,
-                "category": "V+ikMd7sDXDaCibqM5LlloixG3nt/QTp2oI7FrzR1Nc="
-            },
             {
                 "reason": "Future Month Target",
                 "amount": -513.53,
                 "category": "vii1saeP0BmX8VpuAsttojQ7s2yRpcnrVXR80sNJShw="
             }
         ],
-        "balance_diff": -783.53
+        "balance_diff": -513.53
+    },
+    "2025-10-30": {
+        "balance": -57536.99,
+        "changes": [
+            {
+                "reason": "Future Month Target",
+                "amount": -270.0,
+                "category": "V+ikMd7sDXDaCibqM5LlloixG3nt/QTp2oI7FrzR1Nc="
+            }
+        ],
+        "balance_diff": -270.0
     },
     "2025-10-31": {
-        "balance": -87539.41999999998,
+        "balance": -69818.48,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -1223,7 +1249,7 @@
         "balance_diff": -12281.49
     },
     "2025-11-01": {
-        "balance": -88299.41999999998,
+        "balance": -70578.48,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -1234,7 +1260,7 @@
         "balance_diff": -760.0
     },
     "2025-11-02": {
-        "balance": -96081.19999999998,
+        "balance": -78360.26,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -1250,7 +1276,7 @@
         "balance_diff": -7781.78
     },
     "2025-11-05": {
-        "balance": -96430.69999999998,
+        "balance": -78709.76,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -1261,7 +1287,7 @@
         "balance_diff": -349.5
     },
     "2025-11-06": {
-        "balance": -96430.69999999998,
+        "balance": -78709.76,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -1271,24 +1297,19 @@
         ],
         "balance_diff": 0.0
     },
-    "2025-11-22": {
-        "balance": -97214.22999999998,
+    "2025-11-27": {
+        "balance": -79223.29,
         "changes": [
-            {
-                "reason": "Future Month Target",
-                "amount": -270.0,
-                "category": "V+ikMd7sDXDaCibqM5LlloixG3nt/QTp2oI7FrzR1Nc="
-            },
             {
                 "reason": "Future Month Target",
                 "amount": -513.53,
                 "category": "vii1saeP0BmX8VpuAsttojQ7s2yRpcnrVXR80sNJShw="
             }
         ],
-        "balance_diff": -783.53
+        "balance_diff": -513.53
     },
     "2025-11-30": {
-        "balance": -98836.79999999999,
+        "balance": -81115.86,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -1299,6 +1320,11 @@
                 "reason": "Future Month Target",
                 "amount": -267.52,
                 "category": "S5ZYK25uRWlU1/hgp2YVazlrTqdR9ZZlA4yIApGODYk="
+            },
+            {
+                "reason": "Future Month Target",
+                "amount": -270.0,
+                "category": "V+ikMd7sDXDaCibqM5LlloixG3nt/QTp2oI7FrzR1Nc="
             },
             {
                 "reason": "Future Month Target",
@@ -1331,10 +1357,10 @@
                 "category": "V1bc00iPg2y3CWBeI/5oITUsgj6/wrJ2sfMVcA++EnM="
             }
         ],
-        "balance_diff": -1622.57
+        "balance_diff": -1892.57
     },
     "2025-12-01": {
-        "balance": -99596.79999999999,
+        "balance": -81875.86,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -1345,7 +1371,7 @@
         "balance_diff": -760.0
     },
     "2025-12-02": {
-        "balance": -107378.57999999999,
+        "balance": -89657.64,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -1361,7 +1387,7 @@
         "balance_diff": -7781.78
     },
     "2025-12-05": {
-        "balance": -107728.07999999999,
+        "balance": -90007.14,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -1372,7 +1398,7 @@
         "balance_diff": -349.5
     },
     "2025-12-06": {
-        "balance": -107728.07999999999,
+        "balance": -90007.14,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -1382,24 +1408,30 @@
         ],
         "balance_diff": 0.0
     },
-    "2025-12-22": {
-        "balance": -108511.60999999999,
+    "2025-12-27": {
+        "balance": -90520.67,
         "changes": [
-            {
-                "reason": "Future Month Target",
-                "amount": -270.0,
-                "category": "V+ikMd7sDXDaCibqM5LlloixG3nt/QTp2oI7FrzR1Nc="
-            },
             {
                 "reason": "Future Month Target",
                 "amount": -513.53,
                 "category": "vii1saeP0BmX8VpuAsttojQ7s2yRpcnrVXR80sNJShw="
             }
         ],
-        "balance_diff": -783.53
+        "balance_diff": -513.53
+    },
+    "2025-12-30": {
+        "balance": -90790.67,
+        "changes": [
+            {
+                "reason": "Future Month Target",
+                "amount": -270.0,
+                "category": "V+ikMd7sDXDaCibqM5LlloixG3nt/QTp2oI7FrzR1Nc="
+            }
+        ],
+        "balance_diff": -270.0
     },
     "2025-12-31": {
-        "balance": -110134.18,
+        "balance": -92413.24,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -1445,7 +1477,7 @@
         "balance_diff": -1622.57
     },
     "2026-01-01": {
-        "balance": -110894.18,
+        "balance": -93173.24,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -1456,7 +1488,7 @@
         "balance_diff": -760.0
     },
     "2026-01-02": {
-        "balance": -118675.95999999999,
+        "balance": -100955.02,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -1472,7 +1504,7 @@
         "balance_diff": -7781.78
     },
     "2026-01-05": {
-        "balance": -119025.45999999999,
+        "balance": -101304.52,
         "changes": [
             {
                 "reason": "Future Month Target",
@@ -1483,7 +1515,7 @@
         "balance_diff": -349.5
     },
     "2026-01-06": {
-        "balance": -119025.45999999999,
+        "balance": -101304.52,
         "changes": [
             {
                 "reason": "Future Month Target",
