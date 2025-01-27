@@ -167,13 +167,26 @@ def apply_need_category_spending(daily_projection, category, target, current_bal
 
         is_current_month = today.year == target_year and today.month == target_month
 
+        # Calculate scheduled transactions for this month
+        month_start = datetime(target_year, target_month, 1).date()
+        month_end = datetime(target_year, target_month, days_in_month).date()
+        scheduled_amount = 0
+        for day in range(days_in_month):
+            check_date = (month_start + timedelta(days=day)).isoformat()
+            if check_date in daily_projection:
+                for change in daily_projection[check_date]["changes"]:
+                    if change["reason"] == "Scheduled Transaction" and change["category"] == category["name"]:
+                        scheduled_amount += abs(change["amount"])  # We gebruiken abs() omdat changes negatief zijn
+
         # Handle yearly cadence (goal_cadence 13) separately
         if goal_cadence == 13:  # Yearly cadence
             if goal_target_month and spending_date >= goal_target_month:
                 # Only apply if we're at or past the target month
                 if spending_date.month == goal_target_month.month and spending_date.year >= goal_target_month.year:
                     remaining_amount = global_overall_left if global_overall_left > 0 else target_amount
-                    apply_transaction(daily_projection, date_str, remaining_amount, category["name"], "Yearly Payment")
+                    remaining_amount = max(0, remaining_amount - scheduled_amount)
+                    if remaining_amount > 0:
+                        apply_transaction(daily_projection, date_str, remaining_amount, category["name"], "Yearly Payment")
                     applied_months.add(target_date)
             continue
 
@@ -188,13 +201,17 @@ def apply_need_category_spending(daily_projection, category, target, current_bal
         if goal_target_month:
             if target_date == goal_target_month:
                 if global_overall_left > 0:
-                    apply_transaction(daily_projection, date_str, global_overall_left, category["name"], "Remaining Spending (Goal Target)")
+                    remaining_amount = max(0, global_overall_left - scheduled_amount)
+                    if remaining_amount > 0:
+                        apply_transaction(daily_projection, date_str, remaining_amount, category["name"], "Remaining Spending (Goal Target)")
                 applied_months.add(target_date)
                 continue
             elif target_date > goal_target_month and cadence_interval:
                 months_since_goal = (target_date.year - goal_target_month.year) * 12 + (target_date.month - goal_target_month.month)
                 if months_since_goal % cadence_interval == 0:
-                    apply_transaction(daily_projection, date_str, target_amount, category["name"], f"Recurring Spending ({cadence_config['type'].capitalize()} every {goal_cadence_frequency})")
+                    remaining_amount = max(0, target_amount - scheduled_amount)
+                    if remaining_amount > 0:
+                        apply_transaction(daily_projection, date_str, remaining_amount, category["name"], f"Recurring Spending ({cadence_config['type'].capitalize()} every {goal_cadence_frequency})")
                     applied_months.add(target_date)
                 continue
 
@@ -204,7 +221,9 @@ def apply_need_category_spending(daily_projection, category, target, current_bal
                 if current_balance > 0:
                     apply_transaction(daily_projection, date_str, current_balance, category["name"], "Current Month Balance")
             else:
-                apply_transaction(daily_projection, date_str, target_amount, category["name"], "Future Month Target")
+                remaining_amount = max(0, target_amount - scheduled_amount)
+                if remaining_amount > 0:
+                    apply_transaction(daily_projection, date_str, remaining_amount, category["name"], "Future Month Target")
 
 def apply_transaction(daily_projection, date_str, amount, category_name, reason):
     """Hulpfunctie om transacties toe te voegen aan daily_projection."""

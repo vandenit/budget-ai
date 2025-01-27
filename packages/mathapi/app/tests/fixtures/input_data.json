@@ -248,9 +248,9 @@
             "subtransactions": []
         },
         {
-            "id": "c31fad74-3326-44bc-9470-61cf64729880",
-            "date_first": "2025-01-27",
-            "date_next": "2025-01-27",
+            "id": "fb82744d-cb37-4527-925d-c0cec4f8d38c",
+            "date_first": "2025-01-31",
+            "date_next": "2025-01-31",
             "frequency": "never",
             "amount": 1306800,
             "memo": "RX5m+tTHlK+w578wINBu2icm4d8rPW1SvcAhlQKZGgU=",
@@ -314,12 +314,12 @@
             "_id": "66ab697ff9292fc9e1e030eb",
             "uuid": "13455cb7-1766-42fe-9c9c-9d3cd4f50e9e",
             "name": "dwRgvrdJD3DEfY7gIPLLmILiRJMvGMo8W6N7qrx/NOk=",
-            "balance": 133530,
-            "budgeted": 548590,
-            "activity": -415060,
+            "balance": 74730,
+            "budgeted": 539390,
+            "activity": -464660,
             "targetAmount": 200000,
-            "historicalAverage": 321100,
-            "typicalSpendingPattern": 0.7741935483870968,
+            "historicalAverage": 49600,
+            "typicalSpendingPattern": 0.8387096774193549,
             "budgetId": "66ab697ef9292fc9e1e03024",
             "__v": 0,
             "target": {
@@ -333,7 +333,7 @@
                 "goal_percentage_complete": 100,
                 "goal_months_to_budget": 1,
                 "goal_under_funded": 0,
-                "goal_overall_funded": 548590,
+                "goal_overall_funded": 539390,
                 "goal_overall_left": 0
             }
         },
@@ -490,12 +490,12 @@
             "_id": "66ab697ff9292fc9e1e030fd",
             "uuid": "07a8546d-b8d7-4922-b9f5-f2d2a2f8a8b1",
             "name": "I6j4IbaSe3Th3LvEzBGLv05LunvQskOLuUHOc67EhlQ=",
-            "balance": 115520,
-            "budgeted": 162880,
-            "activity": -127630,
+            "balance": 0,
+            "budgeted": 170080,
+            "activity": -250350,
             "targetAmount": 600000,
-            "historicalAverage": 29500,
-            "typicalSpendingPattern": 0.7419354838709677,
+            "historicalAverage": 56620,
+            "typicalSpendingPattern": 0.8709677419354839,
             "budgetId": "66ab697ef9292fc9e1e03024",
             "__v": 0,
             "target": {
@@ -506,47 +506,20 @@
                 "goal_creation_month": "2024-11-01",
                 "goal_target": 600000,
                 "goal_target_month": null,
-                "goal_percentage_complete": 40,
+                "goal_percentage_complete": 41,
                 "goal_months_to_budget": 1,
-                "goal_under_funded": 356850,
-                "goal_overall_funded": 243150,
-                "goal_overall_left": 356850
-            }
-        },
-        {
-            "_id": "66ab697ff9292fc9e1e030ff",
-            "uuid": "4f798300-7477-46cb-88d6-97c601772a0d",
-            "name": "bhsWvl5G/ZDjhlSdg7s3aM3BOrPOy/J+ZIGWSN+UQII=",
-            "balance": 352000,
-            "budgeted": 337000,
-            "activity": -335000,
-            "targetAmount": 760000,
-            "historicalAverage": 335000,
-            "typicalSpendingPattern": 0.16129032258064516,
-            "budgetId": "66ab697ef9292fc9e1e03024",
-            "__v": 0,
-            "target": {
-                "goal_type": "NEED",
-                "goal_day": 1,
-                "goal_cadence": 1,
-                "goal_cadence_frequency": 1,
-                "goal_creation_month": "2024-08-01",
-                "goal_target": 760000,
-                "goal_target_month": null,
-                "goal_percentage_complete": 44,
-                "goal_months_to_budget": 1,
-                "goal_under_funded": 423000,
-                "goal_overall_funded": 337000,
-                "goal_overall_left": 423000
+                "goal_under_funded": 349650,
+                "goal_overall_funded": 250350,
+                "goal_overall_left": 349650
             }
         },
         {
             "_id": "66ab697ff9292fc9e1e030f9",
             "uuid": "b7a4f138-c2f6-4c9b-928f-da17df5a8c3b",
             "name": "vii1saeP0BmX8VpuAsttojQ7s2yRpcnrVXR80sNJShw=",
-            "balance": 513530,
-            "budgeted": 513530,
-            "activity": 0,
+            "balance": 0,
+            "budgeted": 515530,
+            "activity": -515530,
             "targetAmount": 513530,
             "historicalAverage": 515530,
             "typicalSpendingPattern": 0.8709677419354839,
@@ -563,8 +536,35 @@
                 "goal_percentage_complete": 100,
                 "goal_months_to_budget": 1,
                 "goal_under_funded": 0,
-                "goal_overall_funded": 513530,
+                "goal_overall_funded": 515530,
                 "goal_overall_left": 0
+            }
+        },
+        {
+            "_id": "66ab697ff9292fc9e1e030ff",
+            "uuid": "4f798300-7477-46cb-88d6-97c601772a0d",
+            "name": "bhsWvl5G/ZDjhlSdg7s3aM3BOrPOy/J+ZIGWSN+UQII=",
+            "balance": 352000,
+            "budgeted": 337000,
+            "activity": -335000,
+            "targetAmount": 760000,
+            "historicalAverage": 335000,
+            "typicalSpendingPattern": 0.16129032258064516,
+            "budgetId": "66ab697ef9292fc9e1e03024",
+            "__v": 0,
+            "target": {
+                "goal_type": "NEED",
+                "goal_day": null,
+                "goal_cadence": 1,
+                "goal_cadence_frequency": 1,
+                "goal_creation_month": "2024-08-01",
+                "goal_target": 760000,
+                "goal_target_month": null,
+                "goal_percentage_complete": 44,
+                "goal_months_to_budget": 1,
+                "goal_under_funded": 423000,
+                "goal_overall_funded": 337000,
+                "goal_overall_left": 423000
             }
         },
         {
@@ -595,20 +595,6 @@
             }
         },
         {
-            "_id": "66ab697ff9292fc9e1e03103",
-            "uuid": "af2aa56a-06d3-4f9d-a715-1e0c91a31a9a",
-            "name": "ROcF3jNnBn7JnzdgoSohv45K63ErXyhiZb1ATSbRzCI=",
-            "balance": 0,
-            "budgeted": 0,
-            "activity": 0,
-            "targetAmount": 0,
-            "historicalAverage": 1108850,
-            "typicalSpendingPattern": 0.03225806451612903,
-            "budgetId": "66ab697ef9292fc9e1e03024",
-            "__v": 0,
-            "target": null
-        },
-        {
             "_id": "66ab697ff9292fc9e1e03101",
             "uuid": "dee57e80-a449-4fb4-a781-133cace5b730",
             "name": "5f/W5lQk3WQ55e8sfk3cvB7WEMJC+wwc2dqFzTgsIvQ=",
@@ -634,6 +620,20 @@
                 "goal_overall_funded": 293170,
                 "goal_overall_left": 0
             }
+        },
+        {
+            "_id": "66ab697ff9292fc9e1e03103",
+            "uuid": "af2aa56a-06d3-4f9d-a715-1e0c91a31a9a",
+            "name": "ROcF3jNnBn7JnzdgoSohv45K63ErXyhiZb1ATSbRzCI=",
+            "balance": 0,
+            "budgeted": 0,
+            "activity": 0,
+            "targetAmount": 0,
+            "historicalAverage": 1108850,
+            "typicalSpendingPattern": 0.03225806451612903,
+            "budgetId": "66ab697ef9292fc9e1e03024",
+            "__v": 0,
+            "target": null
         },
         {
             "_id": "66ab697ff9292fc9e1e03105",
@@ -706,16 +706,29 @@
         {
             "_id": "66ab697ff9292fc9e1e0310b",
             "uuid": "5664eb25-54a1-445b-b7d8-11dfe3b1c1e3",
-            "name": "MmBVP3TDfi6tiZnrt7msoNa1DE9u1Fa8bkLLsv80Xk8=",
+            "name": "8erLR1P1pXm1LipaXq47xgOMVOVXS46glLLvJ1Hwgvc=",
             "balance": 0,
             "budgeted": 0,
             "activity": 0,
-            "targetAmount": 0,
+            "targetAmount": 1287000,
             "historicalAverage": 1245550,
             "typicalSpendingPattern": 0.7741935483870968,
             "budgetId": "66ab697ef9292fc9e1e03024",
             "__v": 0,
-            "target": null
+            "target": {
+                "goal_type": "NEED",
+                "goal_day": null,
+                "goal_cadence": 1,
+                "goal_cadence_frequency": 1,
+                "goal_creation_month": "2025-01-01",
+                "goal_target": 1287000,
+                "goal_target_month": null,
+                "goal_percentage_complete": 0,
+                "goal_months_to_budget": 1,
+                "goal_under_funded": 1287000,
+                "goal_overall_funded": 0,
+                "goal_overall_left": 1287000
+            }
         },
         {
             "_id": "66ab697ff9292fc9e1e0310d",
@@ -725,7 +738,7 @@
             "budgeted": 378350,
             "activity": -378350,
             "targetAmount": 0,
-            "historicalAverage": 37500,
+            "historicalAverage": 23850,
             "typicalSpendingPattern": 0.06451612903225806,
             "budgetId": "66ab697ef9292fc9e1e03024",
             "__v": 0,
@@ -793,8 +806,8 @@
             "budgeted": 15520,
             "activity": -15520,
             "targetAmount": 1338240,
-            "historicalAverage": 9340,
-            "typicalSpendingPattern": 0.41935483870967744,
+            "historicalAverage": 6180,
+            "typicalSpendingPattern": 0.4193548387096774,
             "budgetId": "66ab697ef9292fc9e1e03024",
             "__v": 0,
             "target": {
@@ -922,20 +935,6 @@
             "target": null
         },
         {
-            "_id": "66ab697ff9292fc9e1e03119",
-            "uuid": "714a9293-4765-4a04-b077-859c86fafa9a",
-            "name": "JyGDlygwdKmKvVSDm8jYUqdkiCTRi5IYNDp8HPofMj4=",
-            "balance": 0,
-            "budgeted": 1702030,
-            "activity": -1702030,
-            "targetAmount": 0,
-            "historicalAverage": 108740,
-            "typicalSpendingPattern": 0.3548387096774194,
-            "budgetId": "66ab697ef9292fc9e1e03024",
-            "__v": 0,
-            "target": null
-        },
-        {
             "_id": "66ab697ff9292fc9e1e0311d",
             "uuid": "c76133c4-e82b-4976-9c15-ac22e9aefc44",
             "name": "zqpVPoOPufEuPkc+xqj+DFMykEHN7ocYdKPksnaeNuo=",
@@ -961,6 +960,20 @@
                 "goal_overall_funded": null,
                 "goal_overall_left": null
             }
+        },
+        {
+            "_id": "66ab697ff9292fc9e1e03119",
+            "uuid": "714a9293-4765-4a04-b077-859c86fafa9a",
+            "name": "JyGDlygwdKmKvVSDm8jYUqdkiCTRi5IYNDp8HPofMj4=",
+            "balance": 0,
+            "budgeted": 1702030,
+            "activity": -1702030,
+            "targetAmount": 0,
+            "historicalAverage": 108740,
+            "typicalSpendingPattern": 0.3548387096774194,
+            "budgetId": "66ab697ef9292fc9e1e03024",
+            "__v": 0,
+            "target": null
         },
         {
             "_id": "66b61b42e15f0b452a57d36a",
@@ -1066,8 +1079,8 @@
             "budgeted": 249260,
             "activity": -249260,
             "targetAmount": 0,
-            "historicalAverage": 113000,
-            "typicalSpendingPattern": 0.7419354838709676,
+            "historicalAverage": 14150,
+            "typicalSpendingPattern": 0.7419354838709677,
             "budgetId": "66ab697ef9292fc9e1e03024",
             "target": null,
             "__v": 0
@@ -1092,19 +1105,9 @@
             "_id": "6733d5d4a7258ff24d935d41",
             "uuid": "9a76aea2-f856-4d25-9234-de47b45ec351",
             "name": "LtFWVU+JIsTH4mUoOCRPZG6hFueaNbZ08EGY759a7/o=",
-            "balance": 1653880,
-            "cleared_balance": -13346120,
+            "balance": 966030,
+            "cleared_balance": -14033970,
             "uncleared_balance": 15000000,
-            "budgetId": "66ab697ef9292fc9e1e03024",
-            "__v": 0
-        },
-        {
-            "_id": "6733d5d4a7258ff24d935d45",
-            "uuid": "66ee1715-58e7-4fc5-8a1b-cf82867a7ee9",
-            "name": "zPV5+fzT15gIsDsfYCbphM1Gfy2mdUob+eraYmTCdK0=",
-            "balance": 549580,
-            "cleared_balance": 549580,
-            "uncleared_balance": 0,
             "budgetId": "66ab697ef9292fc9e1e03024",
             "__v": 0
         },
@@ -1117,7 +1120,17 @@
             "uncleared_balance": 305760,
             "budgetId": "66ab697ef9292fc9e1e03024",
             "__v": 0
+        },
+        {
+            "_id": "6733d5d4a7258ff24d935d45",
+            "uuid": "66ee1715-58e7-4fc5-8a1b-cf82867a7ee9",
+            "name": "zPV5+fzT15gIsDsfYCbphM1Gfy2mdUob+eraYmTCdK0=",
+            "balance": 549580,
+            "cleared_balance": 549580,
+            "uncleared_balance": 0,
+            "budgetId": "66ab697ef9292fc9e1e03024",
+            "__v": 0
         }
     ],
-    "generation_date": "2025-01-24T15:09:50.056860"
+    "generation_date": "2025-01-27T10:53:12.851821"
 }
