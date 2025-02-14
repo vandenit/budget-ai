@@ -16,6 +16,17 @@ CADENCE_CONFIG = {
 
 
 def projected_balances_for_budget(budget_uuid, days_ahead=300, simulations=None):
+    """
+    Calculate projected balances for a budget over a specified period.
+    
+    Args:
+        budget_uuid: The UUID of the budget
+        days_ahead: Number of days to project into the future
+        simulations: Optional list of simulation scenarios to include
+        
+    Returns:
+        Dictionary containing daily projections with changes and balances
+    """
     budget_id = get_objectid_for_budget(budget_uuid)
     future_transactions = get_scheduled_transactions(budget_uuid)
     categories = get_categories_for_budget(budget_id)
@@ -27,6 +38,19 @@ def projected_balances_for_budget(budget_uuid, days_ahead=300, simulations=None)
 
 
 def project_daily_balances_with_reasons(accounts, categories, future_transactions, days_ahead=30, simulations=None):
+    """
+    Project daily balances with detailed reasons for changes.
+    
+    Args:
+        accounts: List of account objects with balances
+        categories: List of budget categories
+        future_transactions: List of scheduled future transactions
+        days_ahead: Number of days to project into the future
+        simulations: Optional list of simulation scenarios
+        
+    Returns:
+        OrderedDict containing daily projections sorted by date
+    """
     initial_balance = calculate_initial_balance(accounts)
     daily_projection = initialize_daily_projection(initial_balance, days_ahead)
 
@@ -44,15 +68,26 @@ def project_daily_balances_with_reasons(accounts, categories, future_transaction
 
 
 def calculate_initial_balance(accounts):
+    """Calculate the total initial balance across all accounts (in thousands)."""
     return sum(account['balance'] for account in accounts) / 1000  # Convert to thousands
 
 
 def initialize_daily_projection(initial_balance, days_ahead):
+    """
+    Initialize the daily projection dictionary with empty entries.
+    
+    Args:
+        initial_balance: Starting balance for the projection
+        days_ahead: Number of days to project into the future
+        
+    Returns:
+        Dictionary with initialized daily entries
+    """
     daily_projection = {}
     # Start with current day (day 0) up to days_ahead
     current_date = datetime.now().date()
     daily_projection[current_date.isoformat()] = {
-        "balance": 0,  # Start met 0, balance wordt later berekend
+        "balance": 0,  # Start with 0, balance will be calculated later
         "changes": [{
             "reason": "Initial Balance",
             "amount": initial_balance,
@@ -64,13 +99,23 @@ def initialize_daily_projection(initial_balance, days_ahead):
     for day in range(1, days_ahead + 1):
         date = (current_date + timedelta(days=day)).isoformat()
         daily_projection[date] = {
-            "balance": 0,  # Start met 0, balance wordt later berekend
+            "balance": 0,  # Start with 0, balance will be calculated later
             "changes": []
         }
     return daily_projection
 
 
 def add_future_transactions_to_projection(daily_projection, future_transactions):
+    """
+    Add scheduled future transactions to the daily projection.
+    
+    Args:
+        daily_projection: Dictionary containing daily projections
+        future_transactions: List of scheduled transactions
+        
+    Returns:
+        Dictionary mapping category names to sets of scheduled dates
+    """
     scheduled_dates_by_category = {}
     for txn in future_transactions:
         transaction_date = datetime.strptime(txn['date_next'], '%Y-%m-%d').date().isoformat()
@@ -95,6 +140,7 @@ def add_future_transactions_to_projection(daily_projection, future_transactions)
 
 
 def process_need_categories(daily_projection, categories, scheduled_dates_by_category, days_ahead):
+    """Process all categories with NEED type goals."""
     for category in categories:
         target = category.get("target")
 
@@ -109,6 +155,16 @@ def process_need_categories(daily_projection, categories, scheduled_dates_by_cat
 
 
 def process_need_category(daily_projection, category, target, scheduled_dates_by_category, days_ahead):
+    """
+    Process a single NEED category and its spending targets.
+    
+    Args:
+        daily_projection: Dictionary containing daily projections
+        category: Category object with target information
+        target: Target configuration for the category
+        scheduled_dates_by_category: Dictionary of already scheduled dates
+        days_ahead: Number of days to project into the future
+    """
     target_amount = target.get("goal_target", 0) / 1000  # Convert to thousands
     current_balance = category.get("balance", 0) / 1000  # Convert to thousands
     global_overall_left = target.get("goal_overall_left")  # This could be None
@@ -116,8 +172,8 @@ def process_need_category(daily_projection, category, target, scheduled_dates_by
         global_overall_left = 0
     global_overall_left /= 1000  # Convert to thousands
 
-    # We geven het huidige saldo door aan apply_need_category_spending
-    # Die functie zal bepalen of het saldo moet worden gebruikt (alleen voor huidige maand)
+    # Pass the current balance to apply_need_category_spending
+    # That function will determine if the balance should be used (only for current month)
     apply_need_category_spending(
         daily_projection,
         category,
@@ -130,6 +186,18 @@ def process_need_category(daily_projection, category, target, scheduled_dates_by
 
 
 def apply_need_category_spending(daily_projection, category, target, current_balance, target_amount, days_ahead, global_overall_left):
+    """
+    Apply spending patterns for a NEED category based on its target configuration.
+    
+    Args:
+        daily_projection: Dictionary containing daily projections
+        category: Category object with target information
+        target: Target configuration for the category
+        current_balance: Current balance in the category
+        target_amount: Target amount for the category
+        days_ahead: Number of days to project into the future
+        global_overall_left: Remaining amount in the overall goal
+    """
     today = datetime.now().date()
     applied_months = set()
     cadence_interval = None
@@ -176,7 +244,7 @@ def apply_need_category_spending(daily_projection, category, target, current_bal
             if check_date in daily_projection:
                 for change in daily_projection[check_date]["changes"]:
                     if change["reason"] == "Scheduled Transaction" and change["category"] == category["name"]:
-                        scheduled_amount += abs(change["amount"])  # We gebruiken abs() omdat changes negatief zijn
+                        scheduled_amount += abs(change["amount"])  # Use abs() since changes are negative
 
         # Handle yearly cadence (goal_cadence 13) separately
         if goal_cadence == 13:  # Yearly cadence
@@ -192,7 +260,7 @@ def apply_need_category_spending(daily_projection, category, target, current_bal
 
         # Handle current month targets
         if is_current_month:
-            # Voor de huidige maand, gebruik het huidige saldo als uitgave
+            # For the current month, use the current balance as spending
             if current_balance > 0:
                 apply_transaction(daily_projection, date_str, current_balance, category["name"], "Current Month Balance")
             continue
@@ -225,18 +293,19 @@ def apply_need_category_spending(daily_projection, category, target, current_bal
                 if remaining_amount > 0:
                     apply_transaction(daily_projection, date_str, remaining_amount, category["name"], "Future Month Target")
 
+
 def apply_transaction(daily_projection, date_str, amount, category_name, reason):
-    """Hulpfunctie om transacties toe te voegen aan daily_projection."""
+    """Helper function to add transactions to the daily projection."""
     if date_str in daily_projection:
         daily_projection[date_str]["changes"].append({
             "reason": reason,
-            "amount": -amount,  # Negative for expesens
+            "amount": -amount,  # Negative for expenses
             "category": category_name
         })
-        
 
 
 def add_simulations_to_projection(daily_projection, simulations):
+    """Add simulation scenarios to the daily projection."""
     if not simulations:
         return
 
@@ -248,25 +317,23 @@ def add_simulations_to_projection(daily_projection, simulations):
 
         if sim_date in daily_projection:
             daily_projection[sim_date]["changes"].append({
-                "amount": sim_amount,  # Use raw numeric value
+                "amount": sim_amount,
                 "category": sim_category,
                 "reason": sim_reason,
                 "is_simulation": True
             })
-        else:
-            daily_projection[sim_date] = {
-                "balance": 0.0,  # Initialize with numeric value
-                "changes": [{
-                    "amount": sim_amount,  # Use raw numeric value
-                    "category": sim_category,
-                    "reason": sim_reason,
-                    "is_simulation": True
-                }]
-            }
 
 
 def calculate_running_balance(daily_projection, initial_balance, days_ahead):
-    running_balance = 0  # Start met 0 omdat initial_balance al als change is toegevoegd
+    """
+    Calculate running balances for each day in the projection.
+    
+    Args:
+        daily_projection: Dictionary containing daily projections
+        initial_balance: Starting balance for the calculation
+        days_ahead: Number of days to calculate balances for
+    """
+    running_balance = 0  # Start with 0 since initial_balance is already added as a change
     for day in range(days_ahead + 1):
         current_date = (datetime.now().date() + timedelta(days=day)).isoformat()
         day_entry = daily_projection[current_date]
