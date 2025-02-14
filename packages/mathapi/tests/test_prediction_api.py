@@ -10,6 +10,7 @@ from app.prediction_api import (
     process_need_category,
     apply_need_category_spending
 )
+import calendar
 
 def test_calculate_initial_balance():
     # Test data
@@ -339,4 +340,218 @@ def test_process_need_categories():
         all_changes.extend(data["changes"])
     
     assert not any(c["category"] == "No Target" for c in all_changes)
-    assert not any(c["category"] == "Other Type" for c in all_changes) 
+    assert not any(c["category"] == "Other Type" for c in all_changes)
+
+@pytest.fixture
+def base_projection():
+    """Create a base projection for testing different spending scenarios."""
+    base_date = datetime.now().date()
+    projection = {}
+    
+    # Create projection starting from the first of the current month
+    start_date = base_date.replace(day=1)
+    # Create projection for 2 years
+    for day in range(730):
+        date = (start_date + timedelta(days=day)).isoformat()
+        projection[date] = {
+            "balance": 0,
+            "changes": []
+        }
+    
+    return projection
+
+def test_yearly_cadence_with_target_month(base_projection):
+    """Test yearly cadence (13) with a target month specified."""
+    base_date = datetime.now().date()
+    target_month = (base_date + timedelta(days=60)).replace(day=1)
+    
+    category = {
+        "name": "Yearly Tax",
+        "target": {
+            "goal_type": "NEED",
+            "goal_target": 1200000,  # €1200
+            "goal_cadence": 13,  # Yearly
+            "goal_cadence_frequency": 1,
+            "goal_target_month": target_month.isoformat(),
+            "goal_day": 15
+        }
+    }
+    
+    apply_need_category_spending(
+        base_projection,
+        category,
+        category["target"],
+        0,  # current_balance
+        1200.0,  # target_amount
+        730,  # days_ahead
+        1200.0  # global_overall_left
+    )
+    
+    # Check if payment was scheduled for target month
+    target_date = target_month.replace(day=15).isoformat()
+    changes = [c for c in base_projection[target_date]["changes"] 
+              if c["category"] == "Yearly Tax"]
+    
+    assert len(changes) == 1
+    assert changes[0]["amount"] == -1200.0
+    assert changes[0]["reason"] == "Yearly Payment"
+
+def test_current_month_with_balance(base_projection):
+    """Test handling of current month with existing balance."""
+    today = datetime.now().date()
+    
+    # Set the spending day to 1 for consistency
+    spending_day = 1
+    current_month_date = today.replace(day=spending_day).isoformat()
+    
+    category = {
+        "name": "Current Month Category",
+        "target": {
+            "goal_type": "NEED",
+            "goal_target": 100000,  # €100
+            "goal_cadence": 1,
+            "goal_cadence_frequency": 1,
+            "goal_day": spending_day
+        }
+    }
+    
+    apply_need_category_spending(
+        base_projection,
+        category,
+        category["target"],
+        50.0,  # current_balance
+        100.0,  # target_amount
+        30,  # days_ahead
+        100.0  # global_overall_left
+    )
+    
+    # Check if current balance was applied
+    changes = [c for c in base_projection[current_month_date]["changes"] 
+              if c["category"] == "Current Month Category"]
+    
+    assert len(changes) == 1
+    assert changes[0]["amount"] == -50.0
+    assert changes[0]["reason"] == "Current Month Balance"
+
+def test_recurring_monthly_spending(base_projection):
+    """Test regular monthly spending pattern."""
+    base_date = datetime.now().date()
+    category = {
+        "name": "Monthly Rent",
+        "target": {
+            "goal_type": "NEED",
+            "goal_target": 100000,  # €100
+            "goal_cadence": 1,
+            "goal_cadence_frequency": 1,
+            "goal_day": 1
+        }
+    }
+    
+    apply_need_category_spending(
+        base_projection,
+        category,
+        category["target"],
+        0,  # current_balance
+        100.0,  # target_amount
+        60,  # days_ahead
+        100.0  # global_overall_left
+    )
+    
+    # Check next month's payment
+    next_month = (base_date.replace(day=1) + timedelta(days=32)).replace(day=1)
+    next_month_str = next_month.isoformat()
+    
+    changes = [c for c in base_projection[next_month_str]["changes"] 
+              if c["category"] == "Monthly Rent"]
+    
+    assert len(changes) == 1
+    assert changes[0]["amount"] == -100.0
+    assert changes[0]["reason"] == "Future Month Target"
+
+def test_quarterly_spending_with_target_month(base_projection):
+    """Test quarterly spending with a specific target month."""
+    base_date = datetime.now().date()
+    target_month = (base_date + timedelta(days=60)).replace(day=1)
+    
+    category = {
+        "name": "Quarterly Insurance",
+        "target": {
+            "goal_type": "NEED",
+            "goal_target": 300000,  # €300
+            "goal_cadence": 3,  # Quarterly
+            "goal_cadence_frequency": 1,
+            "goal_target_month": target_month.isoformat(),
+            "goal_day": 15
+        }
+    }
+    
+    apply_need_category_spending(
+        base_projection,
+        category,
+        category["target"],
+        0,  # current_balance
+        300.0,  # target_amount
+        365,  # days_ahead
+        300.0  # global_overall_left
+    )
+    
+    # Calculate expected payment dates
+    payment_date = target_month.replace(day=15)
+    payment_dates = []
+    while payment_date < (base_date + timedelta(days=365)):
+        payment_dates.append(payment_date)
+        # Add 3 months
+        year = payment_date.year + ((payment_date.month + 2) // 12)
+        month = ((payment_date.month + 2) % 12) + 1
+        payment_date = payment_date.replace(year=year, month=month)
+    
+    # Verify payments
+    for date in payment_dates:
+        date_str = date.isoformat()
+        changes = [c for c in base_projection[date_str]["changes"] 
+                  if c["category"] == "Quarterly Insurance"]
+        assert len(changes) == 1
+        assert changes[0]["amount"] == -300.0
+
+def test_spending_with_scheduled_transactions(base_projection):
+    """Test spending calculation when there are already scheduled transactions."""
+    base_date = datetime.now().date()
+    next_month = (base_date.replace(day=1) + timedelta(days=32)).replace(day=1)
+    
+    # Add a scheduled transaction
+    base_projection[next_month.isoformat()]["changes"].append({
+        "reason": "Scheduled Transaction",
+        "amount": -50.0,
+        "category": "Monthly Bills"
+    })
+    
+    category = {
+        "name": "Monthly Bills",
+        "target": {
+            "goal_type": "NEED",
+            "goal_target": 100000,  # €100 target
+            "goal_cadence": 1,
+            "goal_cadence_frequency": 1,
+            "goal_day": 1
+        }
+    }
+    
+    apply_need_category_spending(
+        base_projection,
+        category,
+        category["target"],
+        0,  # current_balance
+        100.0,  # target_amount
+        60,  # days_ahead
+        100.0  # global_overall_left
+    )
+    
+    # Verify that only the remaining amount was added
+    changes = [c for c in base_projection[next_month.isoformat()]["changes"] 
+              if c["category"] == "Monthly Bills"]
+    
+    assert len(changes) == 2  # Original scheduled + remaining amount
+    scheduled = next(c for c in changes if c["reason"] == "Scheduled Transaction")
+    remaining = next(c for c in changes if c["reason"] == "Future Month Target")
+    assert scheduled["amount"] == -50.0
+    assert remaining["amount"] == -50.0  # Remaining amount to reach target 
