@@ -15,12 +15,19 @@ spec:
     spec:
       containers:
         - name: budget-mathapi
-          image: filipvdb321/budget-mathapi:${IMAGE_TAG}
+          image: filipvdb321/budget-mathapi:2f6844e6f23c516ad8225b3e90599abdb3111446
           ports:
             - containerPort: 5000
+          env:
+            - name: PYTHONPATH
+              value: /app
+            - name: FLASK_APP
+              value: app/app.py
+            - name: FLASK_ENV
+              value: production
+            - name: FLASK_DEBUG
+              value: "0"
           envFrom:
-            - configMapRef:
-                name: budget-mathapi-dev-config
             - secretRef:
                 name: mathapi-secrets
           resources:
