@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: budget-mathapi-app
+  namespace: dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: budget-mathapi
+  template:
+    metadata:
+      labels:
+        app: budget-mathapi
+    spec:
+      containers:
+        - name: budget-mathapi
+          image: filipvdb321/budget-mathapi:${IMAGE_TAG}
+          ports:
+            - containerPort: 5000
+          envFrom:
+            - configMapRef:
+                name: budget-mathapi-dev-config
+            - secretRef:
+                name: mathapi-secrets
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 5000
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 5000
+            initialDelaySeconds: 15
+            periodSeconds: 20 

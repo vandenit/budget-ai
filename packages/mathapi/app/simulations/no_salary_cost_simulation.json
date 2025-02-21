@@ -1,0 +1,14 @@
+[
+    {
+        "date": "2025-03-02",
+        "amount": "7348.21",
+        "reason": "Simulation: no salary",
+        "category": "Salary"
+    },
+    {
+        "date": "2025-04-02",
+        "amount": "7348.21",
+        "reason": "Simulation: no salary",
+        "category": "Salary"
+    }
+]

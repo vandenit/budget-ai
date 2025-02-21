@@ -302,6 +302,7 @@ def apply_transaction(daily_projection, date_str, amount, category_name, reason)
             "amount": -amount,  # Negative for expenses
             "category": category_name
         })
+        
 
 
 def add_simulations_to_projection(daily_projection, simulations):

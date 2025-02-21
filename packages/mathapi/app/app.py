@@ -11,11 +11,30 @@ from .categories_api import get_categories_for_budget
 from .ai_api import suggest_category
 import logging
 import json
+from flask_cors import CORS
+from dotenv import load_dotenv
+from app.auth import requires_auth
+from app.models import get_user_from_request, get_budget
+
+# Load environment variables
+load_dotenv()
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
+
+# Setup CORS
+CORS_ORIGINS = os.getenv('CORS_ORIGINS', 'http://localhost:3000').split(',')
+CORS(app, resources={
+    r"/*": {
+        "origins": CORS_ORIGINS,
+        "methods": ["GET", "POST", "PUT", "OPTIONS"],
+        "allow_headers": ["Authorization", "Content-Type"],
+        "supports_credentials": True
+    }
+})
 
 def load_simulations_folder(folder_name="simulations"):
     """Load all simulations from a folder containing JSON files."""
@@ -124,55 +143,69 @@ def balance_prediction_interactive():
     # Render HTML template with plot data
     return render_template('balance_projection.html', plot_data=sanitized_plot_data)
 
-@app.route('/balance-prediction/data', methods=['GET'])
-def balance_prediction_data():
-    # Step 1: Get `budget_id` and `days_ahead` from query parameters
-    budget_uuid = request.args.get('budget_id')
-    if not budget_uuid:
-        return jsonify({"error": "budget_id query parameter is required"}), 400
-
-    days_ahead_param = request.args.get('days_ahead')
+@app.route('/balance-prediction/data')
+@requires_auth
+def get_prediction():
+    """Get balance prediction for a budget."""
     try:
-        days_ahead = int(days_ahead_param) if days_ahead_param is not None else 300
-    except ValueError:
-        return jsonify({"error": "Invalid days_ahead query parameter, it must be an integer."}), 400
-
-    # Step 2: Load simulations from folder
-    simulations = load_simulations_folder()
-
-    try:
+        user = get_user_from_request(request)
+        if not user:
+            return jsonify({"message": "User not found"}), 401
+            
+        budget_uuid = request.args.get('budget_id')
+        if not budget_uuid:
+            return jsonify({"message": "No budget_id provided"}), 400
+            
+        days_ahead = int(request.args.get('days_ahead', 300))
+        
+        # First get the MongoDB ObjectId for the budget
         budget_id = get_objectid_for_budget(budget_uuid)
+        if not budget_id:
+            return jsonify({"message": "Budget not found"}), 404
+            
+        # Then get the full budget document and verify ownership
+        budget = get_budget(budget_uuid, user)
+        if not budget:
+            return jsonify({"message": "Budget not found or access denied"}), 404
+            
+        # Get YNAB connection details
+        ynab_connection = user.get('ynab', {}).get('connection', {})
+        if not ynab_connection:
+            return jsonify({"message": "No YNAB connection"}), 400
+            
+        # Load simulations
+        simulations = load_simulations_folder()
+        
+        # Fetch required data
         future_transactions = get_scheduled_transactions(budget_uuid)
         categories = get_categories_for_budget(budget_id)
         accounts = get_accounts_for_budget(budget_id)
+
+        # Process each simulation and collect results
+        results = {}
+        for simulation_name, simulation_data in simulations.items():
+            try:
+                projected_balances = project_daily_balances_with_reasons(
+                    accounts, categories, future_transactions, days_ahead, simulation_data
+                )
+                results[simulation_name] = projected_balances
+            except Exception as e:
+                logger.warning(f"Error processing simulation '{simulation_name}': {str(e)}")
+                continue
+
+        return jsonify(results)
+        
+    except ValueError as e:
+        logger.warning(f"Invalid input: {str(e)}")
+        return jsonify({"message": str(e)}), 400
     except Exception as e:
-        return jsonify({"error": f"Error fetching data: {str(e)}"}), 500
+        logger.error(f"Error generating prediction: {str(e)}")
+        return jsonify({"message": "Internal server error"}), 500
 
-    # Step 3: Prepare data for baseline and simulations
-    data = {}
-
-    # Add baseline
-    try:
-        data["baseline"] = project_daily_balances_with_reasons(
-            accounts, categories, future_transactions, days_ahead
-        )
-    except Exception as e:
-        logging.error(f"Error generating baseline: {e}")
-        return jsonify({"error": f"Error generating baseline: {str(e)}"}), 500
-
-    # Add simulations
-    for simulation_name, simulation_data in simulations.items():
-        try:
-            simulation_key = f"simulation_{simulation_name}"
-            data[simulation_key] = project_daily_balances_with_reasons(
-                accounts, categories, future_transactions, days_ahead, simulation_data
-            )
-        except Exception as e:
-            logging.warning(f"Error processing simulation '{simulation_name}': {str(e)}")
-            data[f"simulation_{simulation_name}"] = {"error": f"Error: {str(e)}"}
-
-    # Return data as JSON
-    return jsonify(data)
+@app.route('/health')
+def health_check():
+    """Health check endpoint."""
+    return jsonify({"status": "healthy"})
 
 @app.route('/sheduled-transactions', methods=['GET'])
 def get_scheduled_transactions_route():
@@ -236,4 +269,5 @@ def apply_suggested_categories():
         return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    port = int(os.getenv('PORT', 5000))
+    app.run(host='0.0.0.0', port=port)

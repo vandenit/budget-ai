@@ -10,43 +10,44 @@ services:
     environment:
       NODE_ENV: development
       API_URL: http://api:4000
+      MATH_API_URL: http://mathapi:5000
+      SENTRY_DISABLED: "true"
     depends_on:
       - api
-      - ai
+      - mathapi
     networks:
       - default
   api:
     build:
       context: .
       dockerfile: packages/api/Dockerfile
+      args:
+        SENTRY_DISABLED: "true"
     ports:
       - "4000:4000"
     environment:
       NODE_ENV: development
+      SENTRY_DISABLED: "true"
     env_file:
       - ./packages/api/.env
     networks:
       - default
 
-  ai:
-    build:
-      context: .
-      dockerfile: packages/ai/Dockerfile
-    ports:
-      - "8080:8080"
-    env_file:
-      - ./packages/ai/.env
-    networks:
-      - default
   mathapi:
     build:
       context: .
-      dockerfile: packages/mathapi/Dockerfile # Dockerfile voor mathapi
+      dockerfile: packages/mathapi/Dockerfile
     ports:
-      - "5000:5000" # Exporteer een andere poort, bijv. 5000
+      - "5000:5000"
     environment:
-      NODE_ENV: development
+      PYTHONPATH: /app
+      FLASK_APP: app/app.py
       FLASK_ENV: development
+      FLASK_DEBUG: 1
+      CORS_ORIGINS: http://localhost:3000
+      API_SERVICE_URL: http://api:4000
+    env_file:
+      - ./packages/mathapi/.env
     networks:
       - default
 networks:

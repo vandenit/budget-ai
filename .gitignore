@@ -45,3 +45,6 @@ __pycache__
 /kube/dev/api-deployment.yml
 /kube/dev/web-deployment.yml
 /kube/dev/ai-deployment.yml
+
+# Documentation
+.docs/

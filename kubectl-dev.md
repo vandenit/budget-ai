@@ -32,15 +32,12 @@ kubectl get services -n dev
 kubectl get pods -n dev
 
 kubectl describe pod budget-web-app -n dev
-kubectl describe pod budget-ai-app -n dev
 kubectl describe pod budget-api-app -n dev
 
 kubectl logs -f budget-api-app-5d9689f479-wvbsh -n dev
 
 kubectl logs -l app=budget-web-app -n dev --tail=100
 kubectl logs -l app=budget-api-app -n dev --tail=100
-
-kubectl logs -l app=budget-ai-app -n dev --tail=100
 
 ```
 ## stop web
@@ -56,7 +53,6 @@ kubectl -n dev scale deployment budget-web-app --replicas=1
 
 kubectl -n dev rollout restart deployment budget-web-app
 kubectl -n dev rollout restart deployment budget-api-app
-kubectl -n dev rollout restart deployment budget-ai-app
 
 -- stop dev
 
@@ -66,7 +62,7 @@ kubectl -n dev rollout restart deployment budget-ai-app
 
 ```
 
-kubectl describe pod budget-ai-app -n dev
+kubectl describe pod budget-api-app -n dev
 
 ```
 
@@ -92,7 +88,6 @@ kubectl get configmap budget-web-dev-config -n dev -o yaml
 
 kubectl delete secret budget-web-dev-secrets -n dev
 kubectl delete secret budget-api-dev-secrets -n dev
-kubectl delete secret budget-ai-dev-secrets -n dev
 
 kubectl create secret generic budget-web-dev-secrets \
 --from-env-file=.dev-web-secrets.env \
@@ -102,8 +97,12 @@ kubectl create secret generic budget-api-dev-secrets \
 --from-env-file=.dev-api-secrets.env \
 --namespace=dev
 
-kubectl create secret generic budget-ai-dev-secrets \
---from-env-file=.dev-ai-secrets.env \
+kubectl create secret generic mathapi-secrets \
+--from-env-file=.dev-mathapi-secrets.env \
+--namespace=dev
+
+kubectl create secret generic mathapi-secrets \
+--from-env-file=.dev-mathapi-secrets.env \
 --namespace=dev
 
 ```
@@ -127,8 +126,6 @@ kubectl get secret budget-web-dev-secrets -n dev -o jsonpath="{.data.AUTH0_CLIEN
 
 ```
 
-```
-
 The Prometheus PushGateway can be accessed via port 9091 on the following DNS name from within your cluster:
 prometheus-prometheus-pushgateway.monitoring.svc.cluster.local
 
@@ -138,3 +135,8 @@ Get the PushGateway URL by running these commands in the same shell:
   export POD_NAME=$(kubectl get pods --namespace monitoring -l "app=prometheus-pushgateway,component=pushgateway" -o jsonpath="{.items[0].metadata.name}")
   kubectl --namespace monitoring port-forward $POD_NAME 9091
 ```
+
+# Create secrets for mathapi
+kubectl create secret generic mathapi-secrets \
+--from-env-file=.dev-mathapi-secrets.env \
+--namespace=dev
