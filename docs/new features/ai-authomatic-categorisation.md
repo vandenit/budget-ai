@@ -1,10 +1,6 @@
 # AI Authomatic Categorisation
 
-## Development Practices
-- Follow Next.js best practices (refer to ./docs/nextjs/docs)
-- Ensure proper error handling
-- Write comprehensive tests
-- Document API endpoints
+For development guidelines, refer to [Best Practices](../best-practices.md)
 
 ## Current status
 - google cloud api calls web api with secret. this calls the private api that updates the budgets

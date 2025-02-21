@@ -1,5 +1,7 @@
 # End-to-End Encryption
 
+For development guidelines, refer to [Best Practices](../best-practices.md)
+
 ## Current status
 - All financial data is stored in plain text in MongoDB
 - Server and DB admins can read all user data
@@ -125,15 +127,6 @@ const encrypt = async (data: string, key: CryptoKey) => {
 - Need to handle offline access
 - Search functionality limitations
 - Analytics/reporting complexity
-
-## Development Practices
-- Regular security audits
-- Code review focus on crypto implementation
-- No crypto implementation shortcuts
-- Proper error handling
-- Comprehensive testing
-- Clear documentation
-- Follow Next.js best practices (refer to ./docs/nextjs/docs)
 
 ## First Milestone
 Get basic encryption working for transaction amounts:
