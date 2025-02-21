@@ -1,15 +1,15 @@
-# AI Authomatic Categorisation
+# AI Automatic Categorization
 
 For development guidelines, refer to [Best Practices](../best-practices.md)
 
 ## Current status
-- google cloud api calls web api with secret. this calls the private api that updates the budgets
+- Google Cloud API calls web API with secret, which then calls the private API to update budgets
 
 ## Wanted status
-- the private api calls for each budget also the math-api:
+- The private API calls the math-api for each budget:
 POST http://127.0.0.1:5000/uncategorised-transactions/apply-categories?budget_id=1b443ebf-ea07-4ab7-8fd5-9330bf80608c
-so that categories are kept up to date
+This ensures categories are kept up to date automatically
 
 ## Todo
-- [ ] make sure the private api can access the math-api in kubernetes (but don't expose it to the public)
-- [ ] in the sync call the api for each budget. can be async
+- [ ] Ensure math-api is accessible from private API in Kubernetes (but not exposed publicly)
+- [ ] Implement asynchronous API calls for each budget during sync process
