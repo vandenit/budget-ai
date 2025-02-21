@@ -2,6 +2,7 @@
 
 ## General Practices
 - Follow Next.js best practices (refer to ./docs/nextjs/docs)
+- Use daisyui for styling
 - Ensure proper error handling
 - Write comprehensive tests
 - Document API endpoints

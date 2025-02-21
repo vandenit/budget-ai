@@ -111,11 +111,11 @@ CMD ["gunicorn", "--config", "gunicorn.conf.py", "app.app:app"]
 ```
 
 ## First Milestone
-1. Remove interactive endpoints
-2. Implement mandatory authentication
-3. Switch to Gunicorn
-4. Add basic monitoring
-5. Update deployment configuration
+1. [ ] Remove interactive endpoints
+2. [ ] Implement mandatory authentication
+3. [ ] Switch to Gunicorn
+4. [ ] Add basic monitoring
+5. [ ] Update deployment configuration
 
 ## Impact
 - Improved security
