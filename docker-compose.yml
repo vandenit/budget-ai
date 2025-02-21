@@ -10,9 +10,11 @@ services:
     environment:
       NODE_ENV: development
       API_URL: http://api:4000
+      MATH_API_URL: http://mathapi:5000
       SENTRY_DISABLED: "true"
     depends_on:
       - api
+      - mathapi
     networks:
       - default
   api:
@@ -42,6 +44,8 @@ services:
       FLASK_APP: app/app.py
       FLASK_ENV: development
       FLASK_DEBUG: 1
+      CORS_ORIGINS: http://localhost:3000
+      API_SERVICE_URL: http://api:4000
     env_file:
       - ./packages/mathapi/.env
     networks:

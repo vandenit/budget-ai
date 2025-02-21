@@ -11,4 +11,4 @@ data:
   AUTH0_CALLBACK: api/defauth/callback
   AUTH0_AUDIENCE: "https://vandenit.eu.auth0.com/api/v2/"
   API_URL: "http://budget-api-svc:4000"
-  PUBLIC_MATH_API_URL: "http://budget-mathapi-service:5000"
+  MATH_API_URL: "http://budget-mathapi-service:5000"

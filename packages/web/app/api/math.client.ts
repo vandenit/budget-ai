@@ -16,26 +16,13 @@ const mathApiFetch = async (
     path: string,
     options: RequestInit = {},
 ) => {
-    // First get the token through our API route
-    const tokenResponse = await fetch('/api/auth/token');
-    if (!tokenResponse.ok) {
-        throw new Error('Could not retrieve authentication token');
-    }
-    const { token } = await tokenResponse.json();
-
-    const apiBaseUrl = process.env.PUBLIC_MATH_API_URL || "http://localhost:5000";
-    const apiUrl = `${apiBaseUrl}/${path}`;
-    console.log(`Calling Math API: ${apiUrl}`);
-
     try {
-        const response = await fetch(apiUrl, {
+        const response = await fetch(`/api/math/${path}`, {
             ...options,
             headers: {
                 ...options.headers,
-                Authorization: `Bearer ${token}`,
                 "Content-Type": "application/json",
             },
-            mode: 'cors',
         });
 
         if (!response.ok) {
@@ -45,7 +32,7 @@ const mathApiFetch = async (
 
         return response;
     } catch (error) {
-        console.error(`Error calling math API ${apiUrl}:`, error);
+        console.error(`Error calling math API ${path}:`, error);
         throw error;
     }
 };
