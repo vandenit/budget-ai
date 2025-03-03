@@ -16,6 +16,7 @@ Budget AI is a modern, intelligent budgeting application that goes beyond tradit
 - Advanced spending pattern visualizations
 - User-friendly interface with modern design
 - Secure authentication via Auth0
+- AI-powered budget predictions and analysis
 
 ## 🔒 Privacy & Security
 
@@ -36,11 +37,6 @@ Budget AI is built using a microservices architecture, consisting of several ind
 - MongoDB caching for optimal performance
 - Automated YNAB synchronization
 - Runs on port 4000
-
-### AI Service
-- Dedicated service for AI predictions and analysis
-- Java/Spring Boot based application
-- Runs on port 8080
 
 ### Math API
 - Specialized service for mathematical calculations and financial analysis
@@ -69,10 +65,9 @@ Development priorities:
 ## 🛠 Development Setup
 
 ### Requirements
-- Docker and Docker Compose
 - Node.js 20+ (for local development)
-- Java 17+ (for AI service development)
 - Python 3.8+ (for Math API development)
+- Docker and Docker Compose (optional, for containerized development)
 
 ### Environment Setup
 
@@ -82,7 +77,6 @@ Each service requires specific environment variables to function properly. We pr
 ```bash
 cp packages/web/.env.example packages/web/.env
 cp packages/api/.env.example packages/api/.env
-cp packages/ai/.env.example packages/ai/.env
 cp packages/mathapi/.env.example packages/mathapi/.env
 ```
 
@@ -118,23 +112,9 @@ cp packages/mathapi/.env.example packages/mathapi/.env
 - OpenAI:
   - `OPENAI_API_KEY`: Your OpenAI API key
 
-#### AI Service (.env)
-- Server:
-  - `SERVER_PORT`: AI service port (default: 8080)
-  - `SPRING_PROFILES_ACTIVE`: Active Spring profile
-- Database:
-  - `SPRING_DATA_MONGODB_URI`: Your MongoDB connection string
-- Integration:
-  - `API_SERVICE_URL`: Backend API URL (default: http://localhost:4000)
-- Authentication:
-  - `AUTH0_ISSUER_BASE_URL`: Your Auth0 domain
-  - `AUTH0_AUDIENCE`: Your Auth0 API identifier
-- OpenAI:
-  - `OPENAI_API_KEY`: Your OpenAI API key
-
 #### Math API (.env)
 - Server:
-  - `FLASK_APP`: Main application file (default: app.py)
+  - `FLASK_APP`: Main application file (default: app/app.py)
   - `FLASK_ENV`: Environment (development/production)
   - `PORT`: Math API server port (default: 5000)
 - Database:
@@ -154,7 +134,29 @@ cp packages/mathapi/.env.example packages/mathapi/.env
 
 ### Installation
 
-#### Using Docker (recommended)
+1. Install dependencies:
+```bash
+npm install
+```
+
+2. Start all services in development mode:
+```bash
+npm run dev
+```
+
+This will concurrently start all services:
+- Web Frontend (http://localhost:3000)
+- Backend API (http://localhost:4000)
+- Math API (http://localhost:5000)
+
+Alternatively, you can start services individually:
+```bash
+npm run dev:web    # Start only the web frontend
+npm run dev:api    # Start only the backend API
+npm run dev:mathapi # Start only the math API
+```
+
+#### Using Docker (alternative)
 ```bash
 # Build and start all services
 docker-compose up --build
@@ -163,22 +165,9 @@ docker-compose up --build
 docker-compose up web api
 ```
 
-#### Local Development
-```bash
-# Install dependencies
-npm install
-
-# Start services individually
-cd packages/web && npm run dev
-cd packages/api && npm run dev
-cd packages/ai && ./mvnw spring-boot:run
-cd packages/mathapi && flask run
-```
-
 ### Available Services
 - Web UI: http://localhost:3000
 - API: http://localhost:4000
-- AI Service: http://localhost:8080
 - Math API: http://localhost:5000
 
 ## 🤝 Contributing
