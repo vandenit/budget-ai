@@ -15,7 +15,10 @@
     "dev:mathapi": "cd packages/mathapi && export FLASK_APP=app/app.py && export FLASK_ENV=development && flask run"
   },
   "dependencies": {
-    "next": "^14.2.23",
-    "concurrently": "^8.2.2"
+    "concurrently": "^8.2.2",
+    "next": "^14.2.23"
+  },
+  "devDependencies": {
+    "shadcn": "^2.4.0-canary.11"
   }
 }

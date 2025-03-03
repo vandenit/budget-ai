@@ -1,5 +1,6 @@
 "use client";
-import React, { useEffect, useState } from "react";
+
+import React, { useState } from "react";
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -12,10 +13,10 @@ import {
     TimeScale
 } from "chart.js";
 import { Line } from "react-chartjs-2";
-import { Category, MonthlyForcast } from "common-ts";
-import { getPrediction } from "../../api/math.client";
+import { Category } from "common-ts";
 import 'chartjs-adapter-date-fns';
 import { enUS } from 'date-fns/locale';
+import type { PredictionData } from '@/app/budgets/[budgetUuid]/predictions/prediction-data.server';
 
 ChartJS.register(
     CategoryScale,
@@ -29,41 +30,20 @@ ChartJS.register(
 );
 
 type Props = {
-    forecast: MonthlyForcast;
-    budgetId: string;
+    predictionData: PredictionData;
+    categories: Category[];
     variant?: 'overview' | 'detail';
     selectedTimeRange?: '1m' | '3m' | '6m' | '1y';
     onTimeRangeChange?: (range: '1m' | '3m' | '6m' | '1y') => void;
 };
 
-type SimulationData = {
-    [date: string]: {
-        balance: number;
-        balance_diff?: number;
-        changes: Array<{
-            amount: number;
-            category: string;
-            reason: string;
-            is_simulation?: boolean;
-            memo?: string;
-        }>;
-    };
-};
-
-type PredictionData = {
-    [simulationName: string]: SimulationData;
-};
-
 export const PredictionChart = ({
-    forecast,
-    budgetId,
+    predictionData,
+    categories,
     variant = 'overview',
     selectedTimeRange = '3m',
     onTimeRangeChange,
 }: Props) => {
-    const [predictionData, setPredictionData] = useState<PredictionData | null>(null);
-    const [error, setError] = useState<string | null>(null);
-
     // Function to generate a color based on index
     const getSimulationColor = (index: number) => {
         const colors = [
@@ -76,28 +56,6 @@ export const PredictionChart = ({
         ];
         return colors[index % colors.length];
     };
-
-    useEffect(() => {
-        const fetchPredictionData = async () => {
-            try {
-                const data = await getPrediction(budgetId);
-                setPredictionData(data);
-            } catch (err) {
-                setError(err instanceof Error ? err.message : 'An error occurred while fetching prediction data');
-                console.error('Error fetching prediction data:', err);
-            }
-        };
-
-        fetchPredictionData();
-    }, [budgetId]);
-
-    if (error) {
-        return <div className="alert alert-error">{error}</div>;
-    }
-
-    if (!predictionData) {
-        return <div className="loading loading-spinner loading-lg"></div>;
-    }
 
     // Collect all unique dates from all simulations
     const allDates = new Set<string>();
@@ -198,8 +156,6 @@ export const PredictionChart = ({
                         })}`;
                     },
                     label: function (context: any) {
-                        if (!predictionData) return [];
-
                         const data = context.raw;
                         const lines = [];
 
@@ -235,7 +191,8 @@ export const PredictionChart = ({
                             dayData.changes.forEach(change => {
                                 if (change.amount === 0) return;
                                 const sign = change.amount >= 0 ? '+' : '';
-                                let line = `  ${sign}€${change.amount.toFixed(2)} - ${change.category}`;
+                                const category = categories.find(c => c.uuid === change.category)?.name || change.category;
+                                let line = `  ${sign}€${change.amount.toFixed(2)} - ${category}`;
                                 if (change.reason) line += ` (${change.reason})`;
                                 if (change.is_simulation) line += ' [Simulation]';
                                 lines.push(line);
@@ -331,6 +288,4 @@ export const PredictionChart = ({
             </div>
         </div>
     );
-};
-
-export default PredictionChart; 
+}; 

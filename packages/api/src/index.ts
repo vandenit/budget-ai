@@ -9,6 +9,7 @@ require("dotenv").config();
 import budgetRoutes from "./routes/budgetRoutes";
 import userRoutes from "./routes/userRoutes";
 import syncRoutes from "./routes/syncRoutes";
+import simulationRoutes from "./routes/simulation.routes";
 import { overrideConsoleLog } from "common-ts";
 
 overrideConsoleLog();
@@ -34,16 +35,13 @@ app.use("/users", checkJwt, userRoutes);
 
 app.use("/sync", syncRoutes);
 
+// Add simulation routes
+app.use("/api/simulations", checkJwt, simulationRoutes);
+
 // The error handler must be registered before any other error middleware and after all controllers
 Sentry.setupExpressErrorHandler(app);
 
-// Optional fallthrough error handler
-app.use(function onError(_err: any, _req: any, res: any) {
-  // The error id is attached to `res.sentry` to be returned
-  // and optionally displayed to the user for support.
-  res.statusCode = 500;
-  res.end(res.sentry + "\n");
-});
+
 
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {

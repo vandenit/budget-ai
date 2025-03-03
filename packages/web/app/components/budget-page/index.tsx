@@ -8,6 +8,9 @@ import CurrentMonth from "./current-month";
 import YnabLoginPage from "../ynab-login-page";
 import { getBudget, getBudgetOverviewForUser } from "../../api/budget/budget.client";
 import { savePreferredBudget } from "../../api/user/user.client";
+import { apiGet } from "@/app/api/client.browser";
+import type { PredictionData } from '@/app/budgets/[budgetUuid]/predictions/prediction-data.server';
+import { getPrediction } from "@/app/api/math.client";
 
 export default function BudgetPage({ budgetUuid }: { budgetUuid: string }) {
   return (
@@ -27,11 +30,20 @@ async function BudgetInfo({ budgetUuid: budgetUuid }: { budgetUuid: string }) {
   }
   const { monthPercentage, monthSummaries, categories, monthTotal, forecast } = await getBudgetOverviewForUser(budgetUuid);
 
+  // Fetch prediction data
+  let predictionData: PredictionData | undefined;
+  try {
+    predictionData = await getPrediction(budgetUuid);
+  } catch (error) {
+    console.error('Error fetching prediction data:', error);
+  }
+
   const aiResponse = { response: "AI response" };
 
   if (monthSummaries.length === 0) {
     return <YnabLoginPage />;
   }
+
   const currentMonth = monthSummaries.find((month) => month.isCurrentMonth);
   return (
     <>
@@ -45,6 +57,7 @@ async function BudgetInfo({ budgetUuid: budgetUuid }: { budgetUuid: string }) {
             monthPercentage={monthPercentage}
             monthTotal={monthTotal}
             forecast={forecast}
+            predictionData={predictionData}
           />
         </div>
       )}

@@ -27,8 +27,8 @@ export default async function RootLayout({
   const budgets = session && isLoggedIn ? await findBudgets() : [];
   return (
     <UserProvider>
-      <html lang="en" data-theme="dark">
-        <body>
+      <html lang="en" data-theme="dark" className="dark">
+        <body className="dark:bg-background dark:text-foreground">
           <BudgetNavigation budgets={budgets} loggedIn={isLoggedIn} />
           <main className="container mx-auto p-2">{children}</main>
         </body>
