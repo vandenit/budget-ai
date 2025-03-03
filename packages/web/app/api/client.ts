@@ -1,4 +1,6 @@
 import { getSession } from "@auth0/nextjs-auth0";
+import { handleServerApiResponse } from './utils.server';
+import { headers } from 'next/headers';
 
 const getToken = async (accesToken?: string) => {
   if (accesToken) {
@@ -19,35 +21,43 @@ export const apiFetch = async (
   accesToken?: string
 ) => {
   const token = await getToken(accesToken);
-  const apiBaseUrl = process.env.API_URL || "http://localhost:4000";
-  const apiUrl = `${apiBaseUrl}/${path}`;
+  const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+  const apiUrl = new URL(path, apiBaseUrl).toString();
   console.log(`fetching ${apiUrl}, options: ${JSON.stringify(options)}`);
   try {
+    // Get current pathname from headers if available (server-side)
+    let currentPath = '/';
+    try {
+      const headersList = headers();
+      currentPath = headersList.get('x-pathname') || '/';
+    } catch (e) {
+      // Headers not available (client-side)
+      if (typeof window !== 'undefined') {
+        currentPath = window.location.pathname;
+      }
+    }
+
     const response = await fetch(apiUrl, {
       ...options,
       headers: {
         ...options.headers,
         Authorization: `Bearer ${token}`,
+        'x-pathname': currentPath,
       },
     });
-    if (!response.ok) {
-      // Throw an error if response is not ok (status code is not in the range 200-299)
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    return response;
+    return handleServerApiResponse(response);
   } catch (error) {
-    console.error(`error fetching ${apiUrl}: ${error}`);
+    console.error(`Error fetching ${apiUrl}:`, error);
     throw error;
   }
 };
 
-export const apiGet = async (path: string) => {
-  const response = await apiFetch(path);
-  return response.json();
+export const apiGet = async <T>(path: string): Promise<T> => {
+  return apiFetch(path);
 };
 
 export const apiPut = async (path: string, data: any, accessToken?: string) => {
-  const response = await apiFetch(
+  return apiFetch(
     path,
     {
       method: "PUT",
@@ -58,16 +68,14 @@ export const apiPut = async (path: string, data: any, accessToken?: string) => {
     },
     accessToken
   );
-  return response.json();
 };
 
 export const apiPost = async (path: string, data: any) => {
-  const response = await apiFetch(path, {
+  return apiFetch(path, {
     method: "POST",
     body: JSON.stringify(data),
     headers: {
       "Content-Type": "application/json",
     },
   });
-  return response.json();
 };

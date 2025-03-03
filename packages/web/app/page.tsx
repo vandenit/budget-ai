@@ -5,7 +5,6 @@ import {
   getLoggedInUserPreferredBudgetId as getLoggedInUserPreferredBudgetUuid,
   isYnabTokenExpired
 } from "./api/user/user.client";
-import { useUser } from "@auth0/nextjs-auth0/client";
 import { getSession } from "@auth0/nextjs-auth0";
 import { findBudgets } from "./api/budget/budget.client";
 

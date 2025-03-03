@@ -40,6 +40,8 @@ export const FutureChangesTable = ({ budgetId }: Props) => {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [changes, setChanges] = useState<DayChanges[]>([]);
+    const [simulations, setSimulations] = useState<string[]>([]);
+    const [selectedSimulation, setSelectedSimulation] = useState<string>("Actual Balance");
 
     useEffect(() => {
         const fetchChanges = async () => {
@@ -47,38 +49,28 @@ export const FutureChangesTable = ({ budgetId }: Props) => {
                 setIsLoading(true);
                 const data = await getPrediction(budgetId) as PredictionData;
 
-                // Alleen de "Actual Balance" simulatie gebruiken
-                const actualBalanceSimulation = data["Actual Balance"];
+                // get all available simulations
+                const availableSimulations = Object.keys(data);
+                setSimulations(availableSimulations);
+
+                // use the selected simulation
+                const selectedData = data[selectedSimulation];
                 const allChanges: DayChanges[] = [];
-                const seenChanges = new Set<string>();
 
-                if (actualBalanceSimulation) {
-                    Object.entries(actualBalanceSimulation).forEach(([date, dayData]) => {
+                if (selectedData) {
+                    Object.entries(selectedData).forEach(([date, dayData]) => {
                         if (dayData.changes && dayData.changes.length > 0) {
-                            // Filter duplicaten uit changes array
-                            const uniqueChanges = dayData.changes.filter(change => {
-                                // Maak een unieke key voor elke verandering
-                                const changeKey = `${date}-${change.category}-${change.amount}-${change.reason}`;
-                                if (seenChanges.has(changeKey)) {
-                                    return false;
-                                }
-                                seenChanges.add(changeKey);
-                                return true;
+                            allChanges.push({
+                                date,
+                                balance: dayData.balance,
+                                balance_diff: dayData.balance_diff,
+                                changes: dayData.changes
                             });
-
-                            if (uniqueChanges.length > 0) {
-                                allChanges.push({
-                                    date,
-                                    balance: dayData.balance,
-                                    balance_diff: dayData.balance_diff,
-                                    changes: uniqueChanges
-                                });
-                            }
                         }
                     });
                 }
 
-                // Sort by date
+                // sort by date
                 allChanges.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
                 setChanges(allChanges);
@@ -91,7 +83,7 @@ export const FutureChangesTable = ({ budgetId }: Props) => {
         };
 
         fetchChanges();
-    }, [budgetId]);
+    }, [budgetId, selectedSimulation]);
 
     if (isLoading) {
         return <div className="loading loading-spinner loading-lg"></div>;
@@ -101,59 +93,80 @@ export const FutureChangesTable = ({ budgetId }: Props) => {
         return <div className="alert alert-error">{error}</div>;
     }
 
+    const formatSimulationName = (name: string) => {
+        if (name === "Actual Balance") return name;
+        return name.replace(".json", "").split("_").map(word =>
+            word.charAt(0).toUpperCase() + word.slice(1)
+        ).join(" ");
+    };
+
     return (
-        <div className="overflow-x-auto">
-            <table className="table table-zebra w-full">
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Description</th>
-                        <th>Category</th>
-                        <th className="text-right">Amount</th>
-                        <th className="text-right">Balance</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {changes.map((dayChange, dayIndex) => (
-                        dayChange.changes.map((change, changeIndex) => (
-                            <tr key={`${dayIndex}-${changeIndex}`}>
-                                {changeIndex === 0 && (
-                                    <td rowSpan={dayChange.changes.length} className="font-medium">
-                                        {new Date(dayChange.date).toLocaleDateString('en-US', {
-                                            day: '2-digit',
-                                            month: 'long',
-                                            year: 'numeric'
-                                        })}
-                                    </td>
-                                )}
-                                <td>
-                                    <div className="flex items-center gap-2">
-                                        {change.is_simulation && (
-                                            <span className="badge badge-sm">Simulation</span>
-                                        )}
-                                        <span>{change.reason}</span>
-                                    </div>
-                                    {change.memo && (
-                                        <span className="text-sm text-base-content/70">{change.memo}</span>
+        <div className="space-y-4">
+            <div className="tabs tabs-boxed justify-start">
+                {simulations.map((simulation) => (
+                    <button
+                        key={simulation}
+                        className={`tab ${selectedSimulation === simulation ? 'tab-active' : ''}`}
+                        onClick={() => setSelectedSimulation(simulation)}
+                    >
+                        {formatSimulationName(simulation)}
+                    </button>
+                ))}
+            </div>
+
+            <div className="overflow-x-auto">
+                <table className="table table-zebra w-full">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Description</th>
+                            <th>Category</th>
+                            <th className="text-right">Amount</th>
+                            <th className="text-right">Balance</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {changes.map((dayChange, dayIndex) => (
+                            dayChange.changes.map((change, changeIndex) => (
+                                <tr key={`${dayIndex}-${changeIndex}`}>
+                                    {changeIndex === 0 && (
+                                        <td rowSpan={dayChange.changes.length} className="font-medium">
+                                            {new Date(dayChange.date).toLocaleDateString('en-US', {
+                                                day: '2-digit',
+                                                month: 'long',
+                                                year: 'numeric'
+                                            })}
+                                        </td>
                                     )}
-                                </td>
-                                <td>{change.category}</td>
-                                <td className={`text-right ${change.amount >= 0 ? 'text-success' : 'text-error'}`}>
-                                    {change.amount >= 0 ? '+' : ''}{change.amount.toFixed(2)}
-                                </td>
-                                {changeIndex === 0 && (
-                                    <td rowSpan={dayChange.changes.length} className="text-right">
-                                        €{dayChange.balance.toFixed(2)}
-                                        <div className={`text-sm ${dayChange.balance_diff >= 0 ? 'text-success' : 'text-error'}`}>
-                                            {dayChange.balance_diff >= 0 ? '+' : ''}{dayChange.balance_diff.toFixed(2)}
+                                    <td>
+                                        <div className="flex items-center gap-2">
+                                            {change.is_simulation && (
+                                                <span className="badge badge-sm">Simulation</span>
+                                            )}
+                                            <span>{change.reason}</span>
                                         </div>
+                                        {change.memo && (
+                                            <span className="text-sm text-base-content/70">{change.memo}</span>
+                                        )}
                                     </td>
-                                )}
-                            </tr>
-                        ))
-                    ))}
-                </tbody>
-            </table>
+                                    <td>{change.category}</td>
+                                    <td className={`text-right ${change.amount >= 0 ? 'text-success' : 'text-error'}`}>
+                                        {change.amount >= 0 ? '+' : ''}{change.amount.toFixed(2)}
+                                    </td>
+                                    {changeIndex === 0 && (
+                                        <td rowSpan={dayChange.changes.length} className="text-right">
+                                            €{dayChange.balance.toFixed(2)}
+                                            <div className={`text-sm ${dayChange.balance_diff >= 0 ? 'text-success' : 'text-error'}`}>
+                                                {dayChange.balance_diff >= 0 ? '+' : ''}{dayChange.balance_diff.toFixed(2)}
+                                            </div>
+                                        </td>
+                                    )}
+                                </tr>
+                            ))
+                        ))}
+                    </tbody>
+                </table>
+            </div>
         </div>
     );
 }; 
