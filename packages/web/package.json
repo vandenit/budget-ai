@@ -46,6 +46,6 @@
     "postcss": "latest",
     "tailwindcss": "latest",
     "typescript": "latest",
-    "vitest": "^1.0.0"
+    "vitest": "^1.6.1"
   }
 }
