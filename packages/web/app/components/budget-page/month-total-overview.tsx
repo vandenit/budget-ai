@@ -3,7 +3,7 @@ import {
   MonthTotal, Category, formatAmount,
   totalPercentageSpent, MonthlyForcast
 } from "common-ts";
-
+import Link from "next/link";
 import { CategoryPieChart } from "../charts/category-pie-chart";
 import { PredictionChart } from "../charts/prediction-chart";
 import { percentageToStatusClass } from "../../utils";
@@ -45,19 +45,31 @@ const MonthTotalOverview = ({
             />
           </div>
           <div className="w-full md:w-1/2 lg:w-1/2">
-            <div className="tabs tabs-boxed mb-4 justify-center">
-              <button
-                className={`tab ${selectedTab === "categories" ? "tab-active" : ""}`}
-                onClick={() => setSelectedTab("categories")}
-              >
-                Categories
-              </button>
-              <button
-                className={`tab ${selectedTab === "prediction" ? "tab-active" : ""}`}
-                onClick={() => setSelectedTab("prediction")}
-              >
-                Prediction
-              </button>
+            <div className="flex justify-between items-center mb-4">
+              <div className="tabs tabs-boxed justify-center">
+                <button
+                  className={`tab ${selectedTab === "categories" ? "tab-active" : ""}`}
+                  onClick={() => setSelectedTab("categories")}
+                >
+                  Categories
+                </button>
+                <button
+                  className={`tab ${selectedTab === "prediction" ? "tab-active" : ""}`}
+                  onClick={() => setSelectedTab("prediction")}
+                >
+                  Prediction
+                </button>
+              </div>
+              {selectedTab === "prediction" && (
+                <Link
+                  href={`/budgets/${budgetUuid}/predictions`}
+                  className="btn btn-primary btn-sm gap-2"
+                  title="View detailed predictions"
+                >
+                  <span>Details</span>
+                  <span className="text-lg">📈</span>
+                </Link>
+              )}
             </div>
 
             {selectedTab === "categories" && (
@@ -68,11 +80,21 @@ const MonthTotalOverview = ({
               />
             )}
             {selectedTab === "prediction" && (
-              <PredictionChart
-                forecast={forecast}
-                categories={categories}
-                budgetId={budgetUuid}
-              />
+              <div className="group relative">
+                <PredictionChart
+                  forecast={forecast}
+                  budgetId={budgetUuid}
+                />
+                <div className="absolute top-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <Link
+                    href={`/budgets/${budgetUuid}/predictions`}
+                    className="btn btn-circle btn-ghost btn-sm"
+                    title="View detailed predictions"
+                  >
+                    <span className="text-lg">📈</span>
+                  </Link>
+                </div>
+              </div>
             )}
           </div>
         </div>
