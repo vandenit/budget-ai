@@ -22,7 +22,7 @@ export const apiFetch = async (
   accesToken?: string
 ) => {
   const token = await getToken(accesToken);
-  const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+  const apiBaseUrl = process.env.API_URL || "http://localhost:4000";
   const apiUrl = new URL(path, apiBaseUrl).toString();
   console.log(`fetching ${apiUrl}, options: ${JSON.stringify(options)}`);
   try {
