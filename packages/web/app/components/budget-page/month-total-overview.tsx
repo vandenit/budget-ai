@@ -5,9 +5,10 @@ import {
 } from "common-ts";
 import Link from "next/link";
 import { CategoryPieChart } from "../charts/category-pie-chart";
-import { PredictionChart } from "../charts/prediction-chart";
+import { PredictionChart } from "@/components/charts/prediction-chart";
 import { percentageToStatusClass } from "../../utils";
 import { useState } from "react";
+import type { PredictionData } from '@/app/budgets/[budgetUuid]/predictions/prediction-data.server';
 
 type Props = {
   budgetUuid: string;
@@ -16,6 +17,7 @@ type Props = {
   monthPercentage: number;
   forecast: MonthlyForcast;
   categories: Category[];
+  predictionData?: PredictionData; // TODO: Add proper type
 };
 
 type TabType = "categories" | "prediction";
@@ -27,6 +29,7 @@ const MonthTotalOverview = ({
   monthPercentage,
   forecast,
   categories,
+  predictionData,
 }: Props) => {
   const [selectedTab, setSelectedTab] = useState<TabType>("categories");
   const percentage = totalPercentageSpent(monthTotal);
@@ -79,11 +82,12 @@ const MonthTotalOverview = ({
                 budgetUuid={budgetUuid}
               />
             )}
-            {selectedTab === "prediction" && (
+            {selectedTab === "prediction" && predictionData && (
               <div className="group relative">
                 <PredictionChart
-                  forecast={forecast}
-                  budgetId={budgetUuid}
+                  predictionData={predictionData}
+                  categories={categories}
+                  variant="overview"
                 />
                 <div className="absolute top-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity">
                   <Link
@@ -179,4 +183,5 @@ const TotalTable = ({
     </table>
   );
 };
+
 export default MonthTotalOverview;

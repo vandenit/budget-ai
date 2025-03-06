@@ -1,10 +1,11 @@
 import { Category } from "common-ts";
+import { getBudget, getBudgetOverviewForUser } from "./budget/budget.client";
 
 export const getCategories = async (budgetId: string): Promise<Category[]> => {
-    const response = await fetch(`/api?budgetId=${budgetId}`);
-    if (!response.ok) {
+    // todo : provide real catogories api
+    const budget = await getBudgetOverviewForUser(budgetId);
+    if (!budget) {
         throw new Error('Failed to fetch categories');
     }
-    const data = await response.json();
-    return data.categories;
+    return budget.categories;
 }; 

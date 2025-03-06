@@ -3,6 +3,7 @@ import CategoryCard from "./category-card";
 import MonthTotalOverview from "./month-total-overview";
 import HiddenProgressBars from "./hidden-progress-bars";
 import { Category, MonthlyForcast, MonthSummary, MonthTotal, percentageSpent } from "common-ts";
+import type { PredictionData } from '@/app/budgets/[budgetUuid]/predictions/prediction-data.server';
 
 type Props = {
   budgetUuid: string;
@@ -11,6 +12,7 @@ type Props = {
   monthPercentage: number;
   monthTotal: MonthTotal;
   forecast: MonthlyForcast;
+  predictionData?: PredictionData;
 };
 
 const sortByCategoryUsageWithInflowNameFirst = (a: Category, b: Category) => {
@@ -34,6 +36,7 @@ const CurrentMonth = ({
   monthPercentage,
   monthTotal,
   forecast,
+  predictionData,
 }: Props) => {
   return (
     <div className="card-body">
@@ -53,6 +56,7 @@ const CurrentMonth = ({
         forecast={forecast}
         categories={categories}
         budgetUuid={budgetUuid}
+        predictionData={predictionData}
       />
       <div className="flex flex-wrap mb-2 -mx-2">
         {categories

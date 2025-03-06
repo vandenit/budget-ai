@@ -9,14 +9,14 @@ export const handleServerUnauthorized = () => {
 };
 
 // Server-side API response handler
-export const handleServerApiResponse = async (response: Response) => {
+export const handleServerApiResponse = async (apiUrl: string, response: Response) => {
     if (response.status === 401) {
         handleServerUnauthorized();
         return null;
     }
 
     if (!response.ok) {
-        throw new Error(`API call failed: ${response.status}`);
+        throw new Error(`API call failed: ${response.status} for ${apiUrl}`);
     }
 
     return response.json();

@@ -1,4 +1,4 @@
-import { PayeeWithActivity } from "@/packages/common-ts/dist";
+import { PayeeWithActivity } from "common-ts";
 import { PayeeActivityChart } from "../charts/payee-activity-chart";
 
 export const PayeeChart = ({
