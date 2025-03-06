@@ -8,7 +8,6 @@ import CurrentMonth from "./current-month";
 import YnabLoginPage from "../ynab-login-page";
 import { getBudget, getBudgetOverviewForUser } from "../../api/budget/budget.client";
 import { savePreferredBudget } from "../../api/user/user.client";
-import { apiGet } from "@/app/api/client.browser";
 import type { PredictionData } from '@/app/budgets/[budgetUuid]/predictions/prediction-data.server';
 import { getPrediction } from "@/app/api/math.client";
 

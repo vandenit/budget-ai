@@ -1,36 +1,17 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
-import { Button } from '@/components/ui/button';
+import { useState } from 'react';
 import { Switch } from '@/components/ui/switch';
-import { getSimulations, toggleSimulation, type Simulation } from './simulations.actions';
+import { toggleSimulation, type Simulation } from './actions';
+import { toast } from 'sonner';
 
 interface SimulationListProps {
     onNewClick: () => void;
+    initialSimulations: Simulation[];
 }
 
-export function SimulationList({ onNewClick }: SimulationListProps) {
-    const params = useParams();
-    const budgetId = params.budgetUuid as string;
-    const [simulations, setSimulations] = useState<Simulation[]>([]);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        fetchSimulations();
-    }, [budgetId]);
-
-    const fetchSimulations = async () => {
-        try {
-            const data = await getSimulations(budgetId);
-            setSimulations(data);
-        } catch (error) {
-            console.error('Error fetching simulations:', error);
-            // TODO: Show error message
-        } finally {
-            setLoading(false);
-        }
-    };
+export function SimulationList({ onNewClick, initialSimulations }: SimulationListProps) {
+    const [simulations, setSimulations] = useState<Simulation[]>(initialSimulations);
 
     const handleToggleSimulation = async (id: string) => {
         try {
@@ -40,23 +21,12 @@ export function SimulationList({ onNewClick }: SimulationListProps) {
             ));
         } catch (error) {
             console.error('Error toggling simulation:', error);
-            // TODO: Show error message
+            toast.error("Failed to toggle simulation");
         }
     };
 
-    if (loading) {
-        return <div>Loading simulations...</div>;
-    }
-
     return (
         <div className="space-y-4">
-            <div className="flex justify-between items-center">
-                <h2 className="text-lg font-semibold">Simulations</h2>
-                <Button onClick={onNewClick}>
-                    New Simulation
-                </Button>
-            </div>
-
             <div className="space-y-2">
                 {simulations.length === 0 ? (
                     <p className="text-gray-500">No simulations yet. Create one to get started!</p>

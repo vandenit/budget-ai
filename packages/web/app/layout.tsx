@@ -7,6 +7,7 @@ import { getSession } from "@auth0/nextjs-auth0";
 import { findBudgets } from "./api/budget/budget.client";
 import { useEffect } from "react";
 import { overrideConsoleLog } from "common-ts";
+import { Toaster } from "@/components/ui/sonner";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -31,6 +32,7 @@ export default async function RootLayout({
         <body className="dark:bg-background dark:text-foreground">
           <BudgetNavigation budgets={budgets} loggedIn={isLoggedIn} />
           <main className="container mx-auto p-2">{children}</main>
+          <Toaster />
         </body>
       </html>
     </UserProvider>

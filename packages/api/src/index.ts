@@ -36,7 +36,7 @@ app.use("/users", checkJwt, userRoutes);
 app.use("/sync", syncRoutes);
 
 // Add simulation routes
-app.use("/api/simulations", checkJwt, simulationRoutes);
+app.use("/simulations", checkJwt, simulationRoutes);
 
 // The error handler must be registered before any other error middleware and after all controllers
 Sentry.setupExpressErrorHandler(app);

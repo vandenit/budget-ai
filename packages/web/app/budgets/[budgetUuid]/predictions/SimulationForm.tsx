@@ -21,7 +21,7 @@ interface CategoryOption {
 
 interface SimulationFormProps {
     categories: CategoryOption[];
-    onSubmit: () => void;
+    onSubmit: (data: { name: string; categoryChanges: { categoryId: string; startDate: string; endDate: string; targetAmount: number; }[] }) => void;
     onCancel: () => void;
 }
 
@@ -55,33 +55,15 @@ export function SimulationForm({ categories, onSubmit, onCancel }: SimulationFor
             return;
         }
 
-        try {
-            const response = await fetch('/api/simulations', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    budgetId,
-                    name,
-                    categoryChanges: [{
-                        categoryId,
-                        startDate: startDate.toISOString(),
-                        endDate: endDate.toISOString(),
-                        targetAmount: parseFloat(targetAmount)
-                    }]
-                })
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to create simulation');
-            }
-
-            onSubmit();
-        } catch (error) {
-            console.error('Error creating simulation:', error);
-            // TODO: Show error message
-        }
+        onSubmit({
+            name,
+            categoryChanges: [{
+                categoryId,
+                startDate: startDate.toISOString(),
+                endDate: endDate.toISOString(),
+                targetAmount: parseFloat(targetAmount)
+            }]
+        });
     };
 
     return (
