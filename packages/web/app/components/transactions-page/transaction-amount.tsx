@@ -1,4 +1,4 @@
-import { formatAmount } from "@/packages/common-ts/dist";
+import { formatAmount } from "common-ts";
 
 export const TransactionAmount = ({
     amount,

@@ -3,7 +3,7 @@ import { getSession } from "@auth0/nextjs-auth0";
 import { handleServerApiResponse } from './utils.server';
 import { headers } from 'next/headers';
 
-const getToken = async (accesToken?: string) => {
+export const getToken = async (accesToken?: string) => {
   if (accesToken) {
     return accesToken;
   }
