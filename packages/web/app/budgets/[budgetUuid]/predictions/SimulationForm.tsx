@@ -21,7 +21,7 @@ interface CategoryOption {
 
 interface SimulationFormProps {
     categories: CategoryOption[];
-    onSubmit: (data: { name: string; categoryChanges: { categoryId: string; startDate: string; endDate: string; targetAmount: number; }[] }) => void;
+    onSubmit: (data: { name: string; categoryChanges: { categoryId: string; startDate?: string; endDate?: string; targetAmount: number; }[] }) => void;
     onCancel: () => void;
 }
 
@@ -50,7 +50,7 @@ export function SimulationForm({ categories, onSubmit, onCancel }: SimulationFor
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (!name || !categoryId || !targetAmount || !startDate || !endDate) {
+        if (!name || !categoryId || !targetAmount) {
             // TODO: Show error message
             return;
         }
@@ -59,8 +59,8 @@ export function SimulationForm({ categories, onSubmit, onCancel }: SimulationFor
             name,
             categoryChanges: [{
                 categoryId,
-                startDate: startDate.toISOString(),
-                endDate: endDate.toISOString(),
+                startDate: startDate ? startDate.toISOString() : undefined,
+                endDate: endDate ? endDate.toISOString() : undefined,
                 targetAmount: parseFloat(targetAmount)
             }]
         });
