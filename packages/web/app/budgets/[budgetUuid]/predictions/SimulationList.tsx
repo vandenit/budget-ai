@@ -2,15 +2,18 @@
 
 import { useState, useEffect } from 'react';
 import { Switch } from '@/components/ui/switch';
+import { Button } from '@/components/ui/button';
+import { Pencil } from 'lucide-react';
 import { toggleSimulation, type Simulation } from './actions';
 import { toast } from 'sonner';
 
 interface SimulationListProps {
     onNewClick: () => void;
     initialSimulations: Simulation[];
+    onEditSimulation: (simulation: Simulation) => void;
 }
 
-export function SimulationList({ onNewClick, initialSimulations }: SimulationListProps) {
+export function SimulationList({ onNewClick, initialSimulations, onEditSimulation }: SimulationListProps) {
     const [simulations, setSimulations] = useState<Simulation[]>(initialSimulations);
 
     useEffect(() => {
@@ -55,8 +58,17 @@ export function SimulationList({ onNewClick, initialSimulations }: SimulationLis
                             key={simulation.id || (simulation as any)._id}
                             className="flex items-center justify-between p-3 border rounded-lg"
                         >
-                            <div>
-                                <h3 className="font-medium">{simulation.name}</h3>
+                            <div className="flex-grow">
+                                <div className="flex items-center justify-between">
+                                    <h3 className="font-medium">{simulation.name}</h3>
+                                    <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        onClick={() => onEditSimulation(simulation)}
+                                    >
+                                        <Pencil className="h-4 w-4" />
+                                    </Button>
+                                </div>
                                 <p className="text-sm text-gray-500">
                                     {simulation.categoryChanges.length} category changes
                                 </p>
