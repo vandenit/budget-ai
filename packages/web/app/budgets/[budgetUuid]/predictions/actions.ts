@@ -4,9 +4,9 @@ import { revalidatePath } from "next/cache";
 import { apiGet, apiPost, apiPut } from "@/app/api/client";
 
 export interface CategoryChange {
-    categoryId: string;
-    startDate: string;
-    endDate: string;
+    categoryUuid: string;
+    startDate?: string;
+    endDate?: string;
     targetAmount: number;
 }
 

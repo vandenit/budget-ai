@@ -15,7 +15,7 @@ import { SimulationList } from './SimulationList';
 import { createSimulation, type CategoryChange, type Simulation } from './actions';
 
 interface InteractiveSimulationsProps {
-    categoryOptions: { id: string; name: string; }[];
+    categoryOptions: { uuid: string; name: string; }[];
     initialSimulations: Simulation[];
 }
 
