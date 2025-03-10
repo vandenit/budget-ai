@@ -26,7 +26,7 @@ export default async function PredictionsPage({ params }: PageProps) {
         getSimulations(params.budgetUuid)
     ]);
 
-    const categoryOptions = categories.map(category => ({ id: category.uuid, name: category.name }));
+    const categoryOptions = categories.map(category => ({ uuid: category.uuid, name: category.name }));
 
     return (
         <div className="container mx-auto p-4">

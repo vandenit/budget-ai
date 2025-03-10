@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Switch } from '@/components/ui/switch';
 import { toggleSimulation, type Simulation } from './actions';
 import { toast } from 'sonner';
@@ -13,12 +13,31 @@ interface SimulationListProps {
 export function SimulationList({ onNewClick, initialSimulations }: SimulationListProps) {
     const [simulations, setSimulations] = useState<Simulation[]>(initialSimulations);
 
-    const handleToggleSimulation = async (id: string) => {
+    useEffect(() => {
+        console.log('Initial simulations:', initialSimulations);
+    }, [initialSimulations]);
+
+    const handleToggleSimulation = async (simulation: Simulation) => {
+        console.log('Toggling simulation:', simulation);
+        console.log('Simulation id:', simulation.id);
+        console.log('Simulation _id:', (simulation as any)._id);
+
+        if (!simulation.id && !(simulation as any)._id) {
+            console.error('No simulation id found');
+            toast.error("Failed to toggle simulation: No simulation id found");
+            return;
+        }
+
         try {
+            const id = simulation.id || (simulation as any)._id;
+            console.log('Calling toggleSimulation with id:', id);
             const updatedSimulation = await toggleSimulation(id);
+            console.log('Received updated simulation:', updatedSimulation);
+
             setSimulations(simulations.map(sim =>
-                sim.id === id ? updatedSimulation : sim
+                (sim.id || (sim as any)._id) === id ? updatedSimulation : sim
             ));
+            toast.success("Simulation toggled successfully");
         } catch (error) {
             console.error('Error toggling simulation:', error);
             toast.error("Failed to toggle simulation");
@@ -33,7 +52,7 @@ export function SimulationList({ onNewClick, initialSimulations }: SimulationLis
                 ) : (
                     simulations.map((simulation) => (
                         <div
-                            key={simulation.id}
+                            key={simulation.id || (simulation as any)._id}
                             className="flex items-center justify-between p-3 border rounded-lg"
                         >
                             <div>
@@ -44,7 +63,7 @@ export function SimulationList({ onNewClick, initialSimulations }: SimulationLis
                             </div>
                             <Switch
                                 checked={simulation.isActive}
-                                onCheckedChange={() => handleToggleSimulation(simulation.id)}
+                                onCheckedChange={() => handleToggleSimulation(simulation)}
                             />
                         </div>
                     ))

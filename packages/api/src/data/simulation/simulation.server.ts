@@ -1,24 +1,25 @@
-import { Simulation, SimulationType } from './simulation.schema';
-import { getBudget } from '../budget/budget.server';
-import type { UserType } from '../user/user.server';
+import { Simulation } from "./simulation.schema";
+import { UserType } from "../user/user.server";
+import { getBudget } from "../budget/budget.server";
+import connectDb from "../db";
 
-export async function findSimulationsForBudget(budgetId: string): Promise<SimulationType[]> {
+export type CreateSimulationInput = {
+    name: string;
+    categoryChanges: {
+        categoryUuid: string;
+        startDate?: Date;
+        endDate?: Date;
+        targetAmount: number;
+    }[];
+};
+
+export const findSimulationsForBudget = async (budgetId: string) => {
+    connectDb();
     return Simulation.find({ budgetId });
-}
+};
 
-export async function createSimulation(
-    budgetUuid: string,
-    user: UserType,
-    data: {
-        name: string;
-        categoryChanges: {
-            categoryId: string;
-            startDate: Date;
-            endDate: Date;
-            targetAmount: number;
-        }[];
-    }
-): Promise<SimulationType> {
+export const createSimulation = async (budgetUuid: string, user: UserType, data: CreateSimulationInput) => {
+    connectDb();
     const budget = await getBudget(budgetUuid, user);
     if (!budget) {
         throw new Error('Budget not found');
@@ -27,21 +28,21 @@ export async function createSimulation(
     const simulation = new Simulation({
         budgetId: budget._id,
         name: data.name,
-        categoryChanges: data.categoryChanges.map(change => ({
-            ...change,
-            categoryId: change.categoryId // MongoDB zal dit automatisch converteren naar ObjectId
-        }))
+        categoryChanges: data.categoryChanges
     });
 
-    return simulation.save();
-}
+    await simulation.save();
+    return simulation;
+};
 
-export async function toggleSimulation(id: string): Promise<SimulationType> {
+export const toggleSimulation = async (id: string) => {
+    connectDb();
     const simulation = await Simulation.findById(id);
     if (!simulation) {
         throw new Error('Simulation not found');
     }
 
     simulation.isActive = !simulation.isActive;
-    return simulation.save();
-} 
+    await simulation.save();
+    return simulation;
+}; 

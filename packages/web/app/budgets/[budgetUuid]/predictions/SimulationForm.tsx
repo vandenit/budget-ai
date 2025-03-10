@@ -15,13 +15,13 @@ import { ChangeEvent, forwardRef } from 'react';
 import { DayPickerSingleProps } from 'react-day-picker';
 
 interface CategoryOption {
-    id: string;
+    uuid: string;
     name: string;
 }
 
 interface SimulationFormProps {
     categories: CategoryOption[];
-    onSubmit: (data: { name: string; categoryChanges: { categoryId: string; startDate?: string; endDate?: string; targetAmount: number; }[] }) => void;
+    onSubmit: (data: { name: string; categoryChanges: { categoryUuid: string; startDate?: string; endDate?: string; targetAmount: number; }[] }) => void;
     onCancel: () => void;
 }
 
@@ -42,7 +42,7 @@ export function SimulationForm({ categories, onSubmit, onCancel }: SimulationFor
     const budgetId = params.budgetUuid as string;
 
     const [name, setName] = useState('');
-    const [categoryId, setCategoryId] = useState('');
+    const [categoryUuid, setCategoryUuid] = useState('');
     const [targetAmount, setTargetAmount] = useState('');
     const [startDate, setStartDate] = useState<Date | null>(null);
     const [endDate, setEndDate] = useState<Date | null>(null);
@@ -50,7 +50,7 @@ export function SimulationForm({ categories, onSubmit, onCancel }: SimulationFor
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (!name || !categoryId || !targetAmount) {
+        if (!name || !categoryUuid || !targetAmount) {
             // TODO: Show error message
             return;
         }
@@ -58,7 +58,7 @@ export function SimulationForm({ categories, onSubmit, onCancel }: SimulationFor
         onSubmit({
             name,
             categoryChanges: [{
-                categoryId,
+                categoryUuid,
                 startDate: startDate ? startDate.toISOString() : undefined,
                 endDate: endDate ? endDate.toISOString() : undefined,
                 targetAmount: parseFloat(targetAmount)
@@ -81,13 +81,13 @@ export function SimulationForm({ categories, onSubmit, onCancel }: SimulationFor
 
             <div>
                 <Label htmlFor="category">Category</Label>
-                <Select onValueChange={setCategoryId} value={categoryId}>
+                <Select onValueChange={setCategoryUuid} value={categoryUuid}>
                     <SelectTrigger>
                         <SelectValue placeholder="Select a category" />
                     </SelectTrigger>
                     <SelectContent>
                         {categories.map((category) => (
-                            <SelectItem key={category.id} value={category.id}>
+                            <SelectItem key={category.uuid} value={category.uuid}>
                                 {category.name}
                             </SelectItem>
                         ))}

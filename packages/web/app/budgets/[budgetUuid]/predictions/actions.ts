@@ -4,9 +4,9 @@ import { revalidatePath } from "next/cache";
 import { apiGet, apiPost, apiPut } from "@/app/api/client";
 
 export interface CategoryChange {
-    categoryId: string;
-    startDate: string;
-    endDate: string;
+    categoryUuid: string;
+    startDate?: string;
+    endDate?: string;
     targetAmount: number;
 }
 
@@ -42,7 +42,7 @@ export async function toggleSimulation(id: string): Promise<Simulation> {
     const simulation = await apiPut(`/simulations/${id}/active`, {});
     
     // Invalidate the cache for the predictions page
-    revalidatePath('/budgets/[budgetUuid]/predictions');
+    revalidatePath(`/budgets/${simulation.budgetUuid}/predictions`);
 
     return simulation;
 } 

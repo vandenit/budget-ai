@@ -7,17 +7,17 @@ export type SimulationType = {
     name: string;
     isActive: boolean;
     categoryChanges: {
-        categoryId: mongoose.Schema.Types.ObjectId;
-        startDate: Date;
-        endDate: Date;
+        categoryUuid: string;
+        startDate?: Date;
+        endDate?: Date;
         targetAmount: number;
     }[];
 };
 
 const categoryChangeSchema = new Schema({
-    categoryId: { type: Schema.Types.ObjectId, required: true, ref: 'LocalCategory' },
-    startDate: { type: Date, required: true },
-    endDate: { type: Date, required: true },
+    categoryUuid: { type: String, required: true },
+    startDate: { type: Date, required: false },
+    endDate: { type: Date, required: false },
     targetAmount: { type: Number, required: true }
 });
 

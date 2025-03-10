@@ -15,7 +15,7 @@ import { SimulationList } from './SimulationList';
 import { createSimulation, type CategoryChange, type Simulation } from './actions';
 
 interface InteractiveSimulationsProps {
-    categoryOptions: { id: string; name: string; }[];
+    categoryOptions: { uuid: string; name: string; }[];
     initialSimulations: Simulation[];
 }
 
@@ -24,17 +24,19 @@ export default function InteractiveSimulations({
     initialSimulations
 }: InteractiveSimulationsProps) {
     const [isModalOpen, setModalOpen] = useState(false);
+    const [simulations, setSimulations] = useState<Simulation[]>(initialSimulations);
     const params = useParams();
     const budgetUuid = params.budgetUuid as string;
 
     const handleSubmit = async (formData: { name: string; categoryChanges: CategoryChange[] }) => {
         try {
-            await createSimulation({
+            const newSimulation = await createSimulation({
                 budgetUuid,
                 name: formData.name,
                 categoryChanges: formData.categoryChanges,
             });
 
+            setSimulations([...simulations, newSimulation]);
             setModalOpen(false);
             toast.success("Simulation created successfully");
         } catch (error) {
@@ -57,7 +59,7 @@ export default function InteractiveSimulations({
             <div className="flex-grow">
                 <SimulationList
                     onNewClick={() => setModalOpen(true)}
-                    initialSimulations={initialSimulations}
+                    initialSimulations={simulations}
                 />
             </div>
 
