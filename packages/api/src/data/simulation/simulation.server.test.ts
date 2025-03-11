@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
-import { findSimulationsForBudget, createSimulation, toggleSimulation } from "./simulation.server";
+import { findSimulationsForBudget, createSimulation, toggleSimulation, updateSimulation } from "./simulation.server";
 import { Simulation } from "./simulation.schema";
 import { getBudget } from "../budget/budget.server";
 import type { Budget } from "common-ts";
@@ -7,6 +7,10 @@ import type { UserType } from "../user/user.server";
 import mongoose from "mongoose";
 
 // Mock dependencies
+vi.mock("../db", () => ({
+    default: vi.fn().mockResolvedValue(undefined)
+}));
+
 vi.mock("../budget/budget.server", () => ({
     getBudget: vi.fn()
 }));
@@ -19,6 +23,7 @@ const mockSave = vi.fn();
 vi.mock("./simulation.schema", () => ({
     Simulation: function(data: any) {
         return {
+            _id: "sim123",
             ...data,
             save: mockSave
         };
@@ -69,15 +74,13 @@ describe("simulation.server tests", () => {
             const mockSimulation = {
                 _id: "sim123",
                 name: "Test Simulation",
-                budgetId: mockBudget._id,
-                categoryChanges: [
-                    {
-                        categoryId: "cat123",
-                        startDate: new Date("2024-01-01"),
-                        endDate: new Date("2024-12-31"),
-                        targetAmount: 1000
-                    }
-                ]
+                budgetId: "budget123",
+                categoryChanges: [{
+                    categoryUuid: "cat123",
+                    targetAmount: 1000,
+                    startDate: new Date("2024-01-01"),
+                    endDate: new Date("2024-12-31")
+                }]
             };
 
             // Mock getBudget
@@ -93,7 +96,7 @@ describe("simulation.server tests", () => {
                     name: "Test Simulation",
                     categoryChanges: [
                         {
-                            categoryId: "cat123",
+                            categoryUuid: "cat123",
                             startDate: new Date("2024-01-01"),
                             endDate: new Date("2024-12-31"),
                             targetAmount: 1000
@@ -104,7 +107,10 @@ describe("simulation.server tests", () => {
 
             expect(getBudget).toHaveBeenCalledWith(mockBudget.uuid, mockUser);
             expect(mockSave).toHaveBeenCalled();
-            expect(result).toEqual(mockSimulation);
+            expect(result._id).toBe(mockSimulation._id);
+            expect(result.name).toBe(mockSimulation.name);
+            expect(result.budgetId).toBe(mockSimulation.budgetId);
+            expect(result.categoryChanges).toEqual(mockSimulation.categoryChanges);
         });
 
         it("should throw error when budget is not found", async () => {
@@ -164,6 +170,60 @@ describe("simulation.server tests", () => {
             mockFindById.mockResolvedValue(null);
 
             await expect(toggleSimulation("non-existent-id"))
+                .rejects.toThrow("Simulation not found");
+        });
+    });
+
+    describe("updateSimulation", () => {
+        it("should update an existing simulation with new data", async () => {
+            const mockSimulation = {
+                _id: "sim123",
+                name: "Old Name",
+                categoryChanges: [],
+                save: vi.fn()
+            };
+
+            const updateData = {
+                name: "Updated Name",
+                categoryChanges: [
+                    {
+                        categoryUuid: "cat123",
+                        startDate: new Date("2024-01-01"),
+                        endDate: new Date("2024-12-31"),
+                        targetAmount: 1500
+                    }
+                ]
+            };
+
+            // Mock findById to return the simulation
+            mockFindById.mockResolvedValue(mockSimulation);
+
+            // Mock save to return the updated simulation
+            mockSimulation.save.mockResolvedValue({
+                ...mockSimulation,
+                ...updateData
+            });
+
+            const result = await updateSimulation("sim123", updateData);
+
+            expect(mockFindById).toHaveBeenCalledWith("sim123");
+            expect(mockSimulation.name).toBe(updateData.name);
+            expect(mockSimulation.categoryChanges).toEqual(updateData.categoryChanges);
+            expect(mockSimulation.save).toHaveBeenCalled();
+            expect(result.name).toBe(updateData.name);
+            expect(result.categoryChanges).toEqual(updateData.categoryChanges);
+        });
+
+        it("should throw error when simulation is not found", async () => {
+            // Mock findById to return null
+            mockFindById.mockResolvedValue(null);
+
+            const updateData = {
+                name: "Updated Name",
+                categoryChanges: []
+            };
+
+            await expect(updateSimulation("non-existent-id", updateData))
                 .rejects.toThrow("Simulation not found");
         });
     });

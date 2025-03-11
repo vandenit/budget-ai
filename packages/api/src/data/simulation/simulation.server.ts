@@ -13,6 +13,16 @@ export type CreateSimulationInput = {
     }[];
 };
 
+export type UpdateSimulationInput = {
+    name: string;
+    categoryChanges: {
+        categoryUuid: string;
+        startDate?: Date;
+        endDate?: Date;
+        targetAmount: number;
+    }[];
+};
+
 export const findSimulationsForBudget = async (budgetId: string) => {
     connectDb();
     return Simulation.find({ budgetId });
@@ -35,6 +45,19 @@ export const createSimulation = async (budgetUuid: string, user: UserType, data:
     return simulation;
 };
 
+export const updateSimulation = async (id: string, data: UpdateSimulationInput) => {
+    connectDb();
+    const simulation = await Simulation.findById(id);
+    if (!simulation) {
+        throw new Error('Simulation not found');
+    }
+
+    simulation.name = data.name;
+    simulation.categoryChanges = data.categoryChanges;
+    await simulation.save();
+    return simulation;
+};
+
 export const toggleSimulation = async (id: string) => {
     connectDb();
     const simulation = await Simulation.findById(id);
@@ -44,5 +67,14 @@ export const toggleSimulation = async (id: string) => {
 
     simulation.isActive = !simulation.isActive;
     await simulation.save();
+    return simulation;
+};
+
+export const deleteSimulation = async (id: string) => {
+    connectDb();
+    const simulation = await Simulation.findByIdAndDelete(id);
+    if (!simulation) {
+        throw new Error('Simulation not found');
+    }
     return simulation;
 }; 

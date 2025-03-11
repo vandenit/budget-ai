@@ -1,7 +1,7 @@
 'use server';
 
 import { revalidatePath } from "next/cache";
-import { apiGet, apiPost, apiPut } from "@/app/api/client";
+import { apiGet, apiPost, apiPut, apiDelete } from "@/app/api/client";
 
 export interface CategoryChange {
     categoryUuid: string;
@@ -11,7 +11,7 @@ export interface CategoryChange {
 }
 
 export interface Simulation {
-    id: string;
+    _id: string;
     budgetUuid: string;
     name: string;
     isActive: boolean;
@@ -45,4 +45,27 @@ export async function toggleSimulation(id: string): Promise<Simulation> {
     revalidatePath(`/budgets/${simulation.budgetUuid}/predictions`);
 
     return simulation;
+}
+
+export async function updateSimulation(id: string, data: {
+    budgetUuid: string;
+    name: string;
+    categoryChanges: CategoryChange[];
+}): Promise<Simulation> {
+    const simulation = await apiPut(`/simulations/${id}`, {
+        name: data.name,
+        categoryChanges: data.categoryChanges
+    });
+
+    // Invalidate the cache for the predictions page
+    revalidatePath(`/budgets/${data.budgetUuid}/predictions`);
+
+    return simulation;
+}
+
+export async function deleteSimulation(id: string): Promise<void> {
+    await apiDelete(`/simulations/${id}`);
+    
+    // Invalidate the cache for the predictions page
+    revalidatePath('/budgets/[budgetUuid]/predictions');
 } 
