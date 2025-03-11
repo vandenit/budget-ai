@@ -13,7 +13,7 @@ import { toast } from 'sonner';
 import { SimulationForm } from './SimulationForm';
 import { CategoryChangesForm } from './CategoryChangesForm';
 import { SimulationList } from './SimulationList';
-import { createSimulation, type CategoryChange, type Simulation } from './actions';
+import { createSimulation, updateSimulation, type CategoryChange, type Simulation } from './actions';
 
 interface InteractiveSimulationsProps {
     categoryOptions: { uuid: string; name: string; }[];
@@ -51,17 +51,22 @@ export default function InteractiveSimulations({
     };
 
     const handleUpdateCategoryChanges = async (changes: CategoryChange[]) => {
-        if (!selectedSimulation) return;
+        if (!selectedSimulation) {
+            console.log('No selected simulation to update.');
+            return;
+        }
+
+        console.log('Updating category changes for simulation:', selectedSimulation);
 
         try {
-            const updatedSimulation = await createSimulation({
+            const updatedSimulation = await updateSimulation(selectedSimulation._id, {
                 budgetUuid,
                 name: selectedSimulation.name,
                 categoryChanges: changes
             });
 
             setSimulations(simulations.map(sim =>
-                sim.id === selectedSimulation.id ? updatedSimulation : sim
+                sim._id === selectedSimulation._id ? updatedSimulation : sim
             ));
             setEditModalOpen(false);
             toast.success("Category changes updated successfully");
@@ -72,6 +77,7 @@ export default function InteractiveSimulations({
     };
 
     const handleEditSimulation = (simulation: Simulation) => {
+        console.log('Editing simulation:', simulation);
         setSelectedSimulation(simulation);
         setEditModalOpen(true);
     };
@@ -108,7 +114,7 @@ export default function InteractiveSimulations({
             </Dialog>
 
             <Dialog open={isEditModalOpen} onOpenChange={setEditModalOpen}>
-                <DialogContent>
+                <DialogContent className="max-h-[90vh] overflow-y-auto">
                     <DialogHeader>
                         <DialogTitle>Edit Category Changes</DialogTitle>
                     </DialogHeader>
