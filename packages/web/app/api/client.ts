@@ -81,17 +81,11 @@ export const apiPost = async (path: string, data: any) => {
   });
 };
 
-export async function apiDelete(path: string) {
-    const response = await fetch(`${API_URL}${path}`, {
+export const apiDelete = async (path: string) => {
+    return apiFetch(path, {
         method: 'DELETE',
         headers: {
             'Content-Type': 'application/json',
         },
     });
-
-    if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    return response.json();
-}
+};

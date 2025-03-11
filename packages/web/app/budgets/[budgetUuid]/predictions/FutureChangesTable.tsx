@@ -33,65 +33,32 @@ type DayChanges = {
 };
 
 type Props = {
-    budgetId: string;
+    predictionData: PredictionData;
 };
 
-export const FutureChangesTable = ({ budgetId }: Props) => {
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-    const [changes, setChanges] = useState<DayChanges[]>([]);
-    const [simulations, setSimulations] = useState<string[]>([]);
-    const [selectedSimulation, setSelectedSimulation] = useState<string>("Actual Balance");
+export const FutureChangesTable = ({ predictionData }: Props) => {
+    const simulations = Object.keys(predictionData);
+    const selectedSimulation = "Actual Balance"; // We can make this configurable later if needed
 
-    useEffect(() => {
-        const fetchChanges = async () => {
-            try {
-                setIsLoading(true);
-                const data = await getPrediction(budgetId) as PredictionData;
+    // Process the data
+    const selectedData = predictionData[selectedSimulation];
+    const changes: DayChanges[] = [];
 
-                // get all available simulations
-                const availableSimulations = Object.keys(data);
-                setSimulations(availableSimulations);
-
-                // use the selected simulation
-                const selectedData = data[selectedSimulation];
-                const allChanges: DayChanges[] = [];
-
-                if (selectedData) {
-                    Object.entries(selectedData).forEach(([date, dayData]) => {
-                        if (dayData.changes && dayData.changes.length > 0) {
-                            allChanges.push({
-                                date,
-                                balance: dayData.balance,
-                                balance_diff: dayData.balance_diff,
-                                changes: dayData.changes
-                            });
-                        }
-                    });
-                }
-
-                // sort by date
-                allChanges.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-
-                setChanges(allChanges);
-            } catch (err) {
-                setError(err instanceof Error ? err.message : 'An error occurred while fetching the changes');
-                console.error('Error fetching changes:', err);
-            } finally {
-                setIsLoading(false);
+    if (selectedData) {
+        Object.entries(selectedData).forEach(([date, dayData]) => {
+            if (dayData.changes && dayData.changes.length > 0) {
+                changes.push({
+                    date,
+                    balance: dayData.balance,
+                    balance_diff: dayData.balance_diff,
+                    changes: dayData.changes
+                });
             }
-        };
-
-        fetchChanges();
-    }, [budgetId, selectedSimulation]);
-
-    if (isLoading) {
-        return <div className="loading loading-spinner loading-lg"></div>;
+        });
     }
 
-    if (error) {
-        return <div className="alert alert-error">{error}</div>;
-    }
+    // Sort by date
+    changes.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
     const formatSimulationName = (name: string) => {
         if (name === "Actual Balance") return name;
@@ -107,7 +74,7 @@ export const FutureChangesTable = ({ budgetId }: Props) => {
                     <button
                         key={simulation}
                         className={`tab ${selectedSimulation === simulation ? 'tab-active' : ''}`}
-                        onClick={() => setSelectedSimulation(simulation)}
+                        disabled={simulation !== selectedSimulation} // We can remove this when we make it configurable
                     >
                         {formatSimulationName(simulation)}
                     </button>

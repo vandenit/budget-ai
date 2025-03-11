@@ -5,6 +5,7 @@ import { getPrediction } from '@/app/api/math.client';
 import InteractiveSimulations from './InteractiveSimulations';
 import { getSession } from '@auth0/nextjs-auth0';
 import { getSimulations } from './actions';
+import { FutureChangesTable } from './FutureChangesTable';
 
 interface PageProps {
     params: {
@@ -40,14 +41,26 @@ export default async function PredictionsPage({ params }: PageProps) {
                     />
                 </div>
 
-                <div className="w-full lg:w-3/4">
-                    <Suspense fallback={<div className="loading loading-spinner loading-lg" />}>
-                        <PredictionChart
-                            predictionData={predictionData}
-                            categories={categories}
-                            variant="detail"
-                        />
-                    </Suspense>
+                <div className="w-full lg:w-3/4 space-y-8">
+                    <div className="card bg-base-100 shadow-xl">
+                        <div className="card-body">
+                            <h2 className="card-title">Chart</h2>
+                            <Suspense fallback={<div className="loading loading-spinner loading-lg" />}>
+                                <PredictionChart
+                                    predictionData={predictionData}
+                                    categories={categories}
+                                    variant="detail"
+                                />
+                            </Suspense>
+                        </div>
+                    </div>
+
+                    <div className="card bg-base-100 shadow-xl">
+                        <div className="card-body">
+                            <h2 className="card-title">Future Changes</h2>
+                            <FutureChangesTable predictionData={predictionData} />
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
