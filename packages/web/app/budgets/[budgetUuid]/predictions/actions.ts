@@ -12,7 +12,6 @@ export interface CategoryChange {
 
 export interface Simulation {
     _id: string;
-    _id: string;
     budgetUuid: string;
     name: string;
     isActive: boolean;
