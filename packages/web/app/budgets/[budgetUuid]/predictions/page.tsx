@@ -14,12 +14,6 @@ interface PageProps {
 }
 
 export default async function PredictionsPage({ params }: PageProps) {
-    const session = await getSession();
-    const accessToken = session?.accessToken;
-
-    if (!accessToken) {
-        throw new Error('No access token available');
-    }
 
     const [predictionData, categories, simulations] = await Promise.all([
         getPrediction(params.budgetUuid),
