@@ -53,9 +53,9 @@ export const FutureChangesTable = ({ predictionData }: Props) => {
                     balance_diff: dayData.balance_diff,
                     changes: dayData.changes
                 });
-            }
-        });
-    }
+                        }
+                    });
+                }
 
     // Sort by date
     changes.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());

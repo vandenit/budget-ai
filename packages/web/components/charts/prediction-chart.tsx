@@ -17,6 +17,8 @@ import { Category } from "common-ts";
 import 'chartjs-adapter-date-fns';
 import { enUS } from 'date-fns/locale';
 import type { PredictionData } from '@/app/budgets/[budgetUuid]/predictions/prediction-data.server';
+import type { TimeRange } from '@/app/budgets/[budgetUuid]/predictions/constants';
+import { TIME_RANGES } from '@/app/budgets/[budgetUuid]/predictions/constants';
 
 ChartJS.register(
     CategoryScale,
@@ -33,8 +35,7 @@ type Props = {
     predictionData: PredictionData;
     categories: Category[];
     variant?: 'overview' | 'detail';
-    selectedTimeRange?: '1m' | '3m' | '6m' | '1y';
-    onTimeRangeChange?: (range: '1m' | '3m' | '6m' | '1y') => void;
+    selectedTimeRange?: TimeRange;
 };
 
 export const PredictionChart = ({
@@ -42,7 +43,6 @@ export const PredictionChart = ({
     categories,
     variant = 'overview',
     selectedTimeRange = '3m',
-    onTimeRangeChange,
 }: Props) => {
     // Function to generate a color based on index
     const getSimulationColor = (index: number) => {
@@ -66,12 +66,7 @@ export const PredictionChart = ({
 
     // Filter dates based on selected time range
     const now = new Date();
-    const timeRangeInMonths = {
-        '1m': 1,
-        '3m': 3,
-        '6m': 6,
-        '1y': 12
-    }[selectedTimeRange];
+    const timeRangeInMonths = TIME_RANGES[selectedTimeRange].days / 30;
 
     const endDate = new Date(now);
     endDate.setMonth(now.getMonth() + timeRangeInMonths);
@@ -266,23 +261,6 @@ export const PredictionChart = ({
 
     return (
         <div className="space-y-4">
-            {variant === 'detail' && onTimeRangeChange && (
-                <div className="flex justify-end space-x-2">
-                    <div className="join">
-                        {(['1m', '3m', '6m', '1y'] as const).map((range) => (
-                            <button
-                                key={range}
-                                className={`join-item btn btn-sm ${selectedTimeRange === range ? 'btn-primary' : 'btn-ghost'}`}
-                                onClick={() => onTimeRangeChange(range)}
-                            >
-                                {range === '1m' ? '1 month' :
-                                    range === '3m' ? '3 months' :
-                                        range === '6m' ? '6 months' : '1 year'}
-                            </button>
-                        ))}
-                    </div>
-                </div>
-            )}
             <div className={variant === 'detail' ? 'h-[600px]' : 'h-[400px]'}>
                 <Line options={chartOptions} data={chartData} />
             </div>

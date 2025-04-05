@@ -1,46 +1,6 @@
 # Future Simulation Improvements
 
-## Extended Data Model
 
-```typescript
-// MongoDB Schema
-interface Simulation {
-  _id: ObjectId;           // Internal MongoDB id
-  publicId: string;        // UUID v4 for API exposure
-  budgetId: ObjectId;      // Internal reference
-  budgetPublicId: string;  // Public budget identifier
-  name: string;
-  description?: string;
-  isActive: boolean;
-  createdAt: Date;
-  updatedAt: Date;
-  transactions: TransactionSimulation[];
-  categoryChanges: CategorySimulation[];
-}
-
-interface TransactionSimulation {
-  _id: ObjectId;
-  publicId: string;
-  date: Date;
-  amount: number;
-  description: string;
-  categoryId?: ObjectId;
-  categoryPublicId?: string;
-  recurringType?: 'once' | 'monthly' | 'yearly';
-  recurringEndDate?: Date;
-}
-
-interface CategorySimulation {
-  _id: ObjectId;
-  publicId: string;
-  categoryId: ObjectId;
-  categoryPublicId: string;
-  startDate: Date;
-  endDate: Date;
-  targetAmount: number;
-  recurringType?: 'once' | 'monthly' | 'yearly';
-}
-```
 
 ## Extended Features
 
