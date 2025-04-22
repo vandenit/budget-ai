@@ -9,7 +9,7 @@ export const ynabAuthOptions: NextAuthOptions = {
       type: "oauth",
       authorization: {
         params: {
-          scope: "read-only",
+          scope: "",
         },
         url: "https://app.ynab.com/oauth/authorize",
       },

@@ -1,7 +1,10 @@
 "use client";
 
-import { useEffect, useState } from 'react';
-import { getPrediction } from '../../../api/math.client';
+import { useState } from 'react';
+import { FiEdit2, FiTrash2 } from 'react-icons/fi';
+import { updateScheduledTransaction, deleteScheduledTransaction, ScheduledTransactionUpdate } from '../../../api/scheduledTransactions.client';
+import { Category } from 'common-ts';
+import { EditTransactionDialog } from './EditTransactionDialog';
 
 type Change = {
     amount: number;
@@ -9,6 +12,9 @@ type Change = {
     reason: string;
     is_simulation?: boolean;
     memo?: string;
+    id?: string;
+    account?: string;
+    payee?: string;
 };
 
 type DayData = {
@@ -34,13 +40,49 @@ type DayChanges = {
 
 type Props = {
     predictionData: PredictionData;
+    budgetUuid: string;
+    categories: Category[];
 };
 
-export const FutureChangesTable = ({ predictionData }: Props) => {
-    const simulations = Object.keys(predictionData);
-    const selectedSimulation = "Actual Balance"; // We can make this configurable later if needed
+export const FutureChangesTable = ({ predictionData, budgetUuid, categories }: Props) => {
+    const [editingTransaction, setEditingTransaction] = useState<string | null>(null);
+    const [selectedTransaction, setSelectedTransaction] = useState<{
+        amount: number;
+        categoryId: string;
+        date: string;
+    } | undefined>(undefined);
+
+    const handleEdit = async (transactionId: string, updates: ScheduledTransactionUpdate) => {
+        if (!transactionId) return;
+        try {
+            await updateScheduledTransaction(budgetUuid, transactionId, updates);
+            // TODO: Add toast notification
+            setEditingTransaction(null);
+            setSelectedTransaction(undefined);
+            // TODO: Refresh data
+        } catch (error) {
+            console.error('Failed to update transaction:', error);
+            // TODO: Add error toast
+        }
+    };
+
+    const handleDelete = async (transactionId: string) => {
+        if (!transactionId) return;
+        try {
+            await deleteScheduledTransaction(budgetUuid, transactionId);
+            // TODO: Add toast notification
+            setEditingTransaction(null);
+            setSelectedTransaction(undefined);
+            // TODO: Refresh data
+        } catch (error) {
+            console.error('Failed to delete transaction:', error);
+            // TODO: Add error toast
+        }
+    };
 
     // Process the data
+    const simulations = Object.keys(predictionData);
+    const selectedSimulation = "Actual Balance"; // We can make this configurable later if needed
     const selectedData = predictionData[selectedSimulation];
     const changes: DayChanges[] = [];
 
@@ -53,9 +95,9 @@ export const FutureChangesTable = ({ predictionData }: Props) => {
                     balance_diff: dayData.balance_diff,
                     changes: dayData.changes
                 });
-                        }
-                    });
-                }
+            }
+        });
+    }
 
     // Sort by date
     changes.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
@@ -67,6 +109,37 @@ export const FutureChangesTable = ({ predictionData }: Props) => {
         ).join(" ");
     };
 
+    const handleDialogSave = async (updates: ScheduledTransactionUpdate) => {
+        if (!editingTransaction) return;
+        await handleEdit(editingTransaction, updates);
+    };
+
+    const handleEditClick = (change: Change, date: string) => {
+        console.log('Edit clicked:', { change, date });
+        if (!change.id) {
+            console.log('No transaction ID found');
+            return;
+        }
+
+        // Find the category ID based on the category name
+        const categoryId = categories.find(cat => cat.name === change.category)?.uuid;
+
+        setEditingTransaction(change.id);
+        setSelectedTransaction({
+            amount: change.amount,
+            categoryId: categoryId || '',
+            date: date
+        });
+        console.log('Dialog state set:', {
+            editingTransaction: change.id,
+            selectedTransaction: {
+                amount: change.amount,
+                categoryId: categoryId || '',
+                date: date
+            }
+        });
+    };
+
     return (
         <div className="space-y-4">
             <div className="tabs tabs-boxed justify-start">
@@ -74,7 +147,7 @@ export const FutureChangesTable = ({ predictionData }: Props) => {
                     <button
                         key={simulation}
                         className={`tab ${selectedSimulation === simulation ? 'tab-active' : ''}`}
-                        disabled={simulation !== selectedSimulation} // We can remove this when we make it configurable
+                        disabled={simulation !== selectedSimulation}
                     >
                         {formatSimulationName(simulation)}
                     </button>
@@ -110,10 +183,34 @@ export const FutureChangesTable = ({ predictionData }: Props) => {
                                             {change.is_simulation && (
                                                 <span className="badge badge-sm">Simulation</span>
                                             )}
-                                            <span>{change.reason}</span>
+                                            {change.reason === "Scheduled Transaction" && (
+                                                <div className="flex items-center gap-1">
+                                                    <button
+                                                        onClick={() => {
+                                                            console.log('Edit button clicked for:', change);
+                                                            handleEditClick(change, dayChange.date);
+                                                        }}
+                                                        className="btn btn-ghost btn-xs"
+                                                    >
+                                                        <FiEdit2 className="h-4 w-4" />
+                                                    </button>
+                                                    <button
+                                                        onClick={() => change.id && handleDelete(change.id)}
+                                                        className="btn btn-ghost btn-xs text-error"
+                                                    >
+                                                        <FiTrash2 className="h-4 w-4" />
+                                                    </button>
+                                                </div>
+                                            )}
+                                            <div>
+                                                <span>{change.reason}</span>
+                                                {change.payee && (
+                                                    <span className="text-sm text-base-content/70 block">{change.payee}</span>
+                                                )}
+                                            </div>
                                         </div>
                                         {change.memo && (
-                                            <span className="text-sm text-base-content/70">{change.memo}</span>
+                                            <span className="text-sm text-base-content/70 block">{change.memo}</span>
                                         )}
                                     </td>
                                     <td>{change.category}</td>
@@ -134,6 +231,18 @@ export const FutureChangesTable = ({ predictionData }: Props) => {
                     </tbody>
                 </table>
             </div>
+
+            <EditTransactionDialog
+                isOpen={!!editingTransaction}
+                onClose={() => {
+                    console.log('Dialog closing');
+                    setEditingTransaction(null);
+                    setSelectedTransaction(undefined);
+                }}
+                onSave={handleDialogSave}
+                categories={categories}
+                transaction={selectedTransaction}
+            />
         </div>
     );
 }; 

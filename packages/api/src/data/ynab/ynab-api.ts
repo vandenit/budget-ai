@@ -185,3 +185,34 @@ export const getAccounts = async (
     accounts: data.accounts,
   };
 };
+
+export const updateScheduledTransaction = async (
+  budgetId: string,
+  transactionId: string,
+  data: {
+    scheduled_transaction: {
+      amount?: number;
+      category_id?: string;
+      date?: string;
+    };
+  },
+  user: UserType
+) => {
+  const api = await getApi(user);
+  return api.scheduledTransactions.updateTransaction(budgetId, transactionId, {
+    transaction: {
+      amount: data.scheduled_transaction.amount,
+      category_id: data.scheduled_transaction.category_id,
+      date: data.scheduled_transaction.date,
+    },
+  });
+};
+
+export const deleteScheduledTransaction = async (
+  budgetId: string,
+  transactionId: string,
+  user: UserType
+) => {
+  const api = await getApi(user);
+  return api.transactions.deleteTransaction(budgetId, transactionId);
+};

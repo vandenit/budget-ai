@@ -362,3 +362,46 @@ export const syncYnabUser = async (user: UserType) => {
   await syncAllTransactions(user);
   await syncAccounts(user);
 };
+
+export const updateScheduledTransaction = async (
+  user: UserType,
+  budgetId: string,
+  transactionId: string,
+  updates: {
+    amount?: number;
+    categoryId?: string;
+    date?: string;
+  }
+) => {
+  try {
+    const response = await ynabApi.updateScheduledTransaction(
+      budgetId,
+      transactionId,
+      {
+        scheduled_transaction: {
+          amount: updates.amount ? updates.amount * 1000 : undefined, // Convert to milliunits
+          category_id: updates.categoryId,
+          date: updates.date,
+        },
+      },
+      user
+    );
+    return response.data.transaction;
+  } catch (error) {
+    console.error('Failed to update scheduled transaction:', error);
+    throw error;
+  }
+};
+
+export const deleteScheduledTransaction = async (
+  user: UserType,
+  budgetId: string,
+  transactionId: string
+) => {
+  try {
+    await ynabApi.deleteScheduledTransaction(budgetId, transactionId, user);
+  } catch (error) {
+    console.error('Failed to delete scheduled transaction:', error);
+    throw error;
+  }
+};

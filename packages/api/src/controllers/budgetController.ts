@@ -4,7 +4,7 @@ import { Request, Response } from "express";
 import { getUserFromReq } from "./utils";
 import { Budget } from "common-ts";
 
-const getBudgetFromReq = async (req: Request): Promise<Budget> => {
+export const getBudgetFromReq = async (req: Request): Promise<Budget> => {
   const user = await getUserFromReq(req);
   if (!user) {
     throw new Error("no user found");
@@ -12,7 +12,8 @@ const getBudgetFromReq = async (req: Request): Promise<Budget> => {
   const budget = await getBudget(req.params.uuid, user);
   if (!budget) {
     throw new Error(`budget ${req.params.uuid} does not belong to user`);
-  }
+  } 
+ 
   return budget;
 };
 

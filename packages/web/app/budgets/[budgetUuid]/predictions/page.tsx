@@ -72,7 +72,7 @@ export default async function PredictionsPage({ params, searchParams }: PageProp
                     <div className="card bg-base-100 shadow-xl">
                         <div className="card-body">
                             <h2 className="card-title">Future Changes</h2>
-                            <FutureChangesTable predictionData={predictionData} />
+                            <FutureChangesTable predictionData={predictionData} categories={categories} budgetUuid={params.budgetUuid} />
                         </div>
                     </div>
                 </div>
