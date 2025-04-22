@@ -386,7 +386,7 @@ export const updateScheduledTransaction = async (
       },
       user
     );
-    return response.data.transaction;
+    return response.data.scheduled_transaction;
   } catch (error) {
     console.error('Failed to update scheduled transaction:', error);
     throw error;

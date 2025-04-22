@@ -198,14 +198,35 @@ export const updateScheduledTransaction = async (
   },
   user: UserType
 ) => {
-  const api = await getApi(user);
-  return api.scheduledTransactions.updateTransaction(budgetId, transactionId, {
-    transaction: {
-      amount: data.scheduled_transaction.amount,
-      category_id: data.scheduled_transaction.category_id,
-      date: data.scheduled_transaction.date,
-    },
-  });
+  const token = user?.ynab?.connection.accessToken;
+  if (!token) {
+    throw new Error("No token found");
+  }
+
+  // Custom REST call to update a scheduled transaction
+  const url = `https://api.ynab.com/v1/budgets/${budgetId}/scheduled_transactions/${transactionId}`;
+  
+  try {
+    const response = await fetch(url, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify(data)
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(`YNAB API error: ${JSON.stringify(errorData)}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Error updating scheduled transaction:', error);
+    throw error;
+  }
 };
 
 export const deleteScheduledTransaction = async (
@@ -213,6 +234,31 @@ export const deleteScheduledTransaction = async (
   transactionId: string,
   user: UserType
 ) => {
-  const api = await getApi(user);
-  return api.transactions.deleteTransaction(budgetId, transactionId);
+  const token = user?.ynab?.connection.accessToken;
+  if (!token) {
+    throw new Error("No token found");
+  }
+
+  // Custom REST call to delete a scheduled transaction
+  const url = `https://api.ynab.com/v1/budgets/${budgetId}/scheduled_transactions/${transactionId}`;
+  
+  try {
+    const response = await fetch(url, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Accept': 'application/json'
+      }
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(`YNAB API error: ${JSON.stringify(errorData)}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Error deleting scheduled transaction:', error);
+    throw error;
+  }
 };
