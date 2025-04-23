@@ -60,7 +60,8 @@ def test_add_future_transactions_to_projection():
             "amount": -50000,  # -50.0 after division by 1000
             "account_name": "Checking",
             "payee_name": "Supermarket",
-            "memo": "Weekly groceries"
+            "memo": "Weekly groceries",
+            "id": "test-transaction-id"
         }
     ]
     

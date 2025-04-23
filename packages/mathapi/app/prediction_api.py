@@ -130,7 +130,7 @@ def add_future_transactions_to_projection(daily_projection, future_transactions)
                 "account": txn['account_name'],
                 "payee": txn['payee_name'],
                 "memo": txn['memo'],
-                "id": txn['id']
+                "id": txn.get('id', '')  # Make id optional
             })
 
             if category_name not in scheduled_dates_by_category:
