@@ -1,13 +1,16 @@
 import * as ynab from "ynab";
 import { connectUserWithYnab, UserType } from "../user/user.server";
 
+const YNAB_OAUTH_BASE_URL = "https://app.ynab.com/oauth";
+const YNAB_API_BASE_URL = "https://api.ynab.com/v1";
+
 const refreshAccessToken = async (refreshToken: string) => {
   // refresh using native fetch
   const clientId = process.env.YNAB_CLIENT_ID;
   const clientSecret = process.env.YNAB_CLIENT_SECRET;
   try {
     const response = await fetch(
-      `https://app.ynab.com/oauth/token?client_id=${clientId}&client_secret=${clientSecret}&grant_type=refresh_token&refresh_token=${refreshToken}`,
+      `${YNAB_OAUTH_BASE_URL}/token?client_id=${clientId}&client_secret=${clientSecret}&grant_type=refresh_token&refresh_token=${refreshToken}`,
       {
         method: "POST",
         headers: {
@@ -204,7 +207,7 @@ export const updateScheduledTransaction = async (
   }
 
   // Custom REST call to update a scheduled transaction
-  const url = `https://api.ynab.com/v1/budgets/${budgetId}/scheduled_transactions/${transactionId}`;
+  const url = `${YNAB_API_BASE_URL}/budgets/${budgetId}/scheduled_transactions/${transactionId}`;
   
   try {
     const response = await fetch(url, {
@@ -240,7 +243,7 @@ export const deleteScheduledTransaction = async (
   }
 
   // Custom REST call to delete a scheduled transaction
-  const url = `https://api.ynab.com/v1/budgets/${budgetId}/scheduled_transactions/${transactionId}`;
+  const url = `${YNAB_API_BASE_URL}/budgets/${budgetId}/scheduled_transactions/${transactionId}`;
   
   try {
     const response = await fetch(url, {
