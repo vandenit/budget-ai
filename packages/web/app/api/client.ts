@@ -2,6 +2,7 @@
 import { getSession } from "@auth0/nextjs-auth0";
 import { handleServerApiResponse } from './utils.server';
 import { headers } from 'next/headers';
+import { redirect } from "next/navigation";
 
 export const getToken = async (accesToken?: string) => {
   if (accesToken) {
@@ -9,7 +10,11 @@ export const getToken = async (accesToken?: string) => {
   }
   const session = await getSession();
   if (!session || !session.accessToken) {
-    throw new Error("no session found");
+    console.log("no session found, redirecting to login");
+    if (!session?.user) {
+      redirect("/login");
+      return null;
+    }
   }
   // todo remove this log!
   //console.log("token", session.accessToken);
@@ -22,6 +27,9 @@ export const apiFetch = async (
   accesToken?: string
 ) => {
   const token = await getToken(accesToken);
+  if (!token) {
+    return null;
+  }
   const apiBaseUrl = process.env.API_URL || "http://localhost:4000";
   const apiUrl = new URL(path, apiBaseUrl).toString();
   console.log(`fetching ${apiUrl}, options: ${JSON.stringify(options)}`);
@@ -79,4 +87,13 @@ export const apiPost = async (path: string, data: any) => {
       "Content-Type": "application/json",
     },
   });
+};
+
+export const apiDelete = async (path: string) => {
+    return apiFetch(path, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    });
 };

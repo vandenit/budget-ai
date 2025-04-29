@@ -10,6 +10,7 @@ import budgetRoutes from "./routes/budgetRoutes";
 import userRoutes from "./routes/userRoutes";
 import syncRoutes from "./routes/syncRoutes";
 import simulationRoutes from "./routes/simulation.routes";
+import scheduledTransactionRoutes from "./routes/scheduledTransactions";
 import { overrideConsoleLog } from "common-ts";
 
 overrideConsoleLog();
@@ -36,7 +37,10 @@ app.use("/users", checkJwt, userRoutes);
 app.use("/sync", syncRoutes);
 
 // Add simulation routes
-app.use("/api/simulations", checkJwt, simulationRoutes);
+app.use("/simulations", checkJwt, simulationRoutes);
+
+// Add scheduled transaction routes
+app.use("/scheduled-transactions", checkJwt, scheduledTransactionRoutes);
 
 // The error handler must be registered before any other error middleware and after all controllers
 Sentry.setupExpressErrorHandler(app);

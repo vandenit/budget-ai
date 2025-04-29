@@ -1,13 +1,16 @@
 import * as ynab from "ynab";
 import { connectUserWithYnab, UserType } from "../user/user.server";
 
+const YNAB_OAUTH_BASE_URL = "https://app.ynab.com/oauth";
+const YNAB_API_BASE_URL = "https://api.ynab.com/v1";
+
 const refreshAccessToken = async (refreshToken: string) => {
   // refresh using native fetch
   const clientId = process.env.YNAB_CLIENT_ID;
   const clientSecret = process.env.YNAB_CLIENT_SECRET;
   try {
     const response = await fetch(
-      `https://app.ynab.com/oauth/token?client_id=${clientId}&client_secret=${clientSecret}&grant_type=refresh_token&refresh_token=${refreshToken}`,
+      `${YNAB_OAUTH_BASE_URL}/token?client_id=${clientId}&client_secret=${clientSecret}&grant_type=refresh_token&refresh_token=${refreshToken}`,
       {
         method: "POST",
         headers: {
@@ -184,4 +187,81 @@ export const getAccounts = async (
     knowledge: data.server_knowledge,
     accounts: data.accounts,
   };
+};
+
+export const updateScheduledTransaction = async (
+  budgetId: string,
+  transactionId: string,
+  data: {
+    scheduled_transaction: {
+      amount?: number;
+      category_id?: string;
+      date?: string;
+    };
+  },
+  user: UserType
+) => {
+  const token = user?.ynab?.connection.accessToken;
+  if (!token) {
+    throw new Error("No token found");
+  }
+
+  // Custom REST call to update a scheduled transaction
+  const url = `${YNAB_API_BASE_URL}/budgets/${budgetId}/scheduled_transactions/${transactionId}`;
+  
+  try {
+    const response = await fetch(url, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify(data)
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(`YNAB API error: ${JSON.stringify(errorData)}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Error updating scheduled transaction:', error);
+    throw error;
+  }
+};
+
+export const deleteScheduledTransaction = async (
+  budgetId: string,
+  transactionId: string,
+  user: UserType
+) => {
+  const token = user?.ynab?.connection.accessToken;
+  if (!token) {
+    throw new Error("No token found");
+  }
+
+  // Custom REST call to delete a scheduled transaction
+  const url = `${YNAB_API_BASE_URL}/budgets/${budgetId}/scheduled_transactions/${transactionId}`;
+  
+  try {
+    const response = await fetch(url, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Accept': 'application/json'
+      }
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(`YNAB API error: ${JSON.stringify(errorData)}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Error deleting scheduled transaction:', error);
+    throw error;
+  }
 };

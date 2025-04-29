@@ -1,83 +1,126 @@
 import { Request, Response } from 'express';
-import { Types } from 'mongoose';
-import { Simulation } from '../models/simulation';
+import { getUserFromReq } from './utils';
+import { findSimulationsForBudget, createSimulation, toggleSimulation, updateSimulation as updateSimulationInDb, deleteSimulation as deleteSimulationInDb } from '../data/simulation/simulation.server';
+import { getBudget } from '../data/budget/budget.server';
+import { getCategory } from '../data/category/category.server';
 
 export class SimulationController {
   async getSimulations(req: Request, res: Response) {
-    try {
-      const { budgetId } = req.query;
-      if (!budgetId || !Types.ObjectId.isValid(budgetId as string)) {
-        return res.status(400).json({ error: 'Valid budgetId is required' });
-      }
-
-      const simulations = await Simulation.find({ budgetId: new Types.ObjectId(budgetId as string) });
-      res.json(simulations);
-    } catch (error) {
-      console.error('Error getting simulations:', error);
-      res.status(500).json({ error: 'Internal server error' });
+    const { budgetUuid } = req.params;
+    const user = await getUserFromReq(req);
+    if (!user) {
+      return res.status(401).json({ error: 'Unauthorized' });
     }
+
+    const budget = await getBudget(budgetUuid, user);
+    if (!budget) {
+      return res.status(404).json({ error: 'Budget not found' });
+    }
+
+    const simulations = await findSimulationsForBudget(budget._id);
+    res.json(simulations);
   }
 
   async createSimulation(req: Request, res: Response) {
-    try {
-      const { budgetId, name, categoryChanges } = req.body;
-
-      if (!budgetId || !Types.ObjectId.isValid(budgetId)) {
-        return res.status(400).json({ error: 'Valid budgetId is required' });
-      }
-
-      if (!name || !categoryChanges || !Array.isArray(categoryChanges)) {
-        return res.status(400).json({ error: 'Name and categoryChanges array are required' });
-      }
-
-      // Validate each category change
-      for (const change of categoryChanges) {
-        if (!change.categoryId || !Types.ObjectId.isValid(change.categoryId)) {
-          return res.status(400).json({ error: 'Valid categoryId is required for each change' });
-        }
-        if (!change.startDate || !change.endDate || !change.targetAmount) {
-          return res.status(400).json({ error: 'startDate, endDate and targetAmount are required for each change' });
-        }
-      }
-
-      const simulation = new Simulation({
-        budgetId: new Types.ObjectId(budgetId),
-        name,
-        categoryChanges: categoryChanges.map(change => ({
-          ...change,
-          categoryId: new Types.ObjectId(change.categoryId),
-          startDate: new Date(change.startDate),
-          endDate: new Date(change.endDate)
-        }))
-      });
-
-      await simulation.save();
-      res.status(201).json(simulation);
-    } catch (error) {
-      console.error('Error creating simulation:', error);
-      res.status(500).json({ error: 'Internal server error' });
+    const { budgetUuid } = req.params;
+    const { name, categoryChanges } = req.body;
+    console.log('Creating simulation:', { budgetUuid, body: req.body });
+    const user = await getUserFromReq(req);
+    if (!user) {
+      return res.status(401).json({ error: 'Unauthorized' });
     }
+
+    if (!name || !categoryChanges || !Array.isArray(categoryChanges)) {
+      console.log('Validation error: missing name or categoryChanges', { name, categoryChanges });
+      return res.status(400).json({ error: 'Name and categoryChanges array are required' });
+    }
+
+    // Validate each category change and get category IDs
+    const validatedChanges = await Promise.all(categoryChanges.map(async (change) => {
+      if (!change.categoryUuid) {
+        console.log('Validation error: missing categoryUuid', { change });
+        throw new Error('categoryUuid is required for each change');
+      }
+      if (!change.targetAmount) {
+        console.log('Validation error: missing targetAmount', { change });
+        throw new Error('targetAmount is required for each change');
+      }
+
+      const category = await getCategory(change.categoryUuid);
+      if (!category) {
+        console.log('Validation error: category not found', { categoryUuid: change.categoryUuid });
+        throw new Error(`Category not found for uuid: ${change.categoryUuid}`);
+      }
+
+      return {
+        categoryUuid: change.categoryUuid,
+        targetAmount: change.targetAmount,
+        startDate: change.startDate ? new Date(change.startDate) : undefined,
+        endDate: change.endDate ? new Date(change.endDate) : undefined
+      };
+    }));
+
+    const simulation = await createSimulation(budgetUuid, user, {
+      name,
+      categoryChanges: validatedChanges
+    });
+
+    res.status(201).json(simulation);
   }
 
   async toggleSimulation(req: Request, res: Response) {
-    try {
-      const { id } = req.params;
-      if (!Types.ObjectId.isValid(id)) {
-        return res.status(400).json({ error: 'Valid simulation id is required' });
-      }
+    const { id } = req.params;
+    const simulation = await toggleSimulation(id);
+    res.json(simulation);
+  }
 
-      const simulation = await Simulation.findById(id);
-      if (!simulation) {
-        return res.status(404).json({ error: 'Simulation not found' });
-      }
+  async updateSimulation(req: Request, res: Response) {
+    const { id } = req.params;
+    const { name, categoryChanges } = req.body;
+    console.log('Updating simulation:', { id, body: req.body });
 
-      simulation.isActive = !simulation.isActive;
-      await simulation.save();
-
-      res.json(simulation);
-    } catch (error) {
-      console.error('Error toggling simulation:', error);
-      res.status(500).json({ error: 'Internal server error' });
+    if (!name || !categoryChanges || !Array.isArray(categoryChanges)) {
+      console.log('Validation error: missing name or categoryChanges', { name, categoryChanges });
+      return res.status(400).json({ error: 'Name and categoryChanges array are required' });
     }
+
+    // Validate each category change and get category IDs
+    const validatedChanges = await Promise.all(categoryChanges.map(async (change) => {
+      if (!change.categoryUuid) {
+        console.log('Validation error: missing categoryUuid', { change });
+        throw new Error('categoryUuid is required for each change');
+      }
+      if (!change.targetAmount) {
+        console.log('Validation error: missing targetAmount', { change });
+        throw new Error('targetAmount is required for each change');
+      }
+
+      const category = await getCategory(change.categoryUuid);
+      if (!category) {
+        console.log('Validation error: category not found', { categoryUuid: change.categoryUuid });
+        throw new Error(`Category not found for uuid: ${change.categoryUuid}`);
+      }
+
+      return {
+        categoryUuid: change.categoryUuid,
+        targetAmount: change.targetAmount,
+        startDate: change.startDate ? new Date(change.startDate) : undefined,
+        endDate: change.endDate ? new Date(change.endDate) : undefined
+      };
+    }));
+
+    const simulation = await updateSimulationInDb(id, {
+      name,
+      categoryChanges: validatedChanges
+    });
+
+    res.json(simulation);
+  }
+
+  async deleteSimulation(req: Request, res: Response) {
+    const { id } = req.params;
+    console.log('Deleting simulation:', id);
+    const simulation = await deleteSimulationInDb(id);
+    res.json(simulation);
   }
 } 
