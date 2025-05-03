@@ -1,118 +1,647 @@
-import unittest
-from datetime import datetime, date
-from unittest.mock import patch
-import json
-import os
-from dotenv import load_dotenv
-from app.prediction_api import projected_balances_for_budget
-from app.tests.encryption_helper import EncryptionHelper
+import pytest
+from datetime import datetime, timedelta
+from app.prediction_api import (
+    calculate_initial_balance,
+    initialize_daily_projection,
+    add_future_transactions_to_projection,
+    calculate_running_balance,
+    add_simulations_to_projection,
+    process_need_categories,
+    process_need_category,
+    apply_need_category_spending
+)
+import calendar
 
-class TestPredictionApi(unittest.TestCase):
-    def setUp(self):
-        # Load environment variables
-        load_dotenv()
+def test_calculate_initial_balance():
+    # Test data
+    accounts = [
+        {"balance": 1000},  # 1.0 after division by 1000
+        {"balance": 2000},  # 2.0 after division by 1000
+    ]
+    
+    expected_balance = 3.0  # (1000 + 2000) / 1000
+    assert calculate_initial_balance(accounts) == expected_balance
+
+def test_initialize_daily_projection():
+    initial_balance = 1000.0
+    days_ahead = 2
+    
+    result = initialize_daily_projection(initial_balance, days_ahead)
+    
+    # We expect 3 dates (today + 2 days ahead)
+    assert len(result) == 3
+    
+    # Check structure of the entries
+    for date, data in result.items():
+        assert "balance" in data
+        assert "changes" in data
+        assert isinstance(data["changes"], list)
         
-        # Initialize encryption helper
-        self.encryption_helper = EncryptionHelper()
-        
-        # Load test fixtures
-        fixtures_dir = os.path.join(os.path.dirname(__file__), 'fixtures')
-        
-        with open(os.path.join(fixtures_dir, 'input_data.json'), 'r') as f:
-            self.input_data = json.load(f)
-            
-        with open(os.path.join(fixtures_dir, 'expected_output.json'), 'r') as f:
-            self.expected_output = json.load(f)
+    # Check initial balance entry
+    today = datetime.now().date().isoformat()
+    assert result[today]["changes"][0] == {
+        "reason": "Initial Balance",
+        "amount": initial_balance,
+        "category": "Starting Balance"
+    }
 
-    @patch('app.prediction_api.get_scheduled_transactions')
-    @patch('app.prediction_api.get_categories_for_budget')
-    @patch('app.prediction_api.get_accounts_for_budget')
-    def test_projected_balances(self, mock_accounts, mock_categories, mock_transactions):
-        # Set up our mocks to return the fixture data
-        mock_transactions.return_value = self.input_data['scheduled_transactions']
-        mock_categories.return_value = self.input_data['categories']
-        mock_accounts.return_value = self.input_data['accounts']
-
-        # Call the function we want to test
-        result = projected_balances_for_budget(
-            budget_uuid="test-uuid",
-            days_ahead=365
-        )
-
-        # Just check that we got a non-empty result with the expected structure
-        self.assertTrue(len(result) > 0, "Result should not be empty")
-        
-        # Check a few sample dates to verify structure
-        for date_str, data in list(result.items())[:5]:
-            self.assertIn('balance', data, "Each date should have a balance")
-            self.assertIn('balance_diff', data, "Each date should have a balance_diff")
-            self.assertIn('changes', data, "Each date should have changes")
-            self.assertTrue(isinstance(data['changes'], list), "Changes should be a list")
-            
-            # Check each change has required fields
-            for change in data['changes']:
-                self.assertIn('reason', change, "Each change should have a reason")
-                self.assertIn('amount', change, "Each change should have an amount")
-                self.assertIn('category', change, "Each change should have a category")
-
-    def test_record_new_fixtures(self):
-        """
-        This test is used to record new fixtures. Only run this when you want to update the fixtures!
-        Set RECORD_FIXTURES=1 environment variable to run this test.
-        """
-        if not os.getenv('RECORD_FIXTURES'):
-            self.skipTest('Skipping fixture recording. Set RECORD_FIXTURES=1 to record new fixtures.')
-
-        # Get the actual responses from the real APIs
-        from app.ynab_api import get_scheduled_transactions
-        from app.categories_api import get_categories_for_budget
-        from app.accounts_api import get_accounts_for_budget
-        from app.budget_api import get_objectid_for_budget
-
-        budget_uuid = "1b443ebf-ea07-4ab7-8fd5-9330bf80608c"  # Use your test budget UUID
-        budget_id = get_objectid_for_budget(budget_uuid)
-
-        # Record the API responses
-        input_data = {
-            "scheduled_transactions": get_scheduled_transactions(budget_uuid),
-            "categories": get_categories_for_budget(budget_id),
-            "accounts": get_accounts_for_budget(budget_id)
+def test_add_future_transactions_to_projection():
+    # Setup test data
+    base_date = datetime.now().date()
+    daily_projection = {
+        base_date.isoformat(): {"balance": 0, "changes": []},
+        (base_date + timedelta(days=1)).isoformat(): {"balance": 0, "changes": []}
+    }
+    
+    future_transactions = [
+        {
+            "date_next": base_date.isoformat(),
+            "category_name": "Groceries",
+            "amount": -50000,  # -50.0 after division by 1000
+            "account_name": "Checking",
+            "payee_name": "Supermarket",
+            "memo": "Weekly groceries",
+            "id": "test-transaction-id"
         }
+    ]
+    
+    result = add_future_transactions_to_projection(daily_projection, future_transactions)
+    
+    # Verify the transaction was added correctly
+    assert len(daily_projection[base_date.isoformat()]["changes"]) == 1
+    added_transaction = daily_projection[base_date.isoformat()]["changes"][0]
+    assert added_transaction["amount"] == -50.0
+    assert added_transaction["category"] == "Groceries"
+    assert added_transaction["reason"] == "Scheduled Transaction"
+    
+    # Verify scheduled_dates_by_category
+    assert "Groceries" in result
+    assert base_date.isoformat() in result["Groceries"]
 
-        # Encrypt sensitive data in input
-        encrypted_input = self.encryption_helper.encrypt_sensitive_data(input_data)
+def test_add_simulations_to_projection():
+    # Setup test data
+    base_date = datetime.now().date()
+    daily_projection = {
+        base_date.isoformat(): {"balance": 0, "changes": []}
+    }
+    
+    simulations = [
+        {
+            "date": base_date.isoformat(),
+            "amount": "-100.0",
+            "reason": "Test Simulation",
+            "category": "Test Category"
+        }
+    ]
+    
+    add_simulations_to_projection(daily_projection, simulations)
+    
+    # Verify simulation was added
+    assert len(daily_projection[base_date.isoformat()]["changes"]) == 1
+    added_sim = daily_projection[base_date.isoformat()]["changes"][0]
+    assert added_sim["amount"] == -100.0
+    assert added_sim["reason"] == "Test Simulation"
+    assert added_sim["category"] == "Test Category"
+    assert added_sim["is_simulation"] is True
 
-        # Get the actual projection output
-        output_data = projected_balances_for_budget(budget_uuid, days_ahead=365)
+def test_calculate_running_balance():
+    # Setup test data
+    base_date = datetime.now().date()
+    daily_projection = {
+        base_date.isoformat(): {
+            "balance": 0,
+            "changes": [{"amount": 1000.0}]  # Initial balance
+        },
+        (base_date + timedelta(days=1)).isoformat(): {
+            "balance": 0,
+            "changes": [{"amount": -200.0}]  # Expense
+        }
+    }
+    
+    calculate_running_balance(daily_projection, 1000.0, 1)
+    
+    # Verify running balances
+    assert daily_projection[base_date.isoformat()]["balance"] == 1000.0
+    assert daily_projection[(base_date + timedelta(days=1)).isoformat()]["balance"] == 800.0
 
-        # Encrypt sensitive data in output
-        encrypted_output = {}
-        for date_str, date_data in output_data.items():
-            encrypted_date_data = date_data.copy()
-            encrypted_changes = []
-            
-            for change in date_data['changes']:
-                encrypted_change = change.copy()
-                if 'category' in encrypted_change:
-                    encrypted_change['category'] = self.encryption_helper.encrypt_value(encrypted_change['category'])
-                if 'account' in encrypted_change:
-                    encrypted_change['account'] = self.encryption_helper.encrypt_value(encrypted_change['account'])
-                if 'payee' in encrypted_change and encrypted_change['payee']:
-                    encrypted_change['payee'] = self.encryption_helper.encrypt_value(encrypted_change['payee'])
-                encrypted_changes.append(encrypted_change)
-            
-            encrypted_date_data['changes'] = encrypted_changes
-            encrypted_output[date_str] = encrypted_date_data
+@pytest.fixture
+def base_daily_projection():
+    base_date = datetime.now().date()
+    projection = {}
+    
+    # Create a projection for 365 days
+    for day in range(366):
+        date = (base_date + timedelta(days=day)).isoformat()
+        projection[date] = {
+            "balance": 0,
+            "changes": []
+        }
+    
+    return projection
 
-        # Save the fixtures
-        fixtures_dir = os.path.join(os.path.dirname(__file__), 'fixtures')
-        os.makedirs(fixtures_dir, exist_ok=True)
+def test_process_need_category_monthly():
+    base_date = datetime.now().date()
+    daily_projection = {}
+    
+    # Add data for a full year
+    current_date = base_date
+    while current_date < (base_date + timedelta(days=365)):
+        daily_projection[current_date.isoformat()] = {"balance": 0, "changes": []}
+        current_date += timedelta(days=1)
+    
+    category = {
+        "name": "Rent",
+        "balance": 0,
+        "target": {
+            "goal_type": "NEED",
+            "goal_target": 100000,  # €100 after division by 1000
+            "goal_cadence": 1,  # Monthly
+            "goal_cadence_frequency": 1,
+            "goal_day": 1,  # First of the month
+            "goal_overall_left": 100000
+        }
+    }
+    
+    scheduled_dates = {}
+    
+    process_need_category(
+        daily_projection,
+        category,
+        category["target"],
+        scheduled_dates,
+        365  # days_ahead
+    )
+    
+    # Check if a payment was scheduled for next month
+    next_month = (base_date.replace(day=1) + timedelta(days=32)).replace(day=1)
+    next_month_str = next_month.isoformat()
+    
+    assert next_month_str in daily_projection
+    changes = [c for c in daily_projection[next_month_str]["changes"] 
+              if c["category"] == "Rent"]
+    assert len(changes) == 1
+    assert changes[0]["amount"] == -100.0
 
-        with open(os.path.join(fixtures_dir, 'input_data.json'), 'w') as f:
-            json.dump(encrypted_input, f, indent=4)
+def test_process_need_category_quarterly():
+    base_date = datetime.now().date()
+    daily_projection = {
+        base_date.isoformat(): {"balance": 0, "changes": []}
+    }
+    
+    # Add data for a full year
+    current_date = base_date
+    while current_date < (base_date + timedelta(days=365)):
+        daily_projection[current_date.isoformat()] = {"balance": 0, "changes": []}
+        current_date += timedelta(days=1)
+    
+    category = {
+        "name": "Insurance",
+        "balance": 0,
+        "target": {
+            "goal_type": "NEED",
+            "goal_target": 300000,  # €300 after division by 1000
+            "goal_cadence": 3,  # Quarterly
+            "goal_cadence_frequency": 1,
+            "goal_day": 15,  # 15th of the month
+            "goal_overall_left": 300000
+        }
+    }
+    
+    scheduled_dates = {}
+    
+    process_need_category(
+        daily_projection,
+        category,
+        category["target"],
+        scheduled_dates,
+        365  # days_ahead
+    )
+    
+    # Calculate the next quarter date
+    def next_quarter_date(date):
+        # Round down to the nearest quarter
+        month = ((date.month - 1) // 3) * 3 + 1
+        next_quarter = date.replace(month=month, day=15)
+        if next_quarter <= date:
+            if month + 3 > 12:
+                next_quarter = next_quarter.replace(year=next_quarter.year + 1, month=(month + 3) - 12)
+            else:
+                next_quarter = next_quarter.replace(month=month + 3)
+        return next_quarter
+    
+    next_quarter = next_quarter_date(base_date)
+    next_quarter_str = next_quarter.isoformat()
+    
+    assert next_quarter_str in daily_projection
+    changes = [c for c in daily_projection[next_quarter_str]["changes"] 
+              if c["category"] == "Insurance"]
+    assert len(changes) == 1
+    assert changes[0]["amount"] == -300.0
 
-        with open(os.path.join(fixtures_dir, 'expected_output.json'), 'w') as f:
-            json.dump(encrypted_output, f, indent=4)
+def test_process_need_category_yearly():
+    base_date = datetime.now().date()
+    daily_projection = {}
+    
+    # Add data for two years
+    current_date = base_date
+    while current_date < (base_date + timedelta(days=730)):
+        daily_projection[current_date.isoformat()] = {"balance": 0, "changes": []}
+        current_date += timedelta(days=1)
+    
+    # Set the target_month to 2 months from now
+    target_month = (base_date + timedelta(days=60)).replace(day=1)
+    target_month_str = target_month.isoformat()
+    
+    category = {
+        "name": "Taxes",
+        "balance": 0,
+        "target": {
+            "goal_type": "NEED",
+            "goal_target": 1200000,  # €1200 after division by 1000
+            "goal_cadence": 13,  # Yearly
+            "goal_cadence_frequency": 1,
+            "goal_target_month": target_month_str,
+            "goal_day": 15,
+            "goal_overall_left": 1200000
+        }
+    }
+    
+    scheduled_dates = {}
+    
+    process_need_category(
+        daily_projection,
+        category,
+        category["target"],
+        scheduled_dates,
+        730  # days_ahead
+    )
+    
+    # Check if payment was scheduled for the target month
+    target_date = target_month.replace(day=15).isoformat()
+    
+    assert target_date in daily_projection
+    changes = [c for c in daily_projection[target_date]["changes"] 
+              if c["category"] == "Taxes"]
+    assert len(changes) == 1
+    assert changes[0]["amount"] == -1200.0
 
-if __name__ == '__main__':
-    unittest.main() 
+def test_process_need_categories():
+    base_date = datetime.now().date()
+    daily_projection = {}
+    
+    # Add data for a full year
+    current_date = base_date
+    while current_date < (base_date + timedelta(days=365)):
+        daily_projection[current_date.isoformat()] = {"balance": 0, "changes": []}
+        current_date += timedelta(days=1)
+    
+    categories = [
+        {
+            "name": "Rent",
+            "balance": 0,
+            "target": {
+                "goal_type": "NEED",
+                "goal_target": 100000,
+                "goal_cadence": 1,
+                "goal_cadence_frequency": 1,
+                "goal_day": 1,
+                "goal_overall_left": 100000
+            }
+        },
+        {
+            "name": "No Target",
+            "balance": 0
+        },
+        {
+            "name": "Other Type",
+            "balance": 0,
+            "target": {
+                "goal_type": "SAVINGS",
+                "goal_target": 50000
+            }
+        }
+    ]
+    
+    scheduled_dates = {}
+    
+    process_need_categories(daily_projection, categories, scheduled_dates, 365)
+    
+    # Verify that only the NEED category was processed
+    next_month = (base_date.replace(day=1) + timedelta(days=32)).replace(day=1)
+    next_month_str = next_month.isoformat()
+    
+    assert next_month_str in daily_projection
+    changes = [c for c in daily_projection[next_month_str]["changes"] 
+              if c["category"] == "Rent"]
+    assert len(changes) == 1
+    
+    # Verify other categories were not processed
+    all_changes = []
+    for date, data in daily_projection.items():
+        all_changes.extend(data["changes"])
+    
+    assert not any(c["category"] == "No Target" for c in all_changes)
+    assert not any(c["category"] == "Other Type" for c in all_changes)
+
+@pytest.fixture
+def base_projection():
+    """Create a base projection for testing different spending scenarios."""
+    # Create projection for 2 years starting from Jan 1, 2025
+    start_date = datetime(2025, 1, 1).date()
+    projection = {}
+    
+    # Create projection for 2 years
+    for day in range(730):
+        date = (start_date + timedelta(days=day)).isoformat()
+        projection[date] = {
+            "balance": 0,
+            "changes": []
+        }
+    
+    return projection
+
+def test_yearly_cadence_with_target_month(base_projection):
+    """Test yearly cadence (13) with a target month specified."""
+    base_date = datetime.now().date()
+    target_month = (base_date + timedelta(days=60)).replace(day=1)
+    
+    category = {
+        "name": "Yearly Tax",
+        "target": {
+            "goal_type": "NEED",
+            "goal_target": 1200000,  # €1200
+            "goal_cadence": 13,  # Yearly
+            "goal_cadence_frequency": 1,
+            "goal_target_month": target_month.isoformat(),
+            "goal_day": 15
+        }
+    }
+    
+    apply_need_category_spending(
+        base_projection,
+        category,
+        category["target"],
+        0,  # current_balance
+        1200.0,  # target_amount
+        730,  # days_ahead
+        1200.0  # global_overall_left
+    )
+    
+    # Check if payment was scheduled for target month
+    target_date = target_month.replace(day=15).isoformat()
+    changes = [c for c in base_projection[target_date]["changes"] 
+              if c["category"] == "Yearly Tax"]
+    
+    assert len(changes) == 1
+    assert changes[0]["amount"] == -1200.0
+    assert changes[0]["reason"] == "Yearly Payment"
+
+def test_current_month_with_balance(base_projection):
+    """Test handling of current month with existing balance."""
+    today = datetime.now().date()
+    
+    # Set the spending day to 1 for consistency
+    spending_day = 1
+    current_month_date = today.replace(day=spending_day).isoformat()
+    
+    category = {
+        "name": "Current Month Category",
+        "target": {
+            "goal_type": "NEED",
+            "goal_target": 100000,  # €100
+            "goal_cadence": 1,
+            "goal_cadence_frequency": 1,
+            "goal_day": spending_day
+        }
+    }
+    
+    apply_need_category_spending(
+        base_projection,
+        category,
+        category["target"],
+        50.0,  # current_balance
+        100.0,  # target_amount
+        30,  # days_ahead
+        100.0  # global_overall_left
+    )
+    
+    # Check if current balance was applied
+    changes = [c for c in base_projection[current_month_date]["changes"] 
+              if c["category"] == "Current Month Category"]
+    
+    assert len(changes) == 1
+    assert changes[0]["amount"] == -50.0
+    assert changes[0]["reason"] == "Current Month Balance"
+
+def test_recurring_monthly_spending(base_projection):
+    """Test regular monthly spending pattern."""
+    base_date = datetime.now().date()
+    category = {
+        "name": "Monthly Rent",
+        "target": {
+            "goal_type": "NEED",
+            "goal_target": 100000,  # €100
+            "goal_cadence": 1,
+            "goal_cadence_frequency": 1,
+            "goal_day": 1
+        }
+    }
+    
+    apply_need_category_spending(
+        base_projection,
+        category,
+        category["target"],
+        0,  # current_balance
+        100.0,  # target_amount
+        60,  # days_ahead
+        100.0  # global_overall_left
+    )
+    
+    # Check next month's payment
+    next_month = (base_date.replace(day=1) + timedelta(days=32)).replace(day=1)
+    next_month_str = next_month.isoformat()
+    
+    changes = [c for c in base_projection[next_month_str]["changes"] 
+              if c["category"] == "Monthly Rent"]
+    
+    assert len(changes) == 1
+    assert changes[0]["amount"] == -100.0
+    assert changes[0]["reason"] == "Future Month Target"
+
+def test_quarterly_spending_with_target_month(base_projection):
+    """Test quarterly spending with a specific target month."""
+    base_date = datetime.now().date()
+    target_month = (base_date + timedelta(days=60)).replace(day=1)
+    
+    category = {
+        "name": "Quarterly Insurance",
+        "target": {
+            "goal_type": "NEED",
+            "goal_target": 300000,  # €300
+            "goal_cadence": 3,  # Quarterly
+            "goal_cadence_frequency": 1,
+            "goal_target_month": target_month.isoformat(),
+            "goal_day": 15
+        }
+    }
+    
+    apply_need_category_spending(
+        base_projection,
+        category,
+        category["target"],
+        0,  # current_balance
+        300.0,  # target_amount
+        365,  # days_ahead
+        300.0  # global_overall_left
+    )
+    
+    # Calculate expected payment dates
+    payment_date = target_month.replace(day=15)
+    payment_dates = []
+    while payment_date < (base_date + timedelta(days=365)):
+        payment_dates.append(payment_date)
+        # Add 3 months
+        year = payment_date.year + ((payment_date.month + 2) // 12)
+        month = ((payment_date.month + 2) % 12) + 1
+        payment_date = payment_date.replace(year=year, month=month)
+    
+    # Verify payments
+    for date in payment_dates:
+        date_str = date.isoformat()
+        changes = [c for c in base_projection[date_str]["changes"] 
+                  if c["category"] == "Quarterly Insurance"]
+        assert len(changes) == 1
+        assert changes[0]["amount"] == -300.0
+
+def test_spending_with_scheduled_transactions(base_projection):
+    """Test spending calculation when there are already scheduled transactions."""
+    base_date = datetime.now().date()
+    next_month = (base_date.replace(day=1) + timedelta(days=32)).replace(day=1)
+    
+    # Add a scheduled transaction
+    base_projection[next_month.isoformat()]["changes"].append({
+        "reason": "Scheduled Transaction",
+        "amount": -50.0,
+        "category": "Monthly Bills"
+    })
+    
+    category = {
+        "name": "Monthly Bills",
+        "target": {
+            "goal_type": "NEED",
+            "goal_target": 100000,  # €100 target
+            "goal_cadence": 1,
+            "goal_cadence_frequency": 1,
+            "goal_day": 1
+        }
+    }
+    
+    apply_need_category_spending(
+        base_projection,
+        category,
+        category["target"],
+        0,  # current_balance
+        100.0,  # target_amount
+        60,  # days_ahead
+        100.0  # global_overall_left
+    )
+    
+    # Verify that only the remaining amount was added
+    changes = [c for c in base_projection[next_month.isoformat()]["changes"] 
+              if c["category"] == "Monthly Bills"]
+    
+    assert len(changes) == 2  # Original scheduled + remaining amount
+    scheduled = next(c for c in changes if c["reason"] == "Scheduled Transaction")
+    remaining = next(c for c in changes if c["reason"] == "Future Month Target")
+    assert scheduled["amount"] == -50.0
+    assert remaining["amount"] == -50.0  # Remaining amount to reach target
+
+def test_current_month_salary_prediction_without_balance(base_projection):
+    """Test salary predictions for current month (without balance) and future month."""
+    # Set current date to May 2, 2025
+    today = datetime(2025, 5, 2).date()
+    
+    category = {
+        "name": "Salery",
+        "balance": 0,
+        "target": {
+            "goal_type": "NEED",
+            "goal_target": 7348210,  # €7348.21 (in milliunits)
+            "goal_cadence": 1,
+            "goal_cadence_frequency": 1,
+            "goal_day": 4,
+            "goal_target_month": None,
+            "goal_overall_left": 7348210
+        }
+    }
+    
+    apply_need_category_spending(
+        base_projection,
+        category,
+        category["target"],
+        0,  # current_balance
+        7348.21,  # target_amount (in regular units)
+        60,  # days_ahead
+        7348.21  # global_overall_left (in regular units)
+    )
+    
+    # Check May 4th (current month)
+    may_date = datetime(2025, 5, 4).date().isoformat()
+    may_changes = [c for c in base_projection[may_date]["changes"] 
+                  if c["category"] == "Salery"]
+    assert len(may_changes) == 1, "Should have salary entry for May 4th"
+    assert may_changes[0]["amount"] == -7348.21, "May salary amount should be correct"
+    assert may_changes[0]["reason"] == "Current Month Target", "May should be marked as Current Month Target"
+    
+    # Check June 4th (next month)
+    june_date = datetime(2025, 6, 4).date().isoformat()
+    june_changes = [c for c in base_projection[june_date]["changes"] 
+                   if c["category"] == "Salery"]
+    assert len(june_changes) == 1, "Should have salary entry for June 4th"
+    assert june_changes[0]["amount"] == -7348.21, "June salary amount should be correct"
+    assert june_changes[0]["reason"] == "Future Month Target", "June should be marked as Future Month Target"
+
+def test_current_month_salary_prediction_with_balance(base_projection):
+    """Test salary predictions when there is a current balance."""
+    # Set current date to May 2, 2025
+    today = datetime(2025, 5, 2).date()
+    
+    category = {
+        "name": "Salery",
+        "balance": 3674105,  # Half of the target amount (in milliunits)
+        "target": {
+            "goal_type": "NEED",
+            "goal_target": 7348210,  # €7348.21 (in milliunits)
+            "goal_cadence": 1,
+            "goal_cadence_frequency": 1,
+            "goal_day": 4,
+            "goal_target_month": None,
+            "goal_overall_left": 7348210
+        }
+    }
+    
+    apply_need_category_spending(
+        base_projection,
+        category,
+        category["target"],
+        3674.105,  # current_balance (in regular units)
+        7348.21,  # target_amount (in regular units)
+        60,  # days_ahead
+        7348.21  # global_overall_left (in regular units)
+    )
+    
+    # Check May 4th (current month)
+    may_date = datetime(2025, 5, 4).date().isoformat()
+    may_changes = [c for c in base_projection[may_date]["changes"] 
+                  if c["category"] == "Salery"]
+    assert len(may_changes) == 1, "Should have salary entry for May 4th"
+    assert may_changes[0]["amount"] == -3674.105, "May salary should use current_balance"
+    assert may_changes[0]["reason"] == "Current Month Balance", "May should use current balance"
+    
+    # Check June 4th (next month)
+    june_date = datetime(2025, 6, 4).date().isoformat()
+    june_changes = [c for c in base_projection[june_date]["changes"] 
+                   if c["category"] == "Salery"]
+    assert len(june_changes) == 1, "Should have salary entry for June 4th"
+    assert june_changes[0]["amount"] == -7348.21, "June salary should use full target amount"
+    assert june_changes[0]["reason"] == "Future Month Target", "June should be marked as Future Month Target" 
