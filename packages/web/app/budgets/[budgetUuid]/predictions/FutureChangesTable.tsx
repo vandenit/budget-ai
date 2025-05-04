@@ -59,7 +59,6 @@ export const FutureChangesTable = ({ predictionData, budgetUuid, categories }: P
             // TODO: Add toast notification
             setEditingTransaction(null);
             setSelectedTransaction(undefined);
-            // TODO: Refresh data
         } catch (error) {
             console.error('Failed to update transaction:', error);
             // TODO: Add error toast
@@ -73,7 +72,6 @@ export const FutureChangesTable = ({ predictionData, budgetUuid, categories }: P
             // TODO: Add toast notification
             setEditingTransaction(null);
             setSelectedTransaction(undefined);
-            // TODO: Refresh data
         } catch (error) {
             console.error('Failed to delete transaction:', error);
             // TODO: Add error toast
