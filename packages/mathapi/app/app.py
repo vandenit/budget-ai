@@ -1,7 +1,7 @@
 import os
 import itertools
 from flask import Flask, jsonify, request, render_template
-from .ynab_service import apply_suggested_categories_service
+from .ynab_service import apply_suggested_categories_service, apply_suggested_categories_batch_service, suggest_categories_only_batch_service, start_batch_categorization_job, check_batch_job_status, apply_batch_results_to_ynab
 from .ynab_api import get_scheduled_transactions, get_uncategorized_transactions
 from .categories_api import get_categories_for_budget
 from .budget_api import get_objectid_for_budget
@@ -266,6 +266,74 @@ def apply_suggested_categories():
         return jsonify(result)
     except Exception as e:
         logging.error(f"Error applying categories: {e}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/uncategorised-transactions/suggest-categories-batch', methods=['GET'])
+def suggest_categories_batch_endpoint():
+    """Suggest categories for uncategorized transactions using batch processing (more cost-effective)."""
+    budget_uuid = request.args.get('budget_id')
+    if not budget_uuid:
+        return jsonify({"error": "budget_id query parameter is required"}), 400
+
+    try:
+        # Use the new batch service
+        result = suggest_categories_only_batch_service(budget_uuid)
+        return jsonify(result)
+    except Exception as e:
+        logging.error(f"Error suggesting categories with batch processing: {e}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/uncategorised-transactions/apply-categories-batch', methods=['POST'])
+def apply_suggested_categories_batch():
+    """Fetch transactions, suggest categories using batch processing, and apply them (50% cost savings)."""
+    budget_uuid = request.args.get('budget_id')
+    if not budget_uuid:
+        return jsonify({"error": "budget_id query parameter is required"}), 400
+
+    try:
+        # Delegate business logic to the new batch service layer
+        result = apply_suggested_categories_batch_service(budget_uuid)
+        return jsonify(result)
+    except Exception as e:
+        logging.error(f"Error applying categories with batch processing: {e}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/uncategorised-transactions/start-batch-job', methods=['POST'])
+def start_batch_categorization():
+    """Start a batch categorization job asynchronously and return the job ID."""
+    budget_uuid = request.args.get('budget_id')
+    if not budget_uuid:
+        return jsonify({"error": "budget_id query parameter is required"}), 400
+
+    try:
+        result = start_batch_categorization_job(budget_uuid)
+        return jsonify(result)
+    except Exception as e:
+        logging.error(f"Error starting batch categorization job: {e}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/batch-jobs/<batch_id>/status', methods=['GET'])
+def get_batch_job_status(batch_id):
+    """Check the status of a batch categorization job."""
+    try:
+        result = check_batch_job_status(batch_id)
+        return jsonify(result)
+    except Exception as e:
+        logging.error(f"Error checking batch job status: {e}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/batch-jobs/<batch_id>/apply-results', methods=['POST'])
+def apply_batch_job_results(batch_id):
+    """Apply the results of a completed batch job to YNAB transactions."""
+    budget_uuid = request.args.get('budget_id')
+    if not budget_uuid:
+        return jsonify({"error": "budget_id query parameter is required"}), 400
+
+    try:
+        result = apply_batch_results_to_ynab(budget_uuid, batch_id)
+        return jsonify(result)
+    except Exception as e:
+        logging.error(f"Error applying batch job results: {e}")
         return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
