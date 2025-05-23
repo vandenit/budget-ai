@@ -20,7 +20,7 @@ def apply_suggested_categories_service(budget_uuid):
         for transaction in uncategorized_transactions:
             try:
                 # Suggest a category using AI
-                suggested_category_name = suggest_category(transaction, categories)
+                suggested_category_name = suggest_category(transaction, categories, budget_uuid)
                 suggested_category = next(
                     (cat for cat in categories if cat["name"] == suggested_category_name), None
                 )
@@ -32,7 +32,8 @@ def apply_suggested_categories_service(budget_uuid):
                 # Update transaction in YNAB
                 print (f"Updating transaction {transaction['id']} with category {suggested_category}")
                 transaction_id = transaction["id"]
-                memo = transaction.get("memo") or ""  # Ensure memo is a string
+                # Ensure memo is a string
+                memo = transaction.get("memo") or ""
                 updated_memo = f"{memo} AI suggested".strip()   
 
                 path = f"budgets/{budget_uuid}/transactions/{transaction_id}"
@@ -82,7 +83,7 @@ def apply_suggested_categories_batch_service(budget_uuid):
         logging.info(f"Processing {len(uncategorized_transactions)} uncategorized transactions using batch API")
         
         # Use batch processing to get all category suggestions at once
-        category_suggestions = suggest_categories_batch(uncategorized_transactions, categories)
+        category_suggestions = suggest_categories_batch(uncategorized_transactions, categories, budget_uuid)
         
         updated_transactions = []
         failed_transactions = []
@@ -115,7 +116,8 @@ def apply_suggested_categories_batch_service(budget_uuid):
 
                 # Update transaction in YNAB
                 logging.info(f"Updating transaction {transaction_id} with category {suggested_category['name']}")
-                memo = transaction.get("memo") or ""  # Ensure memo is a string
+                # Ensure memo is a string
+                memo = transaction.get("memo") or ""
                 updated_memo = f"{memo} AI batch suggested".strip()   
 
                 path = f"budgets/{budget_uuid}/transactions/{transaction_id}"
@@ -180,7 +182,7 @@ def suggest_categories_only_batch_service(budget_uuid):
         logging.info(f"Suggesting categories for {len(uncategorized_transactions)} transactions using batch API")
         
         # Use batch processing to get all category suggestions at once
-        category_suggestions = suggest_categories_batch(uncategorized_transactions, categories)
+        category_suggestions = suggest_categories_batch(uncategorized_transactions, categories, budget_uuid)
         
         suggested_transactions = []
 
@@ -223,7 +225,7 @@ def start_batch_categorization_job(budget_uuid):
         logging.info(f"Starting batch job for {len(uncategorized_transactions)} uncategorized transactions")
         
         # Start batch processing (don't wait for completion)
-        batch_id = suggest_categories_batch_async(uncategorized_transactions, categories)
+        batch_id = suggest_categories_batch_async(uncategorized_transactions, categories, budget_uuid)
         
         if not batch_id:
             return {"error": "Failed to start batch job", "batch_id": None}
@@ -387,7 +389,7 @@ def apply_suggested_categories_smart_service(budget_uuid, urgency="normal"):
         logging.info(f"Smart processing {transaction_count} uncategorized transactions with urgency='{urgency}'")
         
         # Use smart processing to get all category suggestions
-        category_suggestions = suggest_categories_smart(uncategorized_transactions, categories, urgency)
+        category_suggestions = suggest_categories_smart(uncategorized_transactions, categories, urgency, budget_uuid)
         
         updated_transactions = []
         failed_transactions = []
@@ -502,7 +504,7 @@ def suggest_categories_only_smart_service(budget_uuid, urgency="normal"):
         logging.info(f"Smart suggesting categories for {transaction_count} transactions with urgency='{urgency}'")
         
         # Use smart processing to get all category suggestions
-        category_suggestions = suggest_categories_smart(uncategorized_transactions, categories, urgency)
+        category_suggestions = suggest_categories_smart(uncategorized_transactions, categories, urgency, budget_uuid)
         
         suggested_transactions = []
 

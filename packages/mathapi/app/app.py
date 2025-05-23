@@ -249,7 +249,7 @@ def suggest_categories_for_unscheduled_transactions():
     suggested_transactions = []
     for transaction in uncategorized_transactions:
         try:
-            suggested_category_name = suggest_category(transaction, categories)
+            suggested_category_name = suggest_category(transaction, categories, budget_uuid)
             suggested_transactions.append({
                 "transaction_id": transaction["id"],
                 "payee_name": transaction["payee_name"],
@@ -389,6 +389,226 @@ def apply_categories_smart_endpoint():
         
         result = apply_suggested_categories_smart_service(budget_id, urgency)
         return jsonify(result)
+    
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+# Payee Mappings Management Endpoints (NEW - for learning user patterns)
+@app.route('/payee-mappings/<budget_id>', methods=['GET'])
+def get_payee_mappings(budget_id):
+    """Get all payee mappings for a budget."""
+    try:
+        from .payee_mappings_mongo import MongoPayeeMappingsManager
+        mappings_manager = MongoPayeeMappingsManager(budget_id)
+        mappings = mappings_manager.get_all_mappings()
+        
+        return jsonify({
+            "budget_id": budget_id,
+            "mappings": mappings,
+            "total_mappings": len(mappings)
+        })
+    
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/payee-mappings/<budget_id>', methods=['POST'])
+def add_payee_mapping(budget_id):
+    """Add a new payee mapping."""
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({"error": "JSON body is required"}), 400
+        
+        payee_name = data.get('payee_name')
+        category_name = data.get('category_name')
+        country_code = data.get('country_code')  # Optional country override
+        
+        if not payee_name or not category_name:
+            return jsonify({"error": "payee_name and category_name are required"}), 400
+        
+        from .payee_mappings_mongo import MongoPayeeMappingsManager
+        mappings_manager = MongoPayeeMappingsManager(budget_id, country_code)
+        success = mappings_manager.add_mapping(payee_name, category_name)
+        
+        if success:
+            return jsonify({
+                "message": f"Added mapping: '{payee_name}' → '{category_name}'",
+                "payee_name": payee_name,
+                "category_name": category_name,
+                "country_code": country_code
+            })
+        else:
+            return jsonify({"error": "Failed to add mapping"}), 500
+    
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/payee-mappings/<budget_id>/<payee_name>', methods=['DELETE'])
+def remove_payee_mapping(budget_id, payee_name):
+    """Remove a payee mapping."""
+    try:
+        from .payee_mappings_mongo import MongoPayeeMappingsManager
+        mappings_manager = MongoPayeeMappingsManager(budget_id)
+        success = mappings_manager.remove_mapping(payee_name)
+        
+        if success:
+            return jsonify({
+                "message": f"Removed mapping for '{payee_name}'"
+            })
+        else:
+            return jsonify({"error": f"Mapping for '{payee_name}' not found"}), 404
+    
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/payee-mappings/<budget_id>/search', methods=['GET'])
+def search_payee_mapping(budget_id):
+    """Search for payee mapping (exact or fuzzy)."""
+    try:
+        payee_name = request.args.get('payee_name')
+        country_code = request.args.get('country_code')  # Optional country override
+        
+        if not payee_name:
+            return jsonify({"error": "payee_name query parameter is required"}), 400
+        
+        from .payee_mappings_mongo import MongoPayeeMappingsManager
+        mappings_manager = MongoPayeeMappingsManager(budget_id, country_code)
+        
+        # Try exact match first
+        exact_match = mappings_manager.get_exact_mapping(payee_name)
+        if exact_match:
+            return jsonify({
+                "payee_name": payee_name,
+                "category_name": exact_match,
+                "match_type": "exact",
+                "country_code": mappings_manager._get_country_for_payee(payee_name)
+            })
+        
+        # Try fuzzy match
+        fuzzy_match = mappings_manager.get_fuzzy_mapping(payee_name)
+        if fuzzy_match:
+            matched_payee, category, score = fuzzy_match
+            return jsonify({
+                "payee_name": payee_name,
+                "category_name": category,
+                "match_type": "fuzzy",
+                "matched_payee": matched_payee,
+                "similarity_score": score,
+                "country_code": mappings_manager._get_country_for_payee(payee_name)
+            })
+        
+        return jsonify({
+            "payee_name": payee_name,
+            "category_name": None,
+            "match_type": "none",
+            "country_code": mappings_manager._get_country_for_payee(payee_name)
+        })
+    
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/payee-mappings/<budget_id>/stats', methods=['GET'])
+def get_payee_mapping_stats(budget_id):
+    """Get statistics about payee mappings for a budget."""
+    try:
+        from .payee_mappings_mongo import MongoPayeeMappingsManager
+        mappings_manager = MongoPayeeMappingsManager(budget_id)
+        stats = mappings_manager.get_mapping_stats()
+        
+        return jsonify(stats)
+    
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+# Country Configuration Management Endpoints (NEW - for multi-country support)
+@app.route('/config/countries', methods=['GET'])
+def get_available_countries():
+    """Get list of all available countries and their configuration status."""
+    try:
+        from .country_config_loader import get_config_loader
+        config_loader = get_config_loader()
+        
+        countries = config_loader.get_available_countries()
+        default_country = config_loader.get_default_country()
+        config_loaded = config_loader.is_config_loaded_successfully()
+        
+        return jsonify({
+            "countries": countries,
+            "default_country": default_country,
+            "config_loaded_successfully": config_loaded,
+            "total_countries": len(countries)
+        })
+    
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/config/countries/<country_code>', methods=['GET'])
+def get_country_config(country_code):
+    """Get detailed configuration for a specific country."""
+    try:
+        from .country_config_loader import get_config_loader
+        config_loader = get_config_loader()
+        
+        country_config = config_loader.get_country_config(country_code)
+        bank_indicators = config_loader.get_all_bank_indicators(country_code)
+        bank_prefixes = config_loader.get_all_bank_prefixes(country_code)
+        
+        return jsonify({
+            "country_code": country_code.upper(),
+            "config": country_config,
+            "bank_indicators": bank_indicators,
+            "bank_prefixes": bank_prefixes
+        })
+    
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/config/detect-country', methods=['POST'])
+def detect_country_from_payee():
+    """Detect country from a payee name."""
+    try:
+        data = request.get_json()
+        if not data or 'payee_name' not in data:
+            return jsonify({"error": "payee_name is required in JSON body"}), 400
+        
+        payee_name = data['payee_name']
+        
+        from .country_config_loader import get_config_loader
+        config_loader = get_config_loader()
+        
+        detected_country = config_loader.detect_country_from_payee(payee_name)
+        
+        # Also show preprocessing result
+        from .payee_mappings_mongo import MongoPayeeMappingsManager
+        manager = MongoPayeeMappingsManager('demo', detected_country)
+        preprocessed = manager.test_preprocessing(payee_name)
+        
+        return jsonify({
+            "payee_name": payee_name,
+            "detected_country": detected_country,
+            "preprocessed_name": preprocessed,
+            "country_name": config_loader.get_country_config(detected_country).get('name', detected_country)
+        })
+    
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/config/reload', methods=['POST'])
+def reload_country_config():
+    """Reload country configuration from file."""
+    try:
+        from .country_config_loader import get_config_loader
+        config_loader = get_config_loader()
+        config_loader.reload_config()
+        
+        return jsonify({
+            "message": "Configuration reloaded successfully",
+            "config_loaded_successfully": config_loader.is_config_loaded_successfully(),
+            "available_countries": len(config_loader.get_available_countries())
+        })
     
     except Exception as e:
         return jsonify({"error": str(e)}), 500

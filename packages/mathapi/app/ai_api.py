@@ -5,6 +5,7 @@ from io import BytesIO
 from openai import OpenAI
 
 from dotenv import load_dotenv
+from .payee_mappings_mongo import MongoPayeeMappingsManager
 
 # Load environment variables from .env file
 load_dotenv()
@@ -22,18 +23,34 @@ client = get_openai_client()
 
 # Fetch the YNAB access token and base URL
 
-def suggest_category(transaction, categories):
-    """Suggest a category for a transaction using OpenAI."""
+def suggest_category(transaction, categories, budget_uuid=None):
+    """Suggest a category for a transaction using OpenAI with payee mappings."""
     if not client:
         raise Exception("OpenAI client not initialized - API key missing")
+    
+    # Check for known payee mappings first (fast and free!)
+    if budget_uuid:
+        mappings_manager = MongoPayeeMappingsManager(budget_uuid)
+        mapping_result = mappings_manager.get_mapping_with_fallback(transaction['payee_name'])
         
+        if mapping_result:
+            category, match_type, matched_payee = mapping_result
+            print(f"🎯 Found {match_type} mapping: '{transaction['payee_name']}' → '{category}' (matched: '{matched_payee}')")
+            return category
+        
+        # Get known mappings for prompt context
+        mappings_context = mappings_manager.get_mappings_for_prompt()
+    else:
+        mappings_context = ""
+    
     category_names = ", ".join([category["name"] for category in categories])
     prompt = f"""
     Suggest the most suitable category for the following transaction based on these available categories: {category_names}.
     Special cases:
-    - 'Afrekening op" means kbc krediet.
+    - 'Afrekening op" means KBC credit.
     - Kbc business => Unexpected
     - Ava => Unexpected
+    {mappings_context}
     Transaction Details:
     - Description: {transaction['payee_name']}
     - Amount: {transaction['amount']}
@@ -45,12 +62,28 @@ def suggest_category(transaction, categories):
     response = client.chat.completions.create(model="gpt-4",
     messages=[{"role": "user", "content": prompt}],
     temperature=0.2)
-    print(response.choices[0].message.content.strip())
-    return response.choices[0].message.content.strip()
+    suggested_category = response.choices[0].message.content.strip()
+    print(suggested_category)
+    
+    # Optional: Learn from this interaction if we want auto-learning
+    # if budget_uuid:
+    #     mappings_manager.learn_from_transaction_update(
+    #         transaction['payee_name'], 
+    #         suggested_category, 
+    #         auto_learn=False  # Set to True for automatic learning
+    #     )
+    
+    return suggested_category
 
 
-def create_batch_tasks_for_categories(transactions, categories):
-    """Create batch tasks for multiple transaction categorizations."""
+def create_batch_tasks_for_categories(transactions, categories, budget_uuid=None):
+    """Create batch tasks for multiple transaction categorizations with payee mappings."""
+    # Get mappings context if budget_uuid is provided
+    mappings_context = ""
+    if budget_uuid:
+        mappings_manager = MongoPayeeMappingsManager(budget_uuid)
+        mappings_context = mappings_manager.get_mappings_for_prompt()
+    
     category_names = ", ".join([category["name"] for category in categories])
     
     tasks = []
@@ -58,9 +91,10 @@ def create_batch_tasks_for_categories(transactions, categories):
         prompt = f"""
         Suggest the most suitable category for the following transaction based on these available categories: {category_names}.
         Special cases:
-        - 'Afrekening op" means kbc krediet.
+        - 'Afrekening op" means KBC credit.
         - Kbc business => Unexpected
         - Ava => Unexpected
+        {mappings_context}
         Transaction Details:
         - Description: {transaction['payee_name']}
         - Amount: {transaction['amount']}
@@ -231,7 +265,7 @@ def parse_category_suggestions(batch_results, transactions):
     return suggestions
 
 
-def suggest_categories_batch(transactions, categories):
+def suggest_categories_batch(transactions, categories, budget_uuid=None):
     """
     Suggest categories for multiple transactions using batch processing.
     Returns a dictionary mapping transaction IDs to suggested categories.
@@ -239,33 +273,61 @@ def suggest_categories_batch(transactions, categories):
     if not transactions:
         return {}
     
-    # Create batch tasks
-    tasks = create_batch_tasks_for_categories(transactions, categories)
+    # Check for known mappings first (fast and free!)
+    suggestions = {}
+    remaining_transactions = []
+    
+    if budget_uuid:
+        mappings_manager = MongoPayeeMappingsManager(budget_uuid)
+        
+        for transaction in transactions:
+            mapping_result = mappings_manager.get_mapping_with_fallback(transaction['payee_name'])
+            if mapping_result:
+                category, match_type, matched_payee = mapping_result
+                suggestions[transaction['id']] = category
+                print(f"🎯 Pre-mapped {match_type}: '{transaction['payee_name']}' → '{category}'")
+            else:
+                remaining_transactions.append(transaction)
+    else:
+        remaining_transactions = transactions
+    
+    # If all transactions were mapped, return early
+    if not remaining_transactions:
+        print(f"✅ All {len(transactions)} transactions resolved via mappings!")
+        return suggestions
+    
+    print(f"📋 Processing {len(remaining_transactions)} unmapped transactions via batch API...")
+    
+    # Create batch tasks for remaining transactions
+    tasks = create_batch_tasks_for_categories(remaining_transactions, categories, budget_uuid)
     
     # Submit batch job
-    batch_job = submit_batch_job(tasks, f"Categorize {len(transactions)} transactions")
+    batch_job = submit_batch_job(tasks, f"Categorize {len(remaining_transactions)} transactions")
     
     if not batch_job:
         print("Failed to create batch job")
-        return {}
+        return suggestions
     
     print(f"Batch job {batch_job.id} submitted. Waiting for completion...")
     
-    # Wait for completion (non-blocking in production, you'd typically store the batch_id and check later)
+    # Wait for completion
     completed_job = wait_for_batch_completion(batch_job.id)
     
     if not completed_job or completed_job.status != "completed":
         print("Batch job did not complete successfully")
-        return {}
+        return suggestions
     
     # Retrieve and parse results
     batch_results = retrieve_batch_results(completed_job)
-    suggestions = parse_category_suggestions(batch_results, transactions)
+    batch_suggestions = parse_category_suggestions(batch_results, remaining_transactions)
+    
+    # Combine pre-mapped and batch suggestions
+    suggestions.update(batch_suggestions)
     
     return suggestions
 
 
-def suggest_categories_batch_async(transactions, categories):
+def suggest_categories_batch_async(transactions, categories, budget_uuid=None):
     """
     Start a batch job for category suggestions but don't wait for completion.
     Returns the batch job ID for later status checking.
@@ -273,11 +335,34 @@ def suggest_categories_batch_async(transactions, categories):
     if not transactions:
         return None
     
-    # Create batch tasks
-    tasks = create_batch_tasks_for_categories(transactions, categories)
+    # Check for known mappings first
+    remaining_transactions = []
+    mapped_count = 0
+    
+    if budget_uuid:
+        mappings_manager = MongoPayeeMappingsManager(budget_uuid)
+        
+        for transaction in transactions:
+            mapping_result = mappings_manager.get_mapping_with_fallback(transaction['payee_name'])
+            if mapping_result:
+                mapped_count += 1
+                print(f"🎯 Pre-mapped: '{transaction['payee_name']}' → '{mapping_result[0]}'")
+            else:
+                remaining_transactions.append(transaction)
+    else:
+        remaining_transactions = transactions
+    
+    if not remaining_transactions:
+        print(f"✅ All {len(transactions)} transactions resolved via mappings!")
+        return "all-mapped"  # Special return value
+    
+    print(f"📋 Starting batch job for {len(remaining_transactions)} unmapped transactions (mapped: {mapped_count})...")
+    
+    # Create batch tasks for remaining transactions
+    tasks = create_batch_tasks_for_categories(remaining_transactions, categories, budget_uuid)
     
     # Submit batch job
-    batch_job = submit_batch_job(tasks, f"Categorize {len(transactions)} transactions (async)")
+    batch_job = submit_batch_job(tasks, f"Categorize {len(remaining_transactions)} transactions (async)")
     
     if not batch_job:
         print("Failed to create batch job")
@@ -327,7 +412,7 @@ def cancel_batch_job(batch_id):
         return None
 
 
-def suggest_categories_smart(transactions, categories, urgency="normal"):
+def suggest_categories_smart(transactions, categories, urgency="normal", budget_uuid=None):
     """
     Smart category suggestion that chooses the best approach based on context.
     
@@ -345,52 +430,70 @@ def suggest_categories_smart(transactions, categories, urgency="normal"):
     if urgency == "immediate":
         # Force real-time processing regardless of count
         print(f"Using real-time processing for {transaction_count} transactions (urgent)")
-        return suggest_categories_realtime_batch(transactions, categories)
+        return suggest_categories_realtime_batch(transactions, categories, budget_uuid)
     
     elif urgency == "economy":
         # Force batch API regardless of count
         print(f"Using batch API for {transaction_count} transactions (economy)")
-        return suggest_categories_batch(transactions, categories)
+        return suggest_categories_batch(transactions, categories, budget_uuid)
     
     else:
         # Auto-choose based on transaction count (normal urgency)
         if transaction_count <= 5:
             print(f"Using real-time processing for {transaction_count} transactions (auto: small batch)")
-            return suggest_categories_realtime_batch(transactions, categories)
+            return suggest_categories_realtime_batch(transactions, categories, budget_uuid)
         elif transaction_count > 20:
             print(f"Using batch API for {transaction_count} transactions (auto: large batch)")
-            return suggest_categories_batch(transactions, categories)
+            return suggest_categories_batch(transactions, categories, budget_uuid)
         else:
             print(f"Using parallel real-time processing for {transaction_count} transactions (auto: medium batch)")
-            return suggest_categories_parallel_realtime(transactions, categories)
+            return suggest_categories_parallel_realtime(transactions, categories, budget_uuid)
 
 
-def suggest_categories_realtime_batch(transactions, categories):
+def suggest_categories_realtime_batch(transactions, categories, budget_uuid=None):
     """
-    Process transactions one-by-one using real-time API.
+    Process transactions one-by-one using real-time API with payee mappings.
     Fast but more expensive.
     """
     if not client:
         raise Exception("OpenAI client not initialized - API key missing")
     
     suggestions = {}
-    total = len(transactions)
+    remaining_transactions = []
     
-    for i, transaction in enumerate(transactions):
+    # Check for known mappings first (fast and free!)
+    if budget_uuid:
+        mappings_manager = MongoPayeeMappingsManager(budget_uuid)
+        
+        for transaction in transactions:
+            mapping_result = mappings_manager.get_mapping_with_fallback(transaction['payee_name'])
+            if mapping_result:
+                category, match_type, matched_payee = mapping_result
+                suggestions[transaction['id']] = category
+                print(f"🎯 Pre-mapped {match_type}: '{transaction['payee_name']}' → '{category}'")
+            else:
+                remaining_transactions.append(transaction)
+    else:
+        remaining_transactions = transactions
+    
+    # Process remaining transactions via OpenAI API
+    total = len(remaining_transactions)
+    for i, transaction in enumerate(remaining_transactions):
         try:
             print(f"Processing transaction {i+1}/{total}: {transaction['payee_name']}")
-            suggested_category = suggest_category(transaction, categories)
+            suggested_category = suggest_category(transaction, categories, budget_uuid)
             suggestions[transaction['id']] = suggested_category
         except Exception as e:
             print(f"Error processing transaction {transaction['id']}: {e}")
             suggestions[transaction['id']] = None
     
+    print(f"✅ Processed {len(transactions)} transactions: {len(suggestions) - len(remaining_transactions)} mapped, {len(remaining_transactions)} via API")
     return suggestions
 
 
-def suggest_categories_parallel_realtime(transactions, categories):
+def suggest_categories_parallel_realtime(transactions, categories, budget_uuid=None):
     """
-    Process transactions in parallel using real-time API with threading.
+    Process transactions in parallel using real-time API with threading and payee mappings.
     Balance between speed and cost.
     """
     if not client:
@@ -401,24 +504,44 @@ def suggest_categories_parallel_realtime(transactions, categories):
     
     suggestions = {}
     suggestions_lock = threading.Lock()
+    remaining_transactions = []
     
+    # Check for known mappings first (fast and free!)
+    if budget_uuid:
+        mappings_manager = MongoPayeeMappingsManager(budget_uuid)
+        
+        for transaction in transactions:
+            mapping_result = mappings_manager.get_mapping_with_fallback(transaction['payee_name'])
+            if mapping_result:
+                category, match_type, matched_payee = mapping_result
+                with suggestions_lock:
+                    suggestions[transaction['id']] = category
+                print(f"🎯 Pre-mapped {match_type}: '{transaction['payee_name']}' → '{category}'")
+            else:
+                remaining_transactions.append(transaction)
+    else:
+        remaining_transactions = transactions
+    
+    # Process remaining transactions in parallel
     def process_transaction(transaction):
         try:
-            suggested_category = suggest_category(transaction, categories)
+            suggested_category = suggest_category(transaction, categories, budget_uuid)
             with suggestions_lock:
                 suggestions[transaction['id']] = suggested_category
-            print(f"✓ Processed: {transaction['payee_name']} -> {suggested_category}")
+            print(f"✓ Processed: {transaction['payee_name']} → {suggested_category}")
         except Exception as e:
             print(f"✗ Error processing {transaction['payee_name']}: {e}")
             with suggestions_lock:
                 suggestions[transaction['id']] = None
     
-    # Process transactions in parallel (max 3 concurrent to respect rate limits)
-    max_workers = min(3, len(transactions))
-    print(f"Processing {len(transactions)} transactions with {max_workers} parallel workers")
+    if remaining_transactions:
+        # Process transactions in parallel (max 3 concurrent to respect rate limits)
+        max_workers = min(3, len(remaining_transactions))
+        print(f"Processing {len(remaining_transactions)} unmapped transactions with {max_workers} parallel workers")
+        
+        with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
+            futures = [executor.submit(process_transaction, transaction) for transaction in remaining_transactions]
+            concurrent.futures.wait(futures)
     
-    with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
-        futures = [executor.submit(process_transaction, transaction) for transaction in transactions]
-        concurrent.futures.wait(futures)
-    
+    print(f"✅ Processed {len(transactions)} transactions: {len(suggestions) - len(remaining_transactions)} mapped, {len(remaining_transactions)} via API")
     return suggestions

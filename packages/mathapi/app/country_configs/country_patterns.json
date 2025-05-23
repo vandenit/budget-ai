@@ -1,0 +1,360 @@
+{
+    "default_country": "BE",
+    "countries": {
+        "BE": {
+            "name": "Belgium",
+            "bank_patterns": {
+                "kbc": {
+                    "prefixes": [
+                        "ls "
+                    ],
+                    "transaction_indicators": [
+                        "betaling met",
+                        "bancontact",
+                        "debetkaart"
+                    ],
+                    "country_code_pattern": "be\\d{4}",
+                    "split_patterns": [
+                        "\\s+be\\d{4}\\s+",
+                        "\\s+betaling\\s+met\\s+",
+                        "\\s+via\\s+",
+                        "\\s+bancontact\\s+",
+                        "\\s+\\d{2}-\\d{2}-\\d{4}\\s+"
+                    ]
+                },
+                "ing_be": {
+                    "prefixes": [],
+                    "transaction_indicators": [
+                        "betaling met",
+                        "bancontact",
+                        "debetkaart"
+                    ],
+                    "country_code_pattern": "be\\d{4}",
+                    "split_patterns": [
+                        "\\s+be\\d{4}\\s+",
+                        "\\s+betaling\\s+met\\s+"
+                    ]
+                }
+            },
+            "cities": [
+                "antwerpen",
+                "gent",
+                "brussel",
+                "leuven",
+                "mechelen",
+                "hasselt",
+                "charleroi",
+                "liège",
+                "namur",
+                "mons",
+                "brugge",
+                "oostende",
+                "kortrijk",
+                "genk",
+                "roeselare",
+                "turnhout",
+                "sint-niklaas"
+            ],
+            "business_suffixes": [
+                "bv",
+                "b\\.v\\.",
+                "nv",
+                "n\\.v\\.",
+                "sa",
+                "sprl",
+                "bvba"
+            ],
+            "location_words": [
+                "winkel",
+                "store",
+                "shop",
+                "station",
+                "center",
+                "centre"
+            ]
+        },
+        "NL": {
+            "name": "Netherlands",
+            "bank_patterns": {
+                "ing": {
+                    "prefixes": [
+                        "ing "
+                    ],
+                    "transaction_indicators": [
+                        "betaling",
+                        "pin",
+                        "contactloos"
+                    ],
+                    "country_code_pattern": "nl\\d{4}",
+                    "split_patterns": [
+                        "\\s+nl\\d{4}\\s+",
+                        "\\s+betaling\\s+",
+                        "\\s+pin\\s+",
+                        "\\s+contactloos\\s+"
+                    ]
+                },
+                "rabobank": {
+                    "prefixes": [
+                        "rabobank ",
+                        "rabo "
+                    ],
+                    "transaction_indicators": [
+                        "betaling",
+                        "maestro",
+                        "pin"
+                    ],
+                    "country_code_pattern": "nl\\d{4}",
+                    "split_patterns": [
+                        "\\s+nl\\d{4}\\s+",
+                        "\\s+betaling\\s+",
+                        "\\s+maestro\\s+"
+                    ]
+                }
+            },
+            "cities": [
+                "amsterdam",
+                "rotterdam",
+                "utrecht",
+                "den haag",
+                "eindhoven",
+                "groningen",
+                "tilburg",
+                "almere",
+                "breda",
+                "nijmegen",
+                "enschede",
+                "haarlem",
+                "arnhem",
+                "zaanstad",
+                "amersfoort",
+                "apeldoorn"
+            ],
+            "business_suffixes": [
+                "bv",
+                "b\\.v\\.",
+                "nv",
+                "n\\.v\\."
+            ],
+            "location_words": [
+                "winkel",
+                "store",
+                "shop",
+                "station",
+                "center",
+                "centre"
+            ]
+        },
+        "DE": {
+            "name": "Germany",
+            "bank_patterns": {
+                "sparkasse": {
+                    "prefixes": [
+                        "sparkasse "
+                    ],
+                    "transaction_indicators": [
+                        "zahlung",
+                        "kartenzahlung"
+                    ],
+                    "country_code_pattern": "de\\d{4}",
+                    "split_patterns": [
+                        "\\s+de\\d{4}\\s+",
+                        "\\s+zahlung\\s+",
+                        "\\s+kartenzahlung\\s+"
+                    ]
+                }
+            },
+            "cities": [
+                "berlin",
+                "hamburg",
+                "münchen",
+                "köln",
+                "frankfurt",
+                "stuttgart",
+                "düsseldorf",
+                "dortmund",
+                "essen",
+                "leipzig",
+                "bremen",
+                "dresden"
+            ],
+            "business_suffixes": [
+                "gmbh",
+                "ag",
+                "kg",
+                "ohg"
+            ],
+            "location_words": [
+                "geschäft",
+                "laden",
+                "center",
+                "markt"
+            ]
+        },
+        "FR": {
+            "name": "France",
+            "bank_patterns": {
+                "credit_agricole": {
+                    "prefixes": [
+                        "credit agricole ",
+                        "ca "
+                    ],
+                    "transaction_indicators": [
+                        "paiement",
+                        "carte"
+                    ],
+                    "country_code_pattern": "fr\\d{4}",
+                    "split_patterns": [
+                        "\\s+fr\\d{4}\\s+",
+                        "\\s+paiement\\s+",
+                        "\\s+carte\\s+"
+                    ]
+                }
+            },
+            "cities": [
+                "paris",
+                "marseille",
+                "lyon",
+                "toulouse",
+                "nice",
+                "nantes",
+                "strasbourg",
+                "montpellier",
+                "bordeaux",
+                "lille",
+                "rennes"
+            ],
+            "business_suffixes": [
+                "sarl",
+                "sas",
+                "sa",
+                "eurl"
+            ],
+            "location_words": [
+                "magasin",
+                "boutique",
+                "centre",
+                "station"
+            ]
+        },
+        "US": {
+            "name": "United States",
+            "bank_patterns": {
+                "generic": {
+                    "prefixes": [
+                        "chase ",
+                        "bank of america ",
+                        "wells fargo "
+                    ],
+                    "transaction_indicators": [
+                        "purchase",
+                        "payment",
+                        "pos"
+                    ],
+                    "country_code_pattern": "us\\d{4}",
+                    "split_patterns": [
+                        "\\s+us\\d{4}\\s+",
+                        "\\s+purchase\\s+",
+                        "\\s+payment\\s+",
+                        "\\s+pos\\s+"
+                    ]
+                }
+            },
+            "cities": [
+                "new york",
+                "los angeles",
+                "chicago",
+                "houston",
+                "philadelphia",
+                "phoenix",
+                "san antonio",
+                "san diego",
+                "dallas",
+                "san jose"
+            ],
+            "business_suffixes": [
+                "ltd",
+                "limited",
+                "inc",
+                "incorporated",
+                "corp",
+                "corporation",
+                "llc"
+            ],
+            "location_words": [
+                "store",
+                "shop",
+                "station",
+                "drive",
+                "center",
+                "centre",
+                "mall",
+                "plaza"
+            ]
+        },
+        "GB": {
+            "name": "United Kingdom",
+            "bank_patterns": {
+                "barclays": {
+                    "prefixes": [
+                        "barclays "
+                    ],
+                    "transaction_indicators": [
+                        "payment",
+                        "card payment"
+                    ],
+                    "country_code_pattern": "gb\\d{4}",
+                    "split_patterns": [
+                        "\\s+gb\\d{4}\\s+",
+                        "\\s+payment\\s+",
+                        "\\s+card\\s+payment\\s+"
+                    ]
+                }
+            },
+            "cities": [
+                "london",
+                "birmingham",
+                "manchester",
+                "glasgow",
+                "liverpool",
+                "leeds",
+                "sheffield",
+                "edinburgh",
+                "bristol",
+                "cardiff"
+            ],
+            "business_suffixes": [
+                "ltd",
+                "limited",
+                "plc",
+                "llp"
+            ],
+            "location_words": [
+                "store",
+                "shop",
+                "centre",
+                "station",
+                "market"
+            ]
+        }
+    },
+    "global_patterns": {
+        "common_business_suffixes": [
+            "co",
+            "company",
+            "group",
+            "international",
+            "intl"
+        ],
+        "common_location_words": [
+            "store",
+            "shop",
+            "station",
+            "center",
+            "centre"
+        ],
+        "number_patterns": [
+            "\\s+\\d{3,}$",
+            "\\s+[a-z\\s]*\\d+[a-z\\s]*$"
+        ]
+    }
+}
