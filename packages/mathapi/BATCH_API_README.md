@@ -1,3 +1,60 @@
+# AI Transaction Categorization API
+
+## 🚀 SMART PROCESSING (RECOMMENDED)
+
+### Problem: OpenAI Batch API Trade-offs
+The OpenAI Batch API provides 50% cost savings but can take **30 minutes to 24 hours** to complete. This creates a dilemma:
+- ⚡ Real-time API: Fast (30 seconds) but 2x more expensive
+- 💰 Batch API: Half the cost but very slow (30 minutes - 24 hours)
+
+### Solution: Smart Processing with Urgency Levels
+
+We've implemented a **smart processing system** that automatically chooses the best approach based on your needs:
+
+#### Urgency Levels:
+
+| Urgency | Method | Speed | Cost | Use Case |
+|---------|--------|--------|------|----------|
+| `immediate` | Real-time Sequential | ~30 seconds | 2x cost | Need results now |
+| `normal` | Auto-smart choice | ~1-2 minutes | 1.5x cost | Balanced approach |
+| `economy` | Batch API | 30 min - 24h | 0.5x cost | Can wait for results |
+
+#### Smart Auto-Selection Logic:
+- **≤ 5 transactions**: Always use real-time (fast for small batches)
+- **6-20 transactions**: Use parallel real-time (3 concurrent requests)
+- **> 20 transactions**: Use batch API (cost effective for large batches)
+- **urgency="immediate"**: Force real-time regardless of count
+- **urgency="economy"**: Force batch API regardless of count
+
+### New Smart Endpoints:
+
+```http
+# Get category suggestions (preview only)
+GET /uncategorised-transactions/suggest-categories-smart?budget_id={uuid}&urgency=normal
+
+# Apply category suggestions to YNAB
+POST /uncategorised-transactions/apply-categories-smart?budget_id={uuid}&urgency=immediate
+```
+
+### Example Usage:
+
+```bash
+# For immediate results (expensive but fast)
+curl -X POST "http://localhost:5000/uncategorised-transactions/apply-categories-smart?budget_id=your-budget-uuid&urgency=immediate"
+
+# For balanced speed/cost (recommended)
+curl -X POST "http://localhost:5000/uncategorised-transactions/apply-categories-smart?budget_id=your-budget-uuid&urgency=normal"
+
+# For maximum cost savings (slow)
+curl -X POST "http://localhost:5000/uncategorised-transactions/apply-categories-smart?budget_id=your-budget-uuid&urgency=economy"
+```
+
+---
+
+## 📊 BATCH API (Original Implementation)
+
+*Note: Use the Smart Processing above for better speed/cost balance. The information below is for reference or when you specifically need batch processing.*
+
 # OpenAI Batch API Integration for Transaction Categorization
 
 This implementation adds OpenAI Batch API support to the mathapi for cost-effective categorization of YNAB transactions.

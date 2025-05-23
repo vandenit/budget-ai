@@ -325,3 +325,100 @@ def cancel_batch_job(batch_id):
     except Exception as e:
         print(f"Error cancelling batch job: {e}")
         return None
+
+
+def suggest_categories_smart(transactions, categories, urgency="normal"):
+    """
+    Smart category suggestion that chooses the best approach based on context.
+    
+    urgency options:
+    - "immediate": Force real-time processing (expensive but fast)
+    - "normal": Auto-choose based on transaction count  
+    - "economy": Force batch processing (cheap but slow)
+    """
+    if not transactions:
+        return {}
+    
+    transaction_count = len(transactions)
+    
+    # Decision logic - urgency takes priority
+    if urgency == "immediate":
+        # Force real-time processing regardless of count
+        print(f"Using real-time processing for {transaction_count} transactions (urgent)")
+        return suggest_categories_realtime_batch(transactions, categories)
+    
+    elif urgency == "economy":
+        # Force batch API regardless of count
+        print(f"Using batch API for {transaction_count} transactions (economy)")
+        return suggest_categories_batch(transactions, categories)
+    
+    else:
+        # Auto-choose based on transaction count (normal urgency)
+        if transaction_count <= 5:
+            print(f"Using real-time processing for {transaction_count} transactions (auto: small batch)")
+            return suggest_categories_realtime_batch(transactions, categories)
+        elif transaction_count > 20:
+            print(f"Using batch API for {transaction_count} transactions (auto: large batch)")
+            return suggest_categories_batch(transactions, categories)
+        else:
+            print(f"Using parallel real-time processing for {transaction_count} transactions (auto: medium batch)")
+            return suggest_categories_parallel_realtime(transactions, categories)
+
+
+def suggest_categories_realtime_batch(transactions, categories):
+    """
+    Process transactions one-by-one using real-time API.
+    Fast but more expensive.
+    """
+    if not client:
+        raise Exception("OpenAI client not initialized - API key missing")
+    
+    suggestions = {}
+    total = len(transactions)
+    
+    for i, transaction in enumerate(transactions):
+        try:
+            print(f"Processing transaction {i+1}/{total}: {transaction['payee_name']}")
+            suggested_category = suggest_category(transaction, categories)
+            suggestions[transaction['id']] = suggested_category
+        except Exception as e:
+            print(f"Error processing transaction {transaction['id']}: {e}")
+            suggestions[transaction['id']] = None
+    
+    return suggestions
+
+
+def suggest_categories_parallel_realtime(transactions, categories):
+    """
+    Process transactions in parallel using real-time API with threading.
+    Balance between speed and cost.
+    """
+    if not client:
+        raise Exception("OpenAI client not initialized - API key missing")
+    
+    import concurrent.futures
+    import threading
+    
+    suggestions = {}
+    suggestions_lock = threading.Lock()
+    
+    def process_transaction(transaction):
+        try:
+            suggested_category = suggest_category(transaction, categories)
+            with suggestions_lock:
+                suggestions[transaction['id']] = suggested_category
+            print(f"✓ Processed: {transaction['payee_name']} -> {suggested_category}")
+        except Exception as e:
+            print(f"✗ Error processing {transaction['payee_name']}: {e}")
+            with suggestions_lock:
+                suggestions[transaction['id']] = None
+    
+    # Process transactions in parallel (max 3 concurrent to respect rate limits)
+    max_workers = min(3, len(transactions))
+    print(f"Processing {len(transactions)} transactions with {max_workers} parallel workers")
+    
+    with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
+        futures = [executor.submit(process_transaction, transaction) for transaction in transactions]
+        concurrent.futures.wait(futures)
+    
+    return suggestions

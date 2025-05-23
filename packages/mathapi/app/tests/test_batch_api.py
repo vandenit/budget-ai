@@ -356,6 +356,124 @@ class TestBatchAPI(unittest.TestCase):
         
         file_obj.close()
 
+    @patch('app.ai_api.suggest_categories_realtime_batch')
+    @patch('app.ai_api.suggest_categories_parallel_realtime')
+    @patch('app.ai_api.suggest_categories_batch')
+    def test_suggest_categories_smart_urgency_immediate(self, mock_batch, mock_parallel, mock_realtime):
+        """Test smart categorization with immediate urgency."""
+        from app.ai_api import suggest_categories_smart
+        
+        mock_realtime.return_value = {"txn-1": "Groceries", "txn-2": "Transportation"}
+        
+        result = suggest_categories_smart(self.sample_transactions, self.sample_categories, "immediate")
+        
+        # Should use real-time processing
+        mock_realtime.assert_called_once()
+        mock_parallel.assert_not_called()
+        mock_batch.assert_not_called()
+        
+        self.assertEqual(result["txn-1"], "Groceries")
+        self.assertEqual(result["txn-2"], "Transportation")
+
+    @patch('app.ai_api.suggest_categories_realtime_batch')
+    @patch('app.ai_api.suggest_categories_parallel_realtime')
+    @patch('app.ai_api.suggest_categories_batch')
+    def test_suggest_categories_smart_urgency_economy(self, mock_batch, mock_parallel, mock_realtime):
+        """Test smart categorization with economy urgency."""
+        from app.ai_api import suggest_categories_smart
+        
+        mock_batch.return_value = {"txn-1": "Groceries", "txn-2": "Transportation"}
+        
+        result = suggest_categories_smart(self.sample_transactions, self.sample_categories, "economy")
+        
+        # Should use batch processing
+        mock_batch.assert_called_once()
+        mock_parallel.assert_not_called()
+        mock_realtime.assert_not_called()
+        
+        self.assertEqual(result["txn-1"], "Groceries")
+        self.assertEqual(result["txn-2"], "Transportation")
+
+    @patch('app.ai_api.suggest_categories_realtime_batch')
+    @patch('app.ai_api.suggest_categories_parallel_realtime')
+    @patch('app.ai_api.suggest_categories_batch')
+    def test_suggest_categories_smart_auto_select_small_batch(self, mock_batch, mock_parallel, mock_realtime):
+        """Test smart categorization auto-selection for small batch (≤5 transactions)."""
+        from app.ai_api import suggest_categories_smart
+        
+        # Test with 3 transactions (should use real-time)
+        small_transactions = self.sample_transactions[:1]  # Only 1 transaction
+        mock_realtime.return_value = {"txn-1": "Groceries"}
+        
+        result = suggest_categories_smart(small_transactions, self.sample_categories, "normal")
+        
+        # Should use real-time processing for small batches
+        mock_realtime.assert_called_once()
+        mock_parallel.assert_not_called()
+        mock_batch.assert_not_called()
+
+    @patch('app.ai_api.suggest_categories_realtime_batch')
+    @patch('app.ai_api.suggest_categories_parallel_realtime')
+    @patch('app.ai_api.suggest_categories_batch')
+    def test_suggest_categories_smart_auto_select_large_batch(self, mock_batch, mock_parallel, mock_realtime):
+        """Test smart categorization auto-selection for large batch (>20 transactions)."""
+        from app.ai_api import suggest_categories_smart
+        
+        # Create 25 transactions (should use batch)
+        large_transactions = [
+            {
+                "id": f"txn-{i}",
+                "payee_name": f"Store {i}",
+                "amount": -1000,
+                "date": "2024-01-15"
+            }
+            for i in range(25)
+        ]
+        
+        mock_batch.return_value = {f"txn-{i}": "Shopping" for i in range(25)}
+        
+        result = suggest_categories_smart(large_transactions, self.sample_categories, "normal")
+        
+        # Should use batch processing for large batches
+        mock_batch.assert_called_once()
+        mock_parallel.assert_not_called()
+        mock_realtime.assert_not_called()
+
+    @patch('app.ai_api.suggest_categories_realtime_batch')
+    @patch('app.ai_api.suggest_categories_parallel_realtime')
+    @patch('app.ai_api.suggest_categories_batch')
+    def test_suggest_categories_smart_auto_select_medium_batch(self, mock_batch, mock_parallel, mock_realtime):
+        """Test smart categorization auto-selection for medium batch (6-20 transactions)."""
+        from app.ai_api import suggest_categories_smart
+        
+        # Create 10 transactions (should use parallel real-time)
+        medium_transactions = [
+            {
+                "id": f"txn-{i}",
+                "payee_name": f"Store {i}",
+                "amount": -1000,
+                "date": "2024-01-15"
+            }
+            for i in range(10)
+        ]
+        
+        mock_parallel.return_value = {f"txn-{i}": "Shopping" for i in range(10)}
+        
+        result = suggest_categories_smart(medium_transactions, self.sample_categories, "normal")
+        
+        # Should use parallel real-time processing for medium batches
+        mock_parallel.assert_called_once()
+        mock_batch.assert_not_called()
+        mock_realtime.assert_not_called()
+
+    def test_suggest_categories_smart_empty_transactions(self):
+        """Test smart categorization with empty transactions list."""
+        from app.ai_api import suggest_categories_smart
+        
+        result = suggest_categories_smart([], self.sample_categories, "normal")
+        
+        self.assertEqual(result, {})
+
 
 if __name__ == '__main__':
     unittest.main() 

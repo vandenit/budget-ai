@@ -1,7 +1,16 @@
 import os
 import itertools
 from flask import Flask, jsonify, request, render_template
-from .ynab_service import apply_suggested_categories_service, apply_suggested_categories_batch_service, suggest_categories_only_batch_service, start_batch_categorization_job, check_batch_job_status, apply_batch_results_to_ynab
+from .ynab_service import (
+    apply_suggested_categories_service, 
+    apply_suggested_categories_batch_service,
+    suggest_categories_only_batch_service,
+    start_batch_categorization_job,
+    check_batch_job_status,
+    apply_batch_results_to_ynab,
+    apply_suggested_categories_smart_service,
+    suggest_categories_only_smart_service
+)
 from .ynab_api import get_scheduled_transactions, get_uncategorized_transactions
 from .categories_api import get_categories_for_budget
 from .budget_api import get_objectid_for_budget
@@ -334,6 +343,54 @@ def apply_batch_job_results(batch_id):
         return jsonify(result)
     except Exception as e:
         logging.error(f"Error applying batch job results: {e}")
+        return jsonify({"error": str(e)}), 500
+
+# Smart categorization endpoints (NEW - recommended for speed/cost balance)
+@app.route('/uncategorised-transactions/suggest-categories-smart', methods=['GET'])
+def suggest_categories_smart_endpoint():
+    """
+    Smart category suggestions with configurable urgency.
+    Query parameters:
+    - budget_id: Budget UUID (required)
+    - urgency: "immediate" (fast/expensive), "normal" (balanced), "economy" (slow/cheap)
+    """
+    try:
+        budget_id = request.args.get('budget_id')
+        if not budget_id:
+            return jsonify({"error": "budget_id query parameter is required"}), 400
+        
+        urgency = request.args.get('urgency', 'normal')
+        if urgency not in ['immediate', 'normal', 'economy']:
+            return jsonify({"error": "urgency must be 'immediate', 'normal', or 'economy'"}), 400
+        
+        result = suggest_categories_only_smart_service(budget_id, urgency)
+        return jsonify(result)
+    
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/uncategorised-transactions/apply-categories-smart', methods=['POST'])
+def apply_categories_smart_endpoint():
+    """
+    Smart category application with configurable urgency.
+    Query parameters:
+    - budget_id: Budget UUID (required)
+    - urgency: "immediate" (fast/expensive), "normal" (balanced), "economy" (slow/cheap)
+    """
+    try:
+        budget_id = request.args.get('budget_id')
+        if not budget_id:
+            return jsonify({"error": "budget_id query parameter is required"}), 400
+        
+        urgency = request.args.get('urgency', 'normal')
+        if urgency not in ['immediate', 'normal', 'economy']:
+            return jsonify({"error": "urgency must be 'immediate', 'normal', or 'economy'"}), 400
+        
+        result = apply_suggested_categories_smart_service(budget_id, urgency)
+        return jsonify(result)
+    
+    except Exception as e:
         return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':

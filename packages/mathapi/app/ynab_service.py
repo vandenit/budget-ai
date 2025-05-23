@@ -1,5 +1,5 @@
 from .ynab_api import fetch, get_uncategorized_transactions
-from .ai_api import suggest_category, suggest_categories_batch, suggest_categories_batch_async, get_batch_status_and_results, parse_category_suggestions
+from .ai_api import suggest_category, suggest_categories_batch, suggest_categories_batch_async, get_batch_status_and_results, parse_category_suggestions, suggest_categories_smart
 from .categories_api import get_categories_for_budget
 from .budget_api import get_objectid_for_budget, convert_objectid_to_str
 import logging
@@ -362,4 +362,168 @@ def apply_batch_results_to_ynab(budget_uuid, batch_id):
 
     except Exception as e:
         logging.error(f"Error applying batch results to YNAB: {e}")
+        raise
+
+
+def apply_suggested_categories_smart_service(budget_uuid, urgency="normal"):
+    """
+    Smart category suggestion and application with configurable urgency.
+    
+    urgency options:
+    - "immediate": Force real-time processing (expensive but fast ~30 seconds)
+    - "normal": Auto-choose based on transaction count (balanced)
+    - "economy": Force batch processing (cheap but slow ~30 minutes to 24 hours)
+    """
+    try:
+        # Fetch budget ID and uncategorized transactions
+        budget_id = get_objectid_for_budget(budget_uuid)
+        uncategorized_transactions = get_uncategorized_transactions(budget_uuid)
+        categories = get_categories_for_budget(budget_id)
+
+        if not uncategorized_transactions:
+            return {"message": "No uncategorized transactions found"}
+
+        transaction_count = len(uncategorized_transactions)
+        logging.info(f"Smart processing {transaction_count} uncategorized transactions with urgency='{urgency}'")
+        
+        # Use smart processing to get all category suggestions
+        category_suggestions = suggest_categories_smart(uncategorized_transactions, categories, urgency)
+        
+        updated_transactions = []
+        failed_transactions = []
+
+        for transaction in uncategorized_transactions:
+            try:
+                transaction_id = transaction["id"]
+                suggested_category_name = category_suggestions.get(transaction_id)
+                
+                if not suggested_category_name:
+                    logging.warning(f"No category suggestion received for transaction: {transaction_id}")
+                    failed_transactions.append({
+                        "transaction_id": transaction_id,
+                        "error": "No category suggestion received"
+                    })
+                    continue
+
+                # Find the matching category
+                suggested_category = next(
+                    (cat for cat in categories if cat["name"] == suggested_category_name), None
+                )
+
+                if not suggested_category:
+                    logging.warning(f"No matching category found for suggestion '{suggested_category_name}' for transaction: {transaction_id}")
+                    failed_transactions.append({
+                        "transaction_id": transaction_id,
+                        "error": f"Category '{suggested_category_name}' not found"
+                    })
+                    continue
+
+                # Update transaction in YNAB
+                logging.info(f"Updating transaction {transaction_id} with category {suggested_category['name']}")
+                memo = transaction.get("memo") or ""
+                
+                # Add different memo based on processing type
+                if urgency == "immediate":
+                    updated_memo = f"{memo} AI immediate".strip()
+                    flag_color = "red"  # Red for immediate processing
+                elif urgency == "economy":
+                    updated_memo = f"{memo} AI economy".strip()
+                    flag_color = "yellow"  # Yellow for economy processing
+                else:
+                    updated_memo = f"{memo} AI smart".strip()
+                    flag_color = "orange"  # Orange for smart processing
+
+                path = f"budgets/{budget_uuid}/transactions/{transaction_id}"
+                body = {
+                    "transaction": {
+                        "category_id": suggested_category["uuid"],
+                        "approved": True,
+                        "flag_color": flag_color,
+                        "memo": updated_memo
+                    }
+                }
+                result = fetch("PUT", path, body)
+                if "error" not in result:
+                    updated_transactions.append({
+                        "transaction_id": transaction_id,
+                        "status": "updated",
+                        "suggested_category": suggested_category_name,
+                        "memo": updated_memo,
+                        "processing_type": urgency
+                    })
+                else:
+                    logging.warning(f"Failed to update transaction {transaction_id}: {result['error']}")
+                    failed_transactions.append({
+                        "transaction_id": transaction_id,
+                        "error": result['error']
+                    })
+
+            except Exception as e:
+                logging.warning(f"Error processing transaction {transaction['id']}: {e}")
+                failed_transactions.append({
+                    "transaction_id": transaction.get('id', 'unknown'),
+                    "error": str(e)
+                })
+                continue
+
+        return {
+            "updated_transactions": updated_transactions,
+            "failed_transactions": failed_transactions,
+            "total_processed": len(uncategorized_transactions),
+            "total_updated": len(updated_transactions),
+            "total_failed": len(failed_transactions),
+            "processing_type": urgency
+        }
+
+    except Exception as e:
+        logging.error(f"Error in apply_suggested_categories_smart_service: {e}")
+        raise
+
+
+def suggest_categories_only_smart_service(budget_uuid, urgency="normal"):
+    """
+    Smart category suggestion without updating YNAB - for preview/review.
+    
+    urgency options:
+    - "immediate": Force real-time processing (expensive but fast)
+    - "normal": Auto-choose based on transaction count
+    - "economy": Force batch processing (cheap but slow)
+    """
+    try:
+        # Fetch budget ID and uncategorized transactions
+        budget_id = get_objectid_for_budget(budget_uuid)
+        uncategorized_transactions = get_uncategorized_transactions(budget_uuid)
+        categories = get_categories_for_budget(budget_id)
+
+        if not uncategorized_transactions:
+            return {"message": "No uncategorized transactions found"}
+
+        transaction_count = len(uncategorized_transactions)
+        logging.info(f"Smart suggesting categories for {transaction_count} transactions with urgency='{urgency}'")
+        
+        # Use smart processing to get all category suggestions
+        category_suggestions = suggest_categories_smart(uncategorized_transactions, categories, urgency)
+        
+        suggested_transactions = []
+
+        for transaction in uncategorized_transactions:
+            transaction_id = transaction["id"]
+            suggested_category_name = category_suggestions.get(transaction_id)
+            
+            suggested_transactions.append({
+                "transaction_id": transaction_id,
+                "payee_name": transaction["payee_name"],
+                "amount": transaction["amount"],
+                "date": transaction["date"],
+                "suggested_category_name": suggested_category_name or "No suggestion"
+            })
+
+        return {
+            "suggested_transactions": suggested_transactions,
+            "total_processed": len(uncategorized_transactions),
+            "processing_type": urgency
+        }
+
+    except Exception as e:
+        logging.error(f"Error in suggest_categories_only_smart_service: {e}")
         raise
