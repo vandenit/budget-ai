@@ -1,7 +1,6 @@
 import { getToken } from "./client";
 import { handleServerApiResponse } from "./utils.server";
 
-
 const mathApiFetch = async (
     path: string,
     options: RequestInit = {},
@@ -35,8 +34,10 @@ const mathApiFetch = async (
 export const getPrediction = async (budgetId: string, daysAhead: number = 180) => mathApiFetch(
     `balance-prediction/data?budget_id=${budgetId}&days_ahead=${daysAhead}`
 );
-export const getScheduledTransactions = async (budgetId: string) => (
-    mathApiFetch(`sheduled-transactions?budget_id=${budgetId}`));
+
+export const getScheduledTransactions = async (budgetId: string) => mathApiFetch(
+    `sheduled-transactions?budget_id=${budgetId}`
+);
 
 export const suggestCategories = async (budgetId: string) => mathApiFetch(
     `uncategorised-transactions/suggest-categories?budget_id=${budgetId}`

@@ -9,7 +9,7 @@ import YnabLoginPage from "../ynab-login-page";
 import { getBudget, getBudgetOverviewForUser } from "../../api/budget/budget.client";
 import { savePreferredBudget } from "../../api/user/user.client";
 import type { PredictionData } from '@/app/budgets/[budgetUuid]/predictions/prediction-data.server';
-import { getPrediction } from "@/app/api/math.client";
+import { getPrediction } from "../../api/math.server";
 
 export default function BudgetPage({ budgetUuid }: { budgetUuid: string }) {
   return (
