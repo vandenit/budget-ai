@@ -116,6 +116,11 @@ class MongoPayeeMappingsManager:
         for pattern in number_patterns:
             normalized = re.sub(pattern, '', normalized)
         
+        # Remove payment method patterns (like domiciliëring + reference numbers)
+        payment_patterns = global_patterns.get('payment_method_patterns', [])
+        for pattern in payment_patterns:
+            normalized = re.sub(pattern, '', normalized)
+        
         # Clean up multiple spaces
         normalized = re.sub(r'\s+', ' ', normalized).strip()
         
@@ -135,8 +140,8 @@ class MongoPayeeMappingsManager:
             True if mapping was added successfully
         """
         try:
-            # Normalize payee name (lowercase, strip)
-            normalized_payee = payee_name.lower().strip()
+            # Use smart preprocessing instead of just lowercase/strip
+            normalized_payee = self._normalize_payee_name(payee_name)
             
             # Use upsert to replace existing mapping or create new one
             result = self.collection.replace_one(

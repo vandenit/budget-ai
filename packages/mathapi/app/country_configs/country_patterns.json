@@ -34,6 +34,18 @@
                         "\\s+be\\d{4}\\s+",
                         "\\s+betaling\\s+met\\s+"
                     ]
+                },
+                "domiciliering": {
+                    "prefixes": [],
+                    "transaction_indicators": [
+                        "domiciliëring"
+                    ],
+                    "country_code_pattern": "",
+                    "split_patterns": [
+                        "\\s+domiciliëring\\s+.*",
+                        "\\s+\\d{10,}.*",
+                        "\\s+\\d{5}-\\d+.*"
+                    ]
                 }
             },
             "cities": [
@@ -355,6 +367,12 @@
         "number_patterns": [
             "\\s+\\d{3,}$",
             "\\s+[a-z\\s]*\\d+[a-z\\s]*$"
+        ],
+        "payment_method_patterns": [
+            "\\s+domiciliëring\\s+.*",
+            "\\s+domiciliëring$",
+            "\\s+\\d{10,}.*",
+            "\\s+\\d{5}-\\d+.*"
         ]
     }
 }
