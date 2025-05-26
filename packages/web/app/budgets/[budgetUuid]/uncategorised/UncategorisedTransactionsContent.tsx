@@ -34,6 +34,12 @@ export default function UncategorisedTransactionsContent({
     const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
     const [lastApplyResult, setLastApplyResult] = useState<any>(null);
     const hasLoadedSuggestions = useRef(false);
+    const manuallyModifiedRef = useRef(manuallyModified);
+
+    // Keep ref in sync with state
+    useEffect(() => {
+        manuallyModifiedRef.current = manuallyModified;
+    }, [manuallyModified]);
 
     // Load missing AI suggestions with concurrent processing
     useEffect(() => {
@@ -70,19 +76,40 @@ export default function UncategorisedTransactionsContent({
                         date: transaction.date
                     });
 
-                    // Update this specific transaction immediately
-                    setSuggestedTransactions(prev =>
-                        prev.map(tx =>
-                            tx.transaction_id === transaction.transaction_id
-                                ? {
-                                    ...tx,
-                                    suggested_category_name: result.suggested_category_name,
-                                    loading_suggestion: false,
-                                    cached: result.cached
-                                }
-                                : tx
-                        )
-                    );
+                    // Update this specific transaction immediately ONLY if it hasn't been manually modified
+                    // Use ref to get the most current manually modified state
+                    const isManuallyModified = manuallyModifiedRef.current.has(transaction.transaction_id);
+
+                    if (isManuallyModified) {
+                        console.log(`🚫 Skipping AI suggestion for manually modified transaction: ${transaction.payee_name}`);
+                        // Just update loading state but keep the manual category
+                        setSuggestedTransactions(prev =>
+                            prev.map(tx =>
+                                tx.transaction_id === transaction.transaction_id
+                                    ? {
+                                        ...tx,
+                                        loading_suggestion: false,
+                                        cached: result.cached
+                                    }
+                                    : tx
+                            )
+                        );
+                    } else {
+                        console.log(`✅ Applying AI suggestion for: ${transaction.payee_name} → ${result.suggested_category_name}`);
+                        // Apply AI suggestion
+                        setSuggestedTransactions(prev =>
+                            prev.map(tx =>
+                                tx.transaction_id === transaction.transaction_id
+                                    ? {
+                                        ...tx,
+                                        suggested_category_name: result.suggested_category_name,
+                                        loading_suggestion: false,
+                                        cached: result.cached
+                                    }
+                                    : tx
+                            )
+                        );
+                    }
 
                     successCount++;
                     console.log(`✅ ${result.cached ? '(cached)' : `(${result.processing_time_ms}ms)`} ${transaction.payee_name} → ${result.suggested_category_name}`);
@@ -155,8 +182,14 @@ export default function UncategorisedTransactionsContent({
     const handleApplyAllSuggestions = async () => {
         setIsApplying(true);
         try {
+            // Enhance transactions with manual modification info to avoid unnecessary AI calls
+            const transactionsWithManualFlags = suggestedTransactions.map(tx => ({
+                ...tx,
+                is_manual_change: manuallyModified.has(tx.transaction_id)
+            }));
+
             // Use new endpoint that handles both AI suggestions and manual changes
-            const result = await applyAllCategories(budgetUuid, suggestedTransactions);
+            const result = await applyAllCategories(budgetUuid, transactionsWithManualFlags);
             setLastApplyResult(result);
 
             // Show success message and refresh data

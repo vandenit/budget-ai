@@ -886,6 +886,10 @@ def apply_single_category():
         budget_id = get_objectid_for_budget(budget_uuid)
         categories = get_categories_for_budget(budget_id)
         
+        # Handle special case: "Ready to Assign" should not be applied (it means uncategorized)
+        if category_name == "Ready to Assign" or category_name == "Uncategorized":
+            return jsonify({"error": f"Cannot apply '{category_name}' - this indicates the transaction should remain uncategorized"}), 400
+        
         # Find the category ID
         category = next((cat for cat in categories if cat["name"] == category_name), None)
         if not category:

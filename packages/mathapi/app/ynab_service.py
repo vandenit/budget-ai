@@ -571,9 +571,25 @@ def apply_all_categories_service(budget_uuid, transactions_with_categories):
                     })
                     continue
 
-                # Get fresh AI suggestion to determine if this was manually changed
-                fresh_ai_suggestion = suggest_category(original_transaction, categories, budget_uuid)
-                is_manual_change = suggested_category_name != fresh_ai_suggestion
+                # Check if this was manually changed (use frontend flag to avoid unnecessary AI calls)
+                is_manual_change = frontend_transaction.get("is_manual_change", False)
+                
+                # If no flag provided, fall back to cache comparison (avoid expensive AI call)
+                if "is_manual_change" not in frontend_transaction:
+                    try:
+                        from .ai_suggestions_simple import SimpleAISuggestionsService
+                        cache_service = SimpleAISuggestionsService(budget_uuid)
+                        cached_suggestion = cache_service.get_cached_suggestion(transaction_id)
+                        is_manual_change = cached_suggestion and cached_suggestion != suggested_category_name
+                        logging.info(f"Determined manual change via cache: {is_manual_change} (cached: {cached_suggestion}, current: {suggested_category_name})")
+                    except Exception as e:
+                        logging.warning(f"Could not determine manual change via cache: {e}, assuming manual")
+                        is_manual_change = True
+                
+                # Handle special cases: "Ready to Assign" and "Uncategorized" should be skipped
+                if suggested_category_name in ["Ready to Assign", "Uncategorized"]:
+                    logging.info(f"Skipping transaction {transaction_id} - AI suggested '{suggested_category_name}' (keeping uncategorized)")
+                    continue
                 
                 # Find the matching category
                 suggested_category = next(

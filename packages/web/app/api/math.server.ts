@@ -44,124 +44,47 @@ export const getUncategorisedTransactions = async (budgetId: string) => mathApiF
 );
 
 export const getCachedSuggestions = async (budgetId: string) => {
-    const mathApiUrl = process.env.MATH_API_URL;
-
-    if (!mathApiUrl) {
-        throw new Error('MATH_API_URL environment variable is not set');
-    }
-
-    try {
-        const response = await fetch(`${mathApiUrl}/uncategorised-transactions/suggestions-cached?budget_id=${budgetId}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        });
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        return data;
-    } catch (error) {
-        console.error('Error fetching cached suggestions:', error);
-        throw error;
-    }
+    return mathApiFetch(`uncategorised-transactions/suggestions-cached?budget_id=${budgetId}`);
 };
 
 export const getSuggestionsAsync = async (budgetId: string, transactionIds: string[]) => {
-    const mathApiUrl = process.env.MATH_API_URL;
-
-    if (!mathApiUrl) {
-        throw new Error('MATH_API_URL environment variable is not set');
-    }
-
-    try {
-        const response = await fetch(`${mathApiUrl}/uncategorised-transactions/suggestions-async?budget_id=${budgetId}`, {
+    return mathApiFetch(
+        `uncategorised-transactions/suggestions-async?budget_id=${budgetId}`,
+        {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
             body: JSON.stringify({
                 transaction_ids: transactionIds
             }),
-        });
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
         }
-
-        const data = await response.json();
-        return data;
-    } catch (error) {
-        console.error('Error fetching async suggestions:', error);
-        throw error;
-    }
+    );
 };
 
 export const getSingleSuggestion = async (budgetId: string, transactionId: string, transaction?: any) => {
-    const mathApiUrl = process.env.MATH_API_URL;
-
-    if (!mathApiUrl) {
-        throw new Error('MATH_API_URL environment variable is not set');
+    const body: any = { transaction_id: transactionId };
+    if (transaction) {
+        body.transaction = transaction;
     }
 
-    try {
-        const body: any = { transaction_id: transactionId };
-        if (transaction) {
-            body.transaction = transaction;
-        }
-
-        const response = await fetch(`${mathApiUrl}/uncategorised-transactions/suggest-single?budget_id=${budgetId}`, {
+    return mathApiFetch(
+        `uncategorised-transactions/suggest-single?budget_id=${budgetId}`,
+        {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
             body: JSON.stringify(body),
-        });
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
         }
-
-        const data = await response.json();
-        return data;
-    } catch (error) {
-        console.error('Error fetching single suggestion:', error);
-        throw error;
-    }
+    );
 };
 
 export const applySingleCategory = async (budgetId: string, transactionId: string, categoryName: string) => {
-    const mathApiUrl = process.env.MATH_API_URL;
-
-    if (!mathApiUrl) {
-        throw new Error('MATH_API_URL environment variable is not set');
-    }
-
-    try {
-        const response = await fetch(`${mathApiUrl}/uncategorised-transactions/apply-single?budget_id=${budgetId}`, {
+    return mathApiFetch(
+        `uncategorised-transactions/apply-single?budget_id=${budgetId}`,
+        {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
             body: JSON.stringify({
                 transaction_id: transactionId,
                 category_name: categoryName
             }),
-        });
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
         }
-
-        const data = await response.json();
-        return data;
-    } catch (error) {
-        console.error('Error applying single category:', error);
-        throw error;
-    }
+    );
 };
 
 export const suggestCategories = async (budgetId: string) => mathApiFetch(
@@ -177,9 +100,6 @@ export const applyAllCategories = async (budgetId: string, transactions: any[]) 
     `uncategorised-transactions/apply-all-categories?budget_id=${budgetId}`,
     { 
         method: "POST",
-        headers: {
-            'Content-Type': 'application/json',
-        },
         body: JSON.stringify({ transactions })
     }
 ); 
