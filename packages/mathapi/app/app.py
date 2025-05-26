@@ -9,9 +9,12 @@ from .ynab_service import (
     check_batch_job_status,
     apply_batch_results_to_ynab,
     apply_suggested_categories_smart_service,
-    suggest_categories_only_smart_service
+    suggest_categories_only_smart_service,
+    apply_all_categories_service,
+    get_cached_suggestions_service,
+    get_suggestions_async_service
 )
-from .ynab_api import get_scheduled_transactions, get_uncategorized_transactions
+from .ynab_api import get_scheduled_transactions, get_uncategorized_transactions, fetch
 from .categories_api import get_categories_for_budget
 from .budget_api import get_objectid_for_budget
 from .accounts_api import get_accounts_for_budget
@@ -228,8 +231,57 @@ def get_scheduled_transactions_route():
     except Exception as e:
         return f"Error fetching scheduled transactions: {str(e)}", 500
     
+@app.route('/uncategorised-transactions', methods=['GET'])
+def get_uncategorised_transactions():
+    """Get uncategorised transactions with any existing AI suggestions for immediate loading."""
+    budget_uuid = request.args.get('budget_id')
+    if not budget_uuid:
+        return jsonify({"error": "budget_id query parameter is required"}), 400
+
+    try:
+        # Get uncategorized transactions immediately (fast)
+        uncategorized_transactions = get_uncategorized_transactions(budget_uuid)
+        
+        if not uncategorized_transactions:
+            return jsonify([])
+
+        # Check for existing AI suggestions using simple cache
+        try:
+            from .ai_suggestions_simple import SimpleAISuggestionsService
+            cache_service = SimpleAISuggestionsService(budget_uuid)
+            transaction_ids = [tx["id"] for tx in uncategorized_transactions]
+            cached_suggestions = cache_service.get_cached_suggestions_batch(transaction_ids)
+        except Exception as e:
+            logging.warning(f"Failed to load cached suggestions: {e}")
+            cached_suggestions = {}
+
+        # Return transactions with existing suggestions (if any)
+        transactions = []
+        for transaction in uncategorized_transactions:
+            transaction_id = transaction["id"]
+            existing_suggestion = cached_suggestions.get(transaction_id)
+            
+            transactions.append({
+                "transaction_id": transaction_id,
+                "payee_name": transaction["payee_name"],
+                "amount": transaction["amount"],
+                "date": transaction["date"],
+                "memo": transaction.get("memo", ""),
+                "suggested_category_name": existing_suggestion,
+                "loading_suggestion": existing_suggestion is None,  # Only load if no existing suggestion
+                "cached": existing_suggestion is not None
+            })
+
+        logging.info(f"Returned {len(transactions)} transactions with {len(cached_suggestions)} existing AI suggestions")
+        return jsonify(transactions)
+        
+    except Exception as e:
+        logging.error(f"Error fetching uncategorised transactions: {e}")
+        return jsonify({"error": str(e)}), 500
+
 @app.route('/uncategorised-transactions/suggest-categories', methods=['GET'])
 def suggest_categories_for_unscheduled_transactions():
+    """Suggest categories for uncategorized transactions, using cache first."""
     budget_uuid = request.args.get('budget_id')
     if not budget_uuid:
         return jsonify({"error": "budget_id query parameter is required"}), 400
@@ -239,28 +291,84 @@ def suggest_categories_for_unscheduled_transactions():
         budget_id = get_objectid_for_budget(budget_uuid)
         uncategorized_transactions = get_uncategorized_transactions(budget_uuid)
         categories = get_categories_for_budget(budget_id)
-    except Exception as e:
-        return jsonify({"error": f"Error fetching data: {str(e)}"}), 500
+        
+        if not uncategorized_transactions:
+            return jsonify([])  # No uncategorized transactions found
 
-    if not uncategorized_transactions:
-        return jsonify([])  # No uncategorized transactions found
-
-    # Suggest categories for each uncategorized transaction
-    suggested_transactions = []
-    for transaction in uncategorized_transactions:
+        # Check for existing AI suggestions first
         try:
-            suggested_category_name = suggest_category(transaction, categories, budget_uuid)
-            suggested_transactions.append({
-                "transaction_id": transaction["id"],
-                "payee_name": transaction["payee_name"],
-                "amount": transaction["amount"],
-                "date": transaction["date"],
-                "suggested_category_name": suggested_category_name
-            })
+            from .ai_suggestions_simple import SimpleAISuggestionsService
+            cache_service = SimpleAISuggestionsService(budget_uuid)
+            transaction_ids = [tx["id"] for tx in uncategorized_transactions]
+            cached_suggestions = cache_service.get_cached_suggestions_batch(transaction_ids)
         except Exception as e:
-             return jsonify({"error": f"Error fetching data: {str(e)}"}), 500
+            logging.warning(f"Failed to load cached suggestions: {e}")
+            cached_suggestions = {}
 
-    return jsonify(suggested_transactions)
+        # Suggest categories for each uncategorized transaction
+        suggested_transactions = []
+        new_suggestions = []
+        
+        for transaction in uncategorized_transactions:
+            transaction_id = transaction["id"]
+            
+            # Use cached suggestion if available
+            existing_suggestion = cached_suggestions.get(transaction_id)
+            if existing_suggestion:
+                suggested_transactions.append({
+                    "transaction_id": transaction_id,
+                    "payee_name": transaction["payee_name"],
+                    "amount": transaction["amount"],
+                    "date": transaction["date"],
+                    "suggested_category_name": existing_suggestion,
+                    "cached": True
+                })
+            else:
+                # Generate new suggestion
+                try:
+                    suggested_category_name = suggest_category(transaction, categories, budget_uuid)
+                    suggested_transactions.append({
+                        "transaction_id": transaction_id,
+                        "payee_name": transaction["payee_name"],
+                        "amount": transaction["amount"],
+                        "date": transaction["date"],
+                        "suggested_category_name": suggested_category_name,
+                        "cached": False
+                    })
+                    
+                    # Prepare for caching
+                    new_suggestions.append({
+                        "transaction_id": transaction_id,
+                        "payee_name": transaction["payee_name"],
+                        "suggested_category": suggested_category_name,
+                        "confidence": 0.8
+                    })
+                    
+                except Exception as e:
+                    logging.warning(f"Failed to generate suggestion for transaction {transaction_id}: {e}")
+                    suggested_transactions.append({
+                        "transaction_id": transaction_id,
+                        "payee_name": transaction["payee_name"],
+                        "amount": transaction["amount"],
+                        "date": transaction["date"],
+                        "suggested_category_name": "Error generating suggestion",
+                        "cached": False
+                    })
+
+        # Cache new suggestions
+        if new_suggestions:
+            try:
+                cached_count = cache_service.store_suggestions_batch(new_suggestions)
+                logging.info(f"Cached {cached_count} new suggestions")
+            except Exception as e:
+                logging.warning(f"Failed to cache new suggestions: {e}")
+
+        logging.info(f"Returned {len(suggested_transactions)} suggestions ({len(cached_suggestions)} from cache, {len(new_suggestions)} new)")
+        return jsonify(suggested_transactions)
+        
+    except Exception as e:
+        logging.error(f"Error suggesting categories: {e}")
+        return jsonify({"error": str(e)}), 500
 
 @app.route('/uncategorised-transactions/apply-categories', methods=['POST'])
 def apply_suggested_categories():
@@ -275,6 +383,28 @@ def apply_suggested_categories():
         return jsonify(result)
     except Exception as e:
         logging.error(f"Error applying categories: {e}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/uncategorised-transactions/apply-all-categories', methods=['POST'])
+def apply_all_categories():
+    """Apply all categories (both AI suggestions and manual changes) and learn from manual changes."""
+    budget_uuid = request.args.get('budget_id')
+    if not budget_uuid:
+        return jsonify({"error": "budget_id query parameter is required"}), 400
+
+    try:
+        # Get the transactions data from request body
+        data = request.get_json()
+        if not data or 'transactions' not in data:
+            return jsonify({"error": "transactions data is required in request body"}), 400
+        
+        transactions = data['transactions']
+        
+        # Delegate business logic to the service layer
+        result = apply_all_categories_service(budget_uuid, transactions)
+        return jsonify(result)
+    except Exception as e:
+        logging.error(f"Error applying all categories: {e}")
         return jsonify({"error": str(e)}), 500
 
 @app.route('/uncategorised-transactions/suggest-categories-batch', methods=['GET'])
@@ -611,6 +741,236 @@ def reload_country_config():
         })
     
     except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/uncategorised-transactions/suggestions-async', methods=['POST'])
+def get_suggestions_async():
+    """Get AI suggestions for specific transactions (progressive loading)."""
+    logging.info(f"POST /suggestions-async called - query params: {dict(request.args)}")
+    
+    budget_uuid = request.args.get('budget_id')
+    if not budget_uuid:
+        logging.warning("Missing budget_id query parameter")
+        return jsonify({"error": "budget_id query parameter is required"}), 400
+
+    try:
+        # Get transaction IDs from request body
+        data = request.get_json()
+        logging.info(f"Request JSON data: {data}")
+        
+        if not data or 'transaction_ids' not in data:
+            logging.warning(f"Invalid request body - data: {data}")
+            return jsonify({"error": "transaction_ids required in request body"}), 400
+        
+        transaction_ids = data['transaction_ids']
+        logging.info(f"Processing {len(transaction_ids)} transaction IDs for async suggestions")
+        
+        # Delegate to async service
+        result = get_suggestions_async_service(budget_uuid, transaction_ids)
+        return jsonify(result)
+        
+    except Exception as e:
+        logging.error(f"Error getting async suggestions: {e}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/uncategorised-transactions/suggestions-cached', methods=['GET'])
+def get_cached_suggestions():
+    """Get cached AI suggestions for immediate display using simple cache in localtransactions."""
+    budget_uuid = request.args.get('budget_id')
+    if not budget_uuid:
+        return jsonify({"error": "budget_id query parameter is required"}), 400
+
+    try:
+        result = get_cached_suggestions_service(budget_uuid)
+        return jsonify(result)
+        
+    except Exception as e:
+        logging.error(f"Error getting cached suggestions: {e}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/uncategorised-transactions/suggest-single', methods=['POST'])
+def suggest_single_transaction():
+    """Get AI suggestion for a single transaction (optimized for real-time UI)."""
+    budget_uuid = request.args.get('budget_id')
+    if not budget_uuid:
+        return jsonify({"error": "budget_id query parameter is required"}), 400
+
+    try:
+        # Get transaction data from request body
+        data = request.get_json()
+        if not data or 'transaction_id' not in data:
+            return jsonify({"error": "transaction_id required in request body"}), 400
+        
+        transaction_id = data['transaction_id']
+        
+        # Get transaction details - we might need to fetch it or it could be provided
+        if 'transaction' in data:
+            # Transaction details provided in request
+            transaction = data['transaction']
+        else:
+            # Need to fetch transaction from YNAB API
+            uncategorized_transactions = get_uncategorized_transactions(budget_uuid)
+            transaction = next((tx for tx in uncategorized_transactions if tx["id"] == transaction_id), None)
+            
+            if not transaction:
+                return jsonify({"error": f"Transaction {transaction_id} not found"}), 404
+
+        # Check cache first using simple cache
+        try:
+            from .ai_suggestions_simple import SimpleAISuggestionsService
+            cache_service = SimpleAISuggestionsService(budget_uuid)
+            cached_suggestion = cache_service.get_cached_suggestion(transaction_id)
+            
+            if cached_suggestion:
+                return jsonify({
+                    "transaction_id": transaction_id,
+                    "suggested_category_name": cached_suggestion,
+                    "confidence": 0.8,
+                    "cached": True,
+                    "processing_time_ms": 0
+                })
+        except Exception as e:
+            logging.warning(f"Cache check failed for {transaction_id}: {e}")
+
+        # Generate new suggestion
+        budget_id = get_objectid_for_budget(budget_uuid)
+        categories = get_categories_for_budget(budget_id)
+        
+        import time
+        start_time = time.time()
+        
+        suggested_category_name = suggest_category(transaction, categories, budget_uuid)
+        
+        processing_time = int((time.time() - start_time) * 1000)
+        
+        # Cache the new suggestion
+        try:
+            cache_service.store_suggestion(
+                transaction_id, 
+                transaction["payee_name"], 
+                suggested_category_name, 
+                0.8
+            )
+        except Exception as e:
+            logging.warning(f"Failed to cache suggestion for {transaction_id}: {e}")
+        
+        return jsonify({
+            "transaction_id": transaction_id,
+            "suggested_category_name": suggested_category_name,
+            "confidence": 0.8,
+            "cached": False,
+            "processing_time_ms": processing_time
+        })
+        
+    except Exception as e:
+        logging.error(f"Error getting single suggestion: {e}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/uncategorised-transactions/apply-single', methods=['POST'])
+def apply_single_category():
+    """Apply category for a single transaction."""
+    budget_uuid = request.args.get('budget_id')
+    if not budget_uuid:
+        return jsonify({"error": "budget_id query parameter is required"}), 400
+
+    try:
+        # Get transaction data from request body
+        data = request.get_json()
+        if not data or 'transaction_id' not in data or 'category_name' not in data:
+            return jsonify({"error": "transaction_id and category_name required in request body"}), 400
+        
+        transaction_id = data['transaction_id']
+        category_name = data['category_name']
+        
+        # Get budget data
+        budget_id = get_objectid_for_budget(budget_uuid)
+        categories = get_categories_for_budget(budget_id)
+        
+        # Find the category ID
+        category = next((cat for cat in categories if cat["name"] == category_name), None)
+        if not category:
+            return jsonify({"error": f"Category '{category_name}' not found"}), 404
+        
+        category_id = category["uuid"]  # Use uuid, not _id
+        
+        # Get original transaction details for learning
+        uncategorized_transactions = get_uncategorized_transactions(budget_uuid)
+        original_transaction = next((tx for tx in uncategorized_transactions if tx["id"] == transaction_id), None)
+        
+        if not original_transaction:
+            return jsonify({"error": f"Transaction {transaction_id} not found"}), 404
+        
+        # Check if this is a manual override by comparing with AI suggestion
+        is_manual_change = False
+        payee_name = original_transaction["payee_name"]
+        
+        try:
+            # Check if we have an AI suggestion cached for this transaction
+            from .ai_suggestions_simple import SimpleAISuggestionsService
+            cache_service = SimpleAISuggestionsService(budget_uuid)
+            ai_suggestion = cache_service.get_cached_suggestion(transaction_id)
+            
+            # If AI suggested something different, this is a manual change
+            if ai_suggestion and ai_suggestion.lower() != category_name.lower():
+                is_manual_change = True
+                logging.info(f"Manual override detected: AI suggested '{ai_suggestion}', user chose '{category_name}'")
+            elif not ai_suggestion:
+                # No AI suggestion cached, consider it manual
+                is_manual_change = True
+                logging.info(f"No AI suggestion found, treating as manual categorization")
+                
+        except Exception as e:
+            logging.warning(f"Could not determine if manual change: {e}")
+            # Assume manual if we can't determine
+            is_manual_change = True
+        
+        # Learn from manual changes
+        learned_mapping = False
+        if is_manual_change:
+            try:
+                from .payee_mappings_mongo import MongoPayeeMappingsManager
+                mappings_manager = MongoPayeeMappingsManager(budget_uuid)
+                mappings_manager.add_mapping(payee_name, category_name)
+                learned_mapping = True
+                logging.info(f"🧠 Learned new mapping: '{payee_name}' → '{category_name}'")
+            except Exception as e:
+                logging.warning(f"Failed to save payee mapping for '{payee_name}': {e}")
+
+        # Update the transaction in YNAB
+        try:
+            memo_suffix = "manual" if is_manual_change else "AI single"
+            flag_color = "purple" if is_manual_change else "green"  # Purple for manual, green for AI
+            
+            update_data = {
+                "transaction": {
+                    "category_id": category_id,
+                    "approved": True,
+                    "flag_color": flag_color,
+                    "memo": f"AI: {category_name} ({memo_suffix})"
+                }
+            }
+            
+            response = fetch("PUT", f"budgets/{budget_uuid}/transactions/{transaction_id}", update_data)
+            
+            learning_message = " (learned for future)" if learned_mapping else ""
+            logging.info(f"Successfully applied single category '{category_name}' to transaction {transaction_id}{learning_message}")
+            
+            return jsonify({
+                "transaction_id": transaction_id,
+                "category_name": category_name,
+                "category_id": category_id,
+                "success": True,
+                "is_manual_change": is_manual_change,
+                "learned_mapping": learned_mapping,
+                "message": f"Applied '{category_name}' to transaction{learning_message}"
+            })
+            
+        except Exception as e:
+            logging.error(f"Failed to update transaction {transaction_id} in YNAB: {e}")
+            return jsonify({"error": f"Failed to update transaction in YNAB: {str(e)}"}), 500
+        
+    except Exception as e:
+        logging.error(f"Error applying single category: {e}")
         return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':

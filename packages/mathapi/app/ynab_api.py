@@ -59,8 +59,6 @@ def get_uncategorized_transactions(budget_id):
     # Define the path for uncategorized transactions
     path = f"budgets/{budget_id}/transactions?type=uncategorized"
     result = fetch("GET", path)
-    # echo result
-    print(result)
     # filter out tranfers with Pyaee name "Transfer :"
     return [transaction for transaction in result.get("data", {}).get("transactions", []) if not transaction["payee_name"].startswith("Transfer :")]
     
