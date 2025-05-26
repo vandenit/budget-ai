@@ -294,7 +294,7 @@ def apply_batch_results_to_ynab(budget_uuid, batch_id):
         categories = get_categories_for_budget(budget_id)
 
         # Parse batch results
-        category_suggestions = parse_category_suggestions(batch_results, uncategorized_transactions)
+        category_suggestions = parse_category_suggestions(batch_results, uncategorized_transactions, categories)
         
         updated_transactions = []
         failed_transactions = []

@@ -1,6 +1,7 @@
 import os
 import json
 import time
+import logging
 from io import BytesIO
 from openai import OpenAI
 
@@ -64,6 +65,23 @@ def suggest_category(transaction, categories, budget_uuid=None):
     temperature=0.2)
     suggested_category = response.choices[0].message.content.strip()
     print(suggested_category)
+    
+    # Validate that the suggested category exists in available categories
+    category_names = [category["name"] for category in categories]
+    if suggested_category not in category_names:
+        logging.warning(f"AI suggested invalid category '{suggested_category}' for payee '{transaction['payee_name']}'. Available: {category_names}")
+        
+        # Try to find a close match (case-insensitive)
+        suggested_lower = suggested_category.lower()
+        for category_name in category_names:
+            if category_name.lower() == suggested_lower:
+                logging.info(f"Found case-insensitive match: '{suggested_category}' → '{category_name}'")
+                suggested_category = category_name
+                break
+        else:
+            # No close match found - return "Uncategorized" as fallback
+            logging.warning(f"No match found for '{suggested_category}', defaulting to 'Uncategorized'")
+            suggested_category = "Uncategorized"
     
     # Optional: Learn from this interaction if we want auto-learning
     # if budget_uuid:
@@ -234,9 +252,12 @@ def retrieve_batch_results(batch_job):
         return []
 
 
-def parse_category_suggestions(batch_results, transactions):
+def parse_category_suggestions(batch_results, transactions, categories=None):
     """Parse batch results and match them back to transactions."""
     suggestions = {}
+    
+    # Create category names list for validation
+    category_names = [category["name"] for category in categories] if categories else []
     
     for result in batch_results:
         try:
@@ -253,6 +274,23 @@ def parse_category_suggestions(batch_results, transactions):
             
             if 'response' in result and 'body' in result['response']:
                 suggested_category = result['response']['body']['choices'][0]['message']['content'].strip()
+                
+                # Validate category if categories provided
+                if categories and suggested_category not in category_names:
+                    logging.warning(f"Batch AI suggested invalid category '{suggested_category}'. Available: {category_names}")
+                    
+                    # Try to find a close match (case-insensitive)
+                    suggested_lower = suggested_category.lower()
+                    for category_name in category_names:
+                        if category_name.lower() == suggested_lower:
+                            logging.info(f"Found case-insensitive match: '{suggested_category}' → '{category_name}'")
+                            suggested_category = category_name
+                            break
+                    else:
+                        # No close match found - return "Uncategorized" as fallback
+                        logging.warning(f"No match found for '{suggested_category}', defaulting to 'Uncategorized'")
+                        suggested_category = "Uncategorized"
+                
                 suggestions[transaction_id] = suggested_category
             else:
                 print(f"No valid response for transaction {transaction_id}")
@@ -319,7 +357,7 @@ def suggest_categories_batch(transactions, categories, budget_uuid=None):
     
     # Retrieve and parse results
     batch_results = retrieve_batch_results(completed_job)
-    batch_suggestions = parse_category_suggestions(batch_results, remaining_transactions)
+    batch_suggestions = parse_category_suggestions(batch_results, remaining_transactions, categories)
     
     # Combine pre-mapped and batch suggestions
     suggestions.update(batch_suggestions)
