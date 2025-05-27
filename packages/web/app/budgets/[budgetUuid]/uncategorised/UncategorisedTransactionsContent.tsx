@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Category } from 'common-ts';
 import { applyCategories, applyAllCategories, getSuggestionsAsync, getSingleSuggestion, applySingleCategory } from './actions';
 import UncategorisedTransactionsList from './UncategorisedTransactionsList';
@@ -76,15 +76,22 @@ export default function UncategorisedTransactionsContent({
                         date: transaction.date
                     });
 
-                    // Update this specific transaction immediately ONLY if it hasn't been manually modified
-                    // Use ref to get the most current manually modified state
-                    const isManuallyModified = manuallyModifiedRef.current.has(transaction.transaction_id);
+                    // Double-check if this transaction was manually modified during the AI call
+                    // Use the most current state by checking both ref AND current component state
+                    setSuggestedTransactions(prev => {
+                        const currentTransaction = prev.find(tx => tx.transaction_id === transaction.transaction_id);
+                        const isCurrentlyManuallyModified = manuallyModifiedRef.current.has(transaction.transaction_id);
 
-                    if (isManuallyModified) {
-                        console.log(`🚫 Skipping AI suggestion for manually modified transaction: ${transaction.payee_name}`);
+                        // Additional safety: check if the transaction still exists and hasn't been removed
+                        if (!currentTransaction) {
+                            console.log(`🚫 Transaction ${transaction.transaction_id} no longer exists, skipping AI suggestion`);
+                            return prev; // No changes
+                        }
+
+                        if (isCurrentlyManuallyModified) {
+                            console.log(`🚫 Skipping AI suggestion for manually modified transaction: ${transaction.payee_name}`);
                         // Just update loading state but keep the manual category
-                        setSuggestedTransactions(prev =>
-                            prev.map(tx =>
+                            return prev.map(tx =>
                                 tx.transaction_id === transaction.transaction_id
                                     ? {
                                         ...tx,
@@ -92,13 +99,11 @@ export default function UncategorisedTransactionsContent({
                                         cached: result.cached
                                     }
                                     : tx
-                            )
-                        );
-                    } else {
-                        console.log(`✅ Applying AI suggestion for: ${transaction.payee_name} → ${result.suggested_category_name}`);
-                        // Apply AI suggestion
-                        setSuggestedTransactions(prev =>
-                            prev.map(tx =>
+                            );
+                        } else {
+                            console.log(`✅ Applying AI suggestion for: ${transaction.payee_name} → ${result.suggested_category_name}`);
+                            // Apply AI suggestion only if not manually modified
+                            return prev.map(tx =>
                                 tx.transaction_id === transaction.transaction_id
                                     ? {
                                         ...tx,
@@ -107,9 +112,9 @@ export default function UncategorisedTransactionsContent({
                                         cached: result.cached
                                     }
                                     : tx
-                            )
-                        );
-                    }
+                            );
+                        }
+                    });
 
                     successCount++;
                     console.log(`✅ ${result.cached ? '(cached)' : `(${result.processing_time_ms}ms)`} ${transaction.payee_name} → ${result.suggested_category_name}`);
@@ -271,7 +276,8 @@ export default function UncategorisedTransactionsContent({
         setApplyingTransactions(prev => new Set([...prev, transactionId]));
 
         try {
-            const result = await applySingleCategory(budgetUuid, transactionId, categoryName);
+            // Apply AI suggestion (not a manual change)
+            const result = await applySingleCategory(budgetUuid, transactionId, categoryName, false);
 
             if (result.success) {
                 // Remove the transaction from our list since it's now categorized
@@ -292,12 +298,57 @@ export default function UncategorisedTransactionsContent({
                     applied_count: 1
                 });
 
-                console.log(`✅ Successfully applied '${categoryName}' to transaction ${transactionId}`);
+                console.log(`✅ Successfully applied AI suggestion '${categoryName}' to transaction ${transactionId}`);
             }
         } catch (error) {
             console.error('Error applying single category:', error);
             setLastApplyResult({
                 error: `Failed to apply category: ${error}`
+            });
+        } finally {
+            // Remove from applying set
+            setApplyingTransactions(prev => {
+                const newSet = new Set(prev);
+                newSet.delete(transactionId);
+                return newSet;
+            });
+        }
+    };
+
+    const handleApplyManualCategory = async (transactionId: string, categoryName: string) => {
+        // Add to applying set
+        setApplyingTransactions(prev => new Set([...prev, transactionId]));
+
+        try {
+            // Apply manual change (with payee learning)
+            const result = await applySingleCategory(budgetUuid, transactionId, categoryName, true);
+
+            if (result.success) {
+                // Remove the transaction from our list since it's now categorized
+                setSuggestedTransactions(prev =>
+                    prev.filter(t => t.transaction_id !== transactionId)
+                );
+
+                // Remove from manually modified set if present
+                setManuallyModified(prev => {
+                    const newSet = new Set(prev);
+                    newSet.delete(transactionId);
+                    return newSet;
+                });
+
+                // Show success message with learning info
+                const learningInfo = result.learned_mapping ? ' (learned for future)' : '';
+                setLastApplyResult({
+                    message: `✅ Applied '${categoryName}' to transaction${learningInfo}`,
+                    applied_count: 1
+                });
+
+                console.log(`✅ Successfully applied manual category '${categoryName}' to transaction ${transactionId}${learningInfo}`);
+            }
+        } catch (error) {
+            console.error('Error applying manual category:', error);
+            setLastApplyResult({
+                error: `Failed to apply manual category: ${error}`
             });
         } finally {
             // Remove from applying set
@@ -357,6 +408,7 @@ export default function UncategorisedTransactionsContent({
                     onCategoryChange={handleManualCategoryChange}
                     onRemoveTransaction={handleRemoveTransaction}
                         onApplySingleCategory={handleApplySingleCategory}
+                        onApplyManualCategory={handleApplyManualCategory}
                 />
             )}
         </div>

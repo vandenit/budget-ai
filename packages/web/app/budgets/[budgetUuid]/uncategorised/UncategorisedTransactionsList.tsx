@@ -14,6 +14,7 @@ interface Props {
     onCategoryChange: (transactionId: string, newCategoryName: string) => void;
     onRemoveTransaction: (transactionId: string) => void;
     onApplySingleCategory: (transactionId: string, categoryName: string) => Promise<void>;
+    onApplyManualCategory: (transactionId: string, categoryName: string) => Promise<void>;
 }
 
 interface GroupedSuggestedTransactions {
@@ -30,7 +31,8 @@ export default function UncategorisedTransactionsList({
     applyingTransactions,
     onCategoryChange,
     onRemoveTransaction,
-    onApplySingleCategory
+    onApplySingleCategory,
+    onApplyManualCategory
 }: Props) {
     const [openDays, setOpenDays] = useState<{ [key: string]: boolean }>(() => {
         // Automatically open ALL dates by default for better UX
@@ -129,9 +131,11 @@ export default function UncategorisedTransactionsList({
         setEditingTransaction(transactionId);
     };
 
-    const handleCategorySave = (transactionId: string, newCategoryId: string) => {
+    const handleCategorySave = async (transactionId: string, newCategoryId: string) => {
         const selectedCategory = categories.find(c => c._id === newCategoryId);
         if (selectedCategory) {
+            // Only update the local state and mark as manual change
+            // Don't apply immediately - user still needs to click Apply
             onCategoryChange(transactionId, selectedCategory.name);
 
             // If we're in a filter that no longer applies to this transaction, switch to 'all'
@@ -148,6 +152,19 @@ export default function UncategorisedTransactionsList({
             }
         }
         setEditingTransaction(null);
+    };
+
+    const handleApplyClick = async (transactionId: string, categoryName: string) => {
+        // Check if this transaction was manually modified
+        const isManuallyModified = manuallyModified.has(transactionId);
+
+        if (isManuallyModified) {
+            // This is a manual change - apply with learning
+            await onApplyManualCategory(transactionId, categoryName);
+        } else {
+            // This is an AI suggestion - apply without learning
+            await onApplySingleCategory(transactionId, categoryName);
+        }
     };
 
     const filteredTransactions = getFilteredAndSortedTransactions();
@@ -459,8 +476,8 @@ export default function UncategorisedTransactionsList({
                                                                     {transaction.suggested_category_name && (
                                                                         <button
                                                                             className="btn btn-success btn-sm gap-1"
-                                                                            onClick={() => onApplySingleCategory(transaction.transaction_id, transaction.suggested_category_name!)}
-                                                                            title="Apply this category to YNAB"
+                                                                            onClick={() => handleApplyClick(transaction.transaction_id, transaction.suggested_category_name!)}
+                                                                            title={isManuallyModified ? "Apply manual change (with learning)" : "Apply AI suggestion"}
                                                                             disabled={isApplying}
                                                                         >
                                                                             {isApplying ? (
@@ -471,7 +488,7 @@ export default function UncategorisedTransactionsList({
                                                                             ) : (
                                                                                 <>
                                                                                     <FaCheck className="w-3 h-3" />
-                                                                                    Apply
+                                                                                        {isManuallyModified ? 'Apply & Learn' : 'Apply'}
                                                                                 </>
                                                                             )}
                                                                         </button>

@@ -6,7 +6,9 @@ Run this while the Flask server is running to test the endpoints.
 
 import requests
 import json
+import pytest
 
+@pytest.mark.integration
 def test_api_endpoints():
     budget_id = 'test-api-789'
     base_url = 'http://localhost:5000'

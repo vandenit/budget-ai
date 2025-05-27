@@ -43,6 +43,10 @@ export const getUncategorisedTransactions = async (budgetId: string) => mathApiF
     `uncategorised-transactions?budget_id=${budgetId}`
 );
 
+export const getUnapprovedTransactions = async (budgetId: string) => mathApiFetch(
+    `unapproved-transactions?budget_id=${budgetId}`
+);
+
 export const getCachedSuggestions = async (budgetId: string) => {
     return mathApiFetch(`uncategorised-transactions/suggestions-cached?budget_id=${budgetId}`);
 };
@@ -74,14 +78,15 @@ export const getSingleSuggestion = async (budgetId: string, transactionId: strin
     );
 };
 
-export const applySingleCategory = async (budgetId: string, transactionId: string, categoryName: string) => {
+export const applySingleCategory = async (budgetId: string, transactionId: string, categoryName: string, isManualChange: boolean = false) => {
     return mathApiFetch(
         `uncategorised-transactions/apply-single?budget_id=${budgetId}`,
         {
             method: 'POST',
             body: JSON.stringify({
                 transaction_id: transactionId,
-                category_name: categoryName
+                category_name: categoryName,
+                is_manual_change: isManualChange
             }),
         }
     );
@@ -102,4 +107,21 @@ export const applyAllCategories = async (budgetId: string, transactions: any[]) 
         method: "POST",
         body: JSON.stringify({ transactions })
     }
-); 
+);
+
+export const approveSingleTransaction = async (budgetId: string, transactionId: string) => {
+    return mathApiFetch(
+        `transactions/approve-single?budget_id=${budgetId}`,
+        {
+            method: "POST",
+            body: JSON.stringify({ transaction_id: transactionId })
+        }
+    );
+};
+
+export const approveAllTransactions = async (budgetId: string) => {
+    return mathApiFetch(
+        `transactions/approve-all?budget_id=${budgetId}`,
+        { method: "POST" }
+    );
+}; 

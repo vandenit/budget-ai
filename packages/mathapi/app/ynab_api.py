@@ -61,4 +61,30 @@ def get_uncategorized_transactions(budget_id):
     result = fetch("GET", path)
     # filter out tranfers with Pyaee name "Transfer :"
     return [transaction for transaction in result.get("data", {}).get("transactions", []) if not transaction["payee_name"].startswith("Transfer :")]
+
+def get_unapproved_transactions(budget_id):
+    """Fetch unapproved transactions for a given budget ID."""
+    if not budget_id:
+        raise ValueError("A budget ID is required")
+
+    # Get all transactions and filter for unapproved ones
+    path = f"budgets/{budget_id}/transactions"
+    result = fetch("GET", path)
+    all_transactions = result.get("data", {}).get("transactions", [])
     
+    # Filter for unapproved transactions (excluding transfers)
+    unapproved = []
+    for transaction in all_transactions:
+        # Handle None payee_name safely
+        payee_name = transaction.get("payee_name") or ""
+        
+        if payee_name.startswith("Transfer :"):
+            continue  # Skip transfers
+            
+        # Check if transaction needs approval
+        is_approved = transaction.get("approved", True)  # Default to True if not specified
+        
+        if not is_approved:
+            unapproved.append(transaction)
+    
+    return unapproved 

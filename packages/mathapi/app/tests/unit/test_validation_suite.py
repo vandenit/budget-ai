@@ -10,8 +10,8 @@ import os
 # Add the app directory to Python path for imports
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 
-from .test_ai_category_validation import test_ai_category_validation
-from .test_apply_all_service_validation import test_apply_all_service_validation
+from app.tests.unit.test_ai_category_validation import test_ai_category_validation
+from app.tests.unit.test_apply_all_service_validation import test_apply_all_service_validation
 
 def run_all_validation_tests():
     """

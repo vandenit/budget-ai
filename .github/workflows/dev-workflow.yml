@@ -24,7 +24,8 @@ jobs:
           cd packages/mathapi
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-          python -m pytest app/tests/
+          # Run only unit tests in CI - integration tests require real DB/API connections
+          python -m pytest app/tests/unit/ -v
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3

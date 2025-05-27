@@ -4,9 +4,11 @@ Test script for MongoDB-based payee mappings functionality.
 This tests the smart preprocessing and MongoDB storage.
 """
 
+import pytest
 from app.payee_mappings_mongo import MongoPayeeMappingsManager
 import os
 
+@pytest.mark.integration
 def test_mongo_payee_mappings():
     print("🧪 Testing MongoDB Payee Mappings Functionality")
     print("=" * 60)

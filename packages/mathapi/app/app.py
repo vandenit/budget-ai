@@ -14,7 +14,7 @@ from .ynab_service import (
     get_cached_suggestions_service,
     get_suggestions_async_service
 )
-from .ynab_api import get_scheduled_transactions, get_uncategorized_transactions, fetch
+from .ynab_api import get_scheduled_transactions, get_uncategorized_transactions, fetch, get_unapproved_transactions
 from .categories_api import get_categories_for_budget
 from .budget_api import get_objectid_for_budget
 from .accounts_api import get_accounts_for_budget
@@ -277,6 +277,51 @@ def get_uncategorised_transactions():
         
     except Exception as e:
         logging.error(f"Error fetching uncategorised transactions: {e}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/unapproved-transactions', methods=['GET'])
+@requires_auth
+def get_unapproved_transactions_endpoint():
+    """Get unapproved transactions for a budget."""
+    try:
+        user = get_user_from_request(request)
+        if not user:
+            return jsonify({"message": "User not found"}), 401
+            
+        budget_uuid = request.args.get('budget_id')
+        if not budget_uuid:
+            return jsonify({"error": "budget_id query parameter is required"}), 400
+        
+        # Verify budget ownership
+        budget = get_budget(budget_uuid, user)
+        if not budget:
+            return jsonify({"message": "Budget not found or access denied"}), 404
+
+        # Get unapproved transactions
+        unapproved_transactions = get_unapproved_transactions(budget_uuid)
+        
+        if not unapproved_transactions:
+            return jsonify([])
+
+        # Return transactions in a format similar to uncategorized transactions
+        transactions = []
+        for transaction in unapproved_transactions:
+            transactions.append({
+                "transaction_id": transaction["id"],
+                "payee_name": transaction.get("payee_name", ""),
+                "amount": transaction["amount"],
+                "date": transaction["date"],
+                "memo": transaction.get("memo", ""),
+                "category_name": transaction.get("category_name"),
+                "category_id": transaction.get("category_id"),
+                "approved": transaction.get("approved", False)
+            })
+
+        logging.info(f"Returned {len(transactions)} unapproved transactions")
+        return jsonify(transactions)
+        
+    except Exception as e:
+        logging.error(f"Error fetching unapproved transactions: {e}")
         return jsonify({"error": str(e)}), 500
 
 @app.route('/uncategorised-transactions/suggest-categories', methods=['GET'])
@@ -869,77 +914,58 @@ def suggest_single_transaction():
 @app.route('/uncategorised-transactions/apply-single', methods=['POST'])
 def apply_single_category():
     """Apply category for a single transaction."""
-    budget_uuid = request.args.get('budget_id')
-    if not budget_uuid:
-        return jsonify({"error": "budget_id query parameter is required"}), 400
-
     try:
-        # Get transaction data from request body
         data = request.get_json()
-        if not data or 'transaction_id' not in data or 'category_name' not in data:
-            return jsonify({"error": "transaction_id and category_name required in request body"}), 400
+        if not data:
+            return jsonify({"error": "No JSON data provided"}), 400
         
-        transaction_id = data['transaction_id']
-        category_name = data['category_name']
+        budget_uuid = request.args.get('budget_id')
+        if not budget_uuid:
+            return jsonify({"error": "budget_id query parameter is required"}), 400
         
-        # Get budget data
+        transaction_id = data.get('transaction_id')
+        category_name = data.get('category_name')
+        
+        if not transaction_id or not category_name:
+            return jsonify({"error": "transaction_id and category_name are required"}), 400
+        
+        # Fetch budget info to get ObjectId
         budget_id = get_objectid_for_budget(budget_uuid)
         categories = get_categories_for_budget(budget_id)
         
-        # Handle special case: "Ready to Assign" should not be applied (it means uncategorized)
-        if category_name == "Ready to Assign" or category_name == "Uncategorized":
-            return jsonify({"error": f"Cannot apply '{category_name}' - this indicates the transaction should remain uncategorized"}), 400
+        # Find the category ID by name
+        category_id = None
+        for cat in categories:
+            if cat["name"].lower() == category_name.lower():
+                category_id = cat["uuid"]
+                break
         
-        # Find the category ID
-        category = next((cat for cat in categories if cat["name"] == category_name), None)
-        if not category:
+        if not category_id:
             return jsonify({"error": f"Category '{category_name}' not found"}), 404
         
-        category_id = category["uuid"]  # Use uuid, not _id
-        
-        # Get original transaction details for learning
-        uncategorized_transactions = get_uncategorized_transactions(budget_uuid)
-        original_transaction = next((tx for tx in uncategorized_transactions if tx["id"] == transaction_id), None)
-        
-        if not original_transaction:
-            return jsonify({"error": f"Transaction {transaction_id} not found"}), 404
-        
-        # Check if this is a manual override by comparing with AI suggestion
-        is_manual_change = False
-        payee_name = original_transaction["payee_name"]
-        
-        try:
-            # Check if we have an AI suggestion cached for this transaction
-            from .ai_suggestions_simple import SimpleAISuggestionsService
-            cache_service = SimpleAISuggestionsService(budget_uuid)
-            ai_suggestion = cache_service.get_cached_suggestion(transaction_id)
-            
-            # If AI suggested something different, this is a manual change
-            if ai_suggestion and ai_suggestion.lower() != category_name.lower():
-                is_manual_change = True
-                logging.info(f"Manual override detected: AI suggested '{ai_suggestion}', user chose '{category_name}'")
-            elif not ai_suggestion:
-                # No AI suggestion cached, consider it manual
-                is_manual_change = True
-                logging.info(f"No AI suggestion found, treating as manual categorization")
-                
-        except Exception as e:
-            logging.warning(f"Could not determine if manual change: {e}")
-            # Assume manual if we can't determine
-            is_manual_change = True
-        
-        # Learn from manual changes
+        # Check if this is a manual change and should be learned as a payee mapping
+        is_manual_change = data.get('is_manual_change', False)
         learned_mapping = False
+        
         if is_manual_change:
+            # Get transaction details from YNAB to extract payee name
             try:
-                from .payee_mappings_mongo import MongoPayeeMappingsManager
-                mappings_manager = MongoPayeeMappingsManager(budget_uuid)
-                mappings_manager.add_mapping(payee_name, category_name)
-                learned_mapping = True
-                logging.info(f"🧠 Learned new mapping: '{payee_name}' → '{category_name}'")
+                ynab_path = f"budgets/{budget_uuid}/transactions/{transaction_id}"
+                ynab_result = fetch("GET", ynab_path)
+                transaction_data = ynab_result.get("data", {}).get("transaction", {})
+                payee_name = transaction_data.get("payee_name", "")
+                
+                if payee_name and not payee_name.startswith("Transfer :"):
+                    # Learn this as a payee mapping
+                    from .payee_mappings import PayeeMappingsManager
+                    mappings_manager = PayeeMappingsManager(budget_uuid)
+                    mappings_manager.add_mapping(payee_name, category_name)
+                    learned_mapping = True
+                    logging.info(f"Learned payee mapping: '{payee_name}' → '{category_name}'")
+                    
             except Exception as e:
-                logging.warning(f"Failed to save payee mapping for '{payee_name}': {e}")
-
+                logging.warning(f"Failed to learn payee mapping: {e}")
+        
         # Update the transaction in YNAB
         try:
             memo_suffix = "manual" if is_manual_change else "AI single"
@@ -977,6 +1003,133 @@ def apply_single_category():
         logging.error(f"Error applying single category: {e}")
         return jsonify({"error": str(e)}), 500
 
+@app.route('/transactions/approve-single', methods=['POST'])
+@requires_auth
+def approve_single_transaction():
+    """Approve a single transaction without changing category."""
+    try:
+        user = get_user_from_request(request)
+        if not user:
+            return jsonify({"message": "User not found"}), 401
+            
+        data = request.get_json()
+        if not data:
+            return jsonify({"error": "No JSON data provided"}), 400
+        
+        budget_uuid = request.args.get('budget_id')
+        if not budget_uuid:
+            return jsonify({"error": "budget_id query parameter is required"}), 400
+        
+        # Verify budget ownership
+        budget = get_budget(budget_uuid, user)
+        if not budget:
+            return jsonify({"message": "Budget not found or access denied"}), 404
+        
+        transaction_id = data.get('transaction_id')
+        
+        if not transaction_id:
+            return jsonify({"error": "transaction_id is required"}), 400
+        
+        # Update the transaction in YNAB to approve it (without changing category)
+        try:
+            update_data = {
+                "transaction": {
+                    "approved": True
+                }
+            }
+            
+            response = fetch("PUT", f"budgets/{budget_uuid}/transactions/{transaction_id}", update_data)
+            
+            if "error" in response:
+                return jsonify({"error": f"Failed to approve transaction: {response['error']}"}), 500
+            
+            logging.info(f"Successfully approved transaction {transaction_id}")
+            
+            return jsonify({
+                "transaction_id": transaction_id,
+                "success": True,
+                "message": "Transaction approved successfully"
+            })
+            
+        except Exception as e:
+            logging.error(f"Failed to approve transaction {transaction_id} in YNAB: {e}")
+            return jsonify({"error": f"Failed to approve transaction in YNAB: {str(e)}"}), 500
+        
+    except Exception as e:
+        logging.error(f"Error approving single transaction: {e}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/transactions/approve-all', methods=['POST'])
+@requires_auth  
+def approve_all_unapproved_transactions():
+    """Approve all unapproved transactions for a budget."""
+    try:
+        user = get_user_from_request(request)
+        if not user:
+            return jsonify({"message": "User not found"}), 401
+            
+        budget_uuid = request.args.get('budget_id')
+        if not budget_uuid:
+            return jsonify({"error": "budget_id query parameter is required"}), 400
+        
+        # Verify budget ownership
+        budget = get_budget(budget_uuid, user)
+        if not budget:
+            return jsonify({"message": "Budget not found or access denied"}), 404
+        
+        # Get all unapproved transactions
+        unapproved_transactions = get_unapproved_transactions(budget_uuid)
+        
+        if not unapproved_transactions:
+            return jsonify({
+                "message": "No unapproved transactions found",
+                "approved_count": 0
+            })
+        
+        approved_count = 0
+        failed_count = 0
+        errors = []
+        
+        for transaction in unapproved_transactions:
+            try:
+                transaction_id = transaction["id"]
+                
+                update_data = {
+                    "transaction": {
+                        "approved": True
+                    }
+                }
+                
+                response = fetch("PUT", f"budgets/{budget_uuid}/transactions/{transaction_id}", update_data)
+                
+                if "error" not in response:
+                    approved_count += 1
+                else:
+                    failed_count += 1
+                    errors.append(f"Transaction {transaction_id}: {response['error']}")
+                    
+            except Exception as e:
+                failed_count += 1
+                errors.append(f"Transaction {transaction.get('id', 'unknown')}: {str(e)}")
+        
+        logging.info(f"Approved {approved_count} transactions, {failed_count} failed")
+        
+        result = {
+            "approved_count": approved_count,
+            "failed_count": failed_count,
+            "total_processed": len(unapproved_transactions),
+            "success": failed_count == 0
+        }
+        
+        if errors:
+            result["errors"] = errors[:5]  # Limit to first 5 errors
+            
+        return jsonify(result)
+        
+    except Exception as e:
+        logging.error(f"Error approving all transactions: {e}")
+        return jsonify({"error": str(e)}), 500
+
 if __name__ == '__main__':
-    port = int(os.getenv('PORT', 5000))
-    app.run(host='0.0.0.0', port=port)
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port, debug=True)

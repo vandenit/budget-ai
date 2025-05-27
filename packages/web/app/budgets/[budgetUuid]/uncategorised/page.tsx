@@ -1,8 +1,9 @@
 import { Suspense } from 'react';
 import Loading from '../../../components/Loading';
-import UncategorisedTransactionsContent from './UncategorisedTransactionsContent';
+import TransactionsPageWithTabs from './TransactionsPageWithTabs';
 import { getCachedSuggestions } from '../../../api/math.server';
 import { getCategories } from '../../../api/categories.client';
+import { getUnapprovedTransactions } from './actions';
 import BudgetSubNavigation from '../../../components/budget-sub-navigation';
 
 interface PageProps {
@@ -15,14 +16,15 @@ export default async function UncategorisedTransactionsPage({ params }: PageProp
     const budgetUuid = params.budgetUuid;
 
     try {
-        // Get categories and cached suggestions in parallel
-        const [categories, cachedResult] = await Promise.all([
+        // Get categories, cached suggestions, and unapproved transactions in parallel
+        const [categories, cachedResult, unapprovedTransactions] = await Promise.all([
             getCategories(budgetUuid),
-            getCachedSuggestions(budgetUuid)
+            getCachedSuggestions(budgetUuid),
+            getUnapprovedTransactions(budgetUuid)
         ]);
 
         // Transform cached suggestions into transaction format for frontend
-        const transactions = cachedResult.uncategorized_transactions?.map((tx: any) => {
+        const uncategorizedTransactions = cachedResult.uncategorized_transactions?.map((tx: any) => {
             const suggestion = cachedResult.suggestions?.[tx.id];
 
             return {
@@ -36,29 +38,31 @@ export default async function UncategorisedTransactionsPage({ params }: PageProp
             };
         }) || [];
 
-        console.log(`🏦 Loaded uncategorised page with ${transactions.length} transactions`);
+        console.log(`🏦 Loaded transactions page with ${uncategorizedTransactions.length} uncategorized and ${unapprovedTransactions.length} unapproved transactions`);
         console.log(`💾 ${cachedResult.cache_stats?.cached_count || 0} cached suggestions available`);
 
         return (
             <>
                 <BudgetSubNavigation budgetUuid={budgetUuid} />
                 <div className="container mx-auto p-4">
-                    <h1 className="text-3xl font-bold mb-6 dark:text-white">Uncategorised Transactions</h1>
-                    <UncategorisedTransactionsContent
+                    <h1 className="text-3xl font-bold mb-6 dark:text-white">Transactions</h1>
+
+                    <TransactionsPageWithTabs
                         budgetUuid={budgetUuid}
                         categories={categories}
-                        initialTransactions={transactions}
+                        uncategorizedTransactions={uncategorizedTransactions}
+                        unapprovedTransactions={unapprovedTransactions}
                     />
                 </div>
             </>
         );
     } catch (error) {
-        console.error('Error loading uncategorised transactions:', error);
+        console.error('Error loading transactions:', error);
         return (
             <div className="container mx-auto p-4">
                 <h1 className="text-3xl font-bold mb-6 text-red-600">Error Loading Transactions</h1>
                 <p className="text-gray-600">
-                    Failed to load uncategorised transactions. Please try again.
+                    Failed to load transactions. Please try again.
                 </p>
                 <p className="text-sm text-gray-500 mt-2">
                     Error: {error instanceof Error ? error.message : 'Unknown error'}

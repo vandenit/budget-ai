@@ -1,157 +1,176 @@
-# Tests Organization 🧪
+# MathAPI Test Suite
 
-This directory contains all tests for the mathapi project, organized by category for clarity and maintainability.
+This project has a structured test suite with different test categories.
 
-## Directory Structure 📂
+## 📁 Test Structure
 
 ```
 app/tests/
-├── unit/                   # Pure unit tests (fast, no external deps)
-│   ├── test_domiciliering.py      # Domiciliëring pattern tests
-│   ├── test_country_config.py     # Country configuration tests
-│   ├── test_config_fallback.py    # Config fallback logic
-│   └── test_default_template.py   # Template rendering tests
-├── integration/            # Integration tests (database, API, external services)
-│   ├── test_batch_api.py          # Batch processing API tests
-│   ├── test_batch_endpoints.py    # Batch endpoint tests
-│   ├── test_batch_service.py      # Batch service layer tests
-│   ├── test_prediction_api.py     # Balance prediction API tests
-│   ├── test_fixtures_prediction_api.py # Prediction with fixtures
-│   ├── test_api_endpoints.py      # General API endpoint tests
-│   ├── test_mongo_payee_mappings.py # MongoDB payee mapping tests
-│   ├── test_ai_with_real_ynab.py  # AI integration with YNAB
-│   └── test_real_ynab_payee.py    # Real YNAB payee processing
-├── scenarios/              # End-to-end scenario tests
-│   ├── test_realistic_payee_scenarios.py # Realistic payee scenarios
-│   └── test_payee_mappings.py     # Payee mapping scenarios
-├── scripts/                # Test utilities and cleanup scripts
-│   ├── cleanup_mappings.py        # Database cleanup utility
-│   └── test_ui.py                 # UI testing utilities
-└── fixtures/               # Test data and fixtures
-    └── (test data files)
+├── unit/           # Unit tests (no external dependencies)
+├── integration/    # Integration tests (real DB/API connections)
+├── scenarios/      # End-to-end scenario tests
+└── fixtures/       # Test data and helpers
 ```
 
-## Running Tests 🚀
+## 🧪 Test Categories
 
-### **All Tests**
+### Unit Tests (`app/tests/unit/`)
+- ✅ **No external dependencies**
+- ✅ **Fast and reliable**
+- ✅ **Run in CI/CD**
+- ✅ **Mock all external calls**
+
+**Contains:**
+- AI category validation tests
+- Apply-all service validation tests
+- Business logic tests
+- Configuration tests
+
+### Integration Tests (`app/tests/integration/`)
+- ⚠️ **Require real database connections**
+- ⚠️ **Require running services**
+- ⚠️ **Not in CI/CD (for now)**
+- ✅ **End-to-end functionality**
+
+**Contains:**
+- MongoDB payee mappings tests
+- YNAB API integration tests
+- Flask API endpoint tests
+- Batch processing tests
+
+## 🚀 Running Tests
+
+### For Development (all tests)
 ```bash
-pytest
+cd packages/mathapi
+
+# All unit tests
+pytest app/tests/unit/ -v
+
+# All integration tests (requires services)
+pytest app/tests/integration/ -v
+
+# All tests
+pytest -v
 ```
 
-### **By Category**
+### For CI/CD (unit tests only)
 ```bash
-# Fast unit tests only
-pytest app/tests/unit/
+cd packages/mathapi
 
-# Integration tests (slower, requires external services)
-pytest app/tests/integration/
+# Unit tests only (used in GitHub Actions)
+pytest app/tests/unit/ -v
 
-# Realistic scenario tests
-pytest app/tests/scenarios/
+# Or with markers
+pytest -m "not integration" -v
 ```
 
-### **By Markers**
+### Validation Test Suite
 ```bash
-# Unit tests only (fast)
+# Comprehensive validation tests
+python app/tests/unit/test_validation_suite.py
+
+# Interactive test runner
+python app/tests/unit/test_validation_suite.py --interactive
+```
+
+## ⚙️ CI/CD Configuration
+
+**GitHub Actions** (`.github/workflows/dev-workflow.yml`):
+- ✅ Runs only **unit tests**
+- ❌ Skips **integration tests**
+- 📝 Uses: `pytest app/tests/unit/ -v`
+
+**Why no integration tests in CI:**
+- Require MongoDB database setup
+- Require running Flask server
+- Require YNAB API keys
+- Require external service configuration
+
+## 🏷️ Test Markers
+
+Tests are marked with pytest markers:
+
+```python
+@pytest.mark.unit          # Unit test (mocked dependencies)
+@pytest.mark.integration   # Integration test (real connections)
+@pytest.mark.slow         # Slow test (excluded from quick runs)
+```
+
+**Using markers:**
+```bash
+# Unit tests only
 pytest -m unit
 
-# Integration tests
+# Everything except integration tests
+pytest -m "not integration"
+
+# Integration tests only (local)
 pytest -m integration
-
-# Exclude slow tests
-pytest -m "not slow"
 ```
 
-### **Specific Test Files**
-```bash
-# Test domiciliëring preprocessing
-pytest app/tests/unit/test_domiciliering.py
+## 📊 Test Coverage
 
-# Test MongoDB integration
-pytest app/tests/integration/test_mongo_payee_mappings.py
+Unit tests cover:
+- ✅ AI category validation logic
+- ✅ Apply-all service validation
+- ✅ Error handling scenarios
+- ✅ Business logic validation
+- ✅ Configuration handling
 
-# Test realistic payee scenarios
-pytest app/tests/scenarios/test_realistic_payee_scenarios.py
-```
+Integration tests cover:
+- ✅ Database CRUD operations
+- ✅ API endpoint functionality
+- ✅ External service integration
+- ✅ End-to-end workflows
 
-### **With Coverage**
-```bash
-# Generate coverage report
-pytest --cov=app --cov-report=html --cov-report=term-missing
+## 🔧 Local Setup For Integration Tests
 
-# View coverage report
-open htmlcov/index.html
-```
+If you want to run integration tests locally:
 
-## Test Categories Explained 📋
+1. **MongoDB Setup:**
+   ```bash
+   # Start MongoDB (docker)
+   docker run -d -p 27017:27017 mongo:latest
+   
+   # Or use MongoDB Atlas
+   export MONGODB_URI="mongodb://localhost:27017"
+   ```
 
-### **Unit Tests** 🔬
-- **Purpose**: Test individual functions/classes in isolation
-- **Characteristics**: Fast, no external dependencies, no database/API calls
-- **Examples**: Config parsing, string preprocessing, business logic
+2. **Flask Server:**
+   ```bash
+   cd packages/mathapi
+   python app/app.py
+   ```
 
-### **Integration Tests** 🔗
-- **Purpose**: Test interaction between components and external services
-- **Characteristics**: Slower, requires database/API access, tests real integrations
-- **Examples**: Database operations, API endpoints, external service calls
+3. **YNAB API Keys:**
+   ```bash
+   export YNAB_API_KEY="your-api-key"
+   ```
 
-### **Scenario Tests** 🎭
-- **Purpose**: Test realistic end-to-end workflows
-- **Characteristics**: High-level tests, test complete user scenarios
-- **Examples**: Complete payee processing workflows, realistic data patterns
+4. **Run Integration Tests:**
+   ```bash
+   pytest app/tests/integration/ -v
+   ```
 
-## Development Guidelines 📝
+## 🐛 Troubleshooting
 
-### **Adding New Tests**
-1. **Determine category**: Is it unit, integration, or scenario?
-2. **Place in correct directory**: `unit/`, `integration/`, or `scenarios/`
-3. **Use appropriate markers**: Add `@pytest.mark.unit` etc.
-4. **Follow naming convention**: `test_feature_name.py`
+### Import Errors
+Make sure you're in the `packages/mathapi` directory.
 
-### **Test Naming**
-- **Files**: `test_feature_name.py`
-- **Classes**: `TestFeatureName`
-- **Methods**: `test_specific_behavior`
+### MongoDB Connection Errors
+Check if `MONGODB_URI` environment variable is set.
 
-### **Example Test Structure**
-```python
-import pytest
+### API Connection Errors
+For API tests, ensure the Flask server is running on `localhost:5000`.
 
-@pytest.mark.unit
-class TestPayeePreprocessing:
-    def test_domiciliering_pattern_removal(self):
-        # Test implementation
-        pass
-    
-    def test_belgian_bank_patterns(self):
-        # Test implementation
-        pass
-```
+### Test Discovery Issues
+Check if `__init__.py` files exist in test directories.
 
-### **Running Tests in CI/CD**
-```bash
-# Quick feedback loop (unit tests only)
-pytest app/tests/unit/
+## 📈 Future Extensions
 
-# Full test suite (for releases)
-pytest
-```
-
-## Utilities 🛠️
-
-### **Cleanup Scripts**
-```bash
-# Clean up test data
-python app/tests/scripts/cleanup_mappings.py
-```
-
-### **Test Data Management**
-- **Fixtures**: Stored in `fixtures/` directory
-- **Mock data**: Use pytest fixtures for consistent test data
-- **Database cleanup**: Automated cleanup in test teardown
-
----
-
-**📊 Test Metrics**: Run `pytest --cov=app` to see current test coverage
-**🐛 Debugging**: Use `pytest -v -s` for verbose output with print statements
-**⚡ Speed**: Unit tests should run in < 1s, integration tests in < 30s 
+- [ ] Test database setup in CI
+- [ ] Docker compose for integration tests
+- [ ] Performance benchmarking tests
+- [ ] Security vulnerability tests
+- [ ] Load testing for API endpoints 
