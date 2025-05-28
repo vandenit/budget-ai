@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
 """
-Test script for domiciliëring (direct debit) pattern preprocessing.
+Test script for direct debit pattern preprocessing.
 """
 
 from app.payee_mappings_mongo import MongoPayeeMappingsManager
 
-def test_domiciliering_patterns():
-    print('🧪 Testing domiciliëring pattern preprocessing:')
+def test_direct_debit_patterns():
+    print('🧪 Testing direct debit pattern preprocessing:')
     print('=' * 60)
-    
+
     manager = MongoPayeeMappingsManager('test-budget')
-    
+
     test_cases = [
         'het raster vzw domiciliëring 122401816796 30172-1 30172-1',
         'belgacom domiciliëring 987654321 12345-6',
@@ -21,15 +21,15 @@ def test_domiciliering_patterns():
         'proximus domiciliëring 111222333444555',
         'de lijn domiciliëring 777888999 11111-2 22222-3'
     ]
-    
-    print('Testing multiple domiciliëring patterns:')
+
+    print('Testing multiple direct debit patterns:')
     for test in test_cases:
         result = manager.test_preprocessing(test)
         print(f'  Original: {test[:50]}...')
         print(f'  Cleaned:  "{result}"')
         print()
-    
-    print('✅ All domiciliëring patterns tested!')
+
+    print('✅ All direct debit patterns tested!')
 
 if __name__ == '__main__':
-    test_domiciliering_patterns() 
+    test_direct_debit_patterns()

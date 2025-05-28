@@ -12,7 +12,7 @@ YNAB_BASE_URL = os.getenv("YNAB_BASE_URL")
 
 def fetch(method, path, body=None):
     """Performs an HTTP request to the YNAB API with the specified method and path."""
-    
+
     # Define the full URL by combining the base URL and path
     url = f"{YNAB_BASE_URL}{path}"
     headers = {
@@ -27,7 +27,7 @@ def fetch(method, path, body=None):
 
         # Return the parsed JSON response
         return response.json()
-    
+
     except requests.exceptions.HTTPError as http_err:
         print(f"HTTP error occurred: {http_err}")
         return {"error": f"HTTP error occurred: {http_err}"}
@@ -37,14 +37,14 @@ def fetch(method, path, body=None):
 
 def get_scheduled_transactions(budget_id):
     """Fetches scheduled transactions for a given budget ID from the YNAB API."""
-    
+
     if not budget_id:
         raise ValueError("A budget ID is required")
 
     # Define the path for scheduled transactions and use the fetch function
     path = f"budgets/{budget_id}/scheduled_transactions"
     result = fetch("GET", path)
-    
+
     # Extract only the scheduled transactions data if no error occurred
     if "error" not in result:
         return result.get("data", {}).get("scheduled_transactions", [])
@@ -59,7 +59,7 @@ def get_uncategorized_transactions(budget_id):
     # Define the path for uncategorized transactions
     path = f"budgets/{budget_id}/transactions?type=uncategorized"
     result = fetch("GET", path)
-    # filter out tranfers with Pyaee name "Transfer :"
+    # filter out transfers with Payee name "Transfer :"
     return [transaction for transaction in result.get("data", {}).get("transactions", []) if not transaction["payee_name"].startswith("Transfer :")]
 
 def get_unapproved_transactions(budget_id):
@@ -71,20 +71,20 @@ def get_unapproved_transactions(budget_id):
     path = f"budgets/{budget_id}/transactions"
     result = fetch("GET", path)
     all_transactions = result.get("data", {}).get("transactions", [])
-    
+
     # Filter for unapproved transactions (excluding transfers)
     unapproved = []
     for transaction in all_transactions:
         # Handle None payee_name safely
         payee_name = transaction.get("payee_name") or ""
-        
+
         if payee_name.startswith("Transfer :"):
             continue  # Skip transfers
-            
+
         # Check if transaction needs approval
         is_approved = transaction.get("approved", True)  # Default to True if not specified
-        
+
         if not is_approved:
             unapproved.append(transaction)
-    
-    return unapproved 
+
+    return unapproved
