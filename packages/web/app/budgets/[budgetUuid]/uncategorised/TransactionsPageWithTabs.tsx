@@ -40,36 +40,50 @@ export default function TransactionsPageWithTabs({
     return (
         <div className="space-y-6">
             {/* Tab Navigation */}
-            <div className="tabs tabs-boxed bg-base-200 p-1">
-                <button
-                    className={`tab tab-lg ${activeTab === 'uncategorized' ? 'tab-active' : ''}`}
-                    onClick={() => setActiveTab('uncategorized')}
-                >
-                    <span className="flex items-center gap-2">
-                        <span className="text-xl">📝</span>
+            <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-2">
+                <div className="flex gap-2">
+                    <button
+                        className={`inline-flex items-center gap-3 px-6 py-3 text-sm font-medium rounded-lg transition-all duration-200 relative ${activeTab === 'uncategorized'
+                                ? 'bg-blue-100 text-blue-800 border border-blue-200 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-800 shadow-sm'
+                                : 'text-slate-600 hover:text-slate-800 hover:bg-slate-50 dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-slate-800'
+                            }`}
+                        onClick={() => setActiveTab('uncategorized')}
+                    >
+                        <span className="text-lg">📝</span>
                         <span>Uncategorized</span>
                         {uncategorizedCount > 0 && (
-                            <div className="badge badge-primary">
+                            <span className="inline-flex items-center justify-center w-5 h-5 text-xs font-bold bg-red-100 text-red-800 rounded-full dark:bg-red-900/20 dark:text-red-300">
                                 {uncategorizedCount}
-                            </div>
+                            </span>
                         )}
-                    </span>
-                </button>
 
-                <button
-                    className={`tab tab-lg ${activeTab === 'unapproved' ? 'tab-active' : ''}`}
-                    onClick={() => setActiveTab('unapproved')}
-                >
-                    <span className="flex items-center gap-2">
-                        <span className="text-xl">⏳</span>
+                        {/* Active indicator */}
+                        {activeTab === 'uncategorized' && (
+                            <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-8 h-0.5 bg-blue-500 rounded-full"></div>
+                        )}
+                    </button>
+
+                    <button
+                        className={`inline-flex items-center gap-3 px-6 py-3 text-sm font-medium rounded-lg transition-all duration-200 relative ${activeTab === 'unapproved'
+                                ? 'bg-blue-100 text-blue-800 border border-blue-200 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-800 shadow-sm'
+                                : 'text-slate-600 hover:text-slate-800 hover:bg-slate-50 dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-slate-800'
+                            }`}
+                        onClick={() => setActiveTab('unapproved')}
+                    >
+                        <span className="text-lg">⏳</span>
                         <span>Unapproved</span>
                         {unapprovedCount > 0 && (
-                            <div className="badge badge-warning">
+                            <span className="inline-flex items-center justify-center w-5 h-5 text-xs font-bold bg-amber-100 text-amber-800 rounded-full dark:bg-amber-900/20 dark:text-amber-300">
                                 {unapprovedCount}
-                            </div>
+                            </span>
                         )}
-                    </span>
-                </button>
+
+                        {/* Active indicator */}
+                        {activeTab === 'unapproved' && (
+                            <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-8 h-0.5 bg-blue-500 rounded-full"></div>
+                        )}
+                    </button>
+                </div>
             </div>
 
             {/* Tab Content */}
@@ -92,4 +106,4 @@ export default function TransactionsPageWithTabs({
             </div>
         </div>
     );
-} 
+}
