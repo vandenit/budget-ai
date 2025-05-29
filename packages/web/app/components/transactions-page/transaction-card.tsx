@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { Category } from 'common-ts';
 import { TransactionAmount } from './transaction-amount';
 import { TransactionBadge, CategoryBadge, BadgeType } from './transaction-badge';
+import { CategoryEditor } from './category-editor';
 import { FaEdit, FaTrash, FaCheck } from 'react-icons/fa';
 
 // Base transaction interface that all transaction types should extend
@@ -10,6 +12,8 @@ export interface BaseTransaction {
   payeeName?: string;
   date: string;
   memo?: string;
+  id?: string;
+  transaction_id?: string;
 }
 
 // Props for the transaction card component
@@ -20,9 +24,12 @@ interface TransactionCardProps<T extends BaseTransaction> {
   showCategory?: boolean;
   showActions?: boolean;
   showMemo?: boolean;
+  enableCategoryEdit?: boolean;
 
   // Category information
   categoryName?: string;
+  categoryId?: string;
+  categories?: Category[];
   categoryBadgeProps?: {
     isManuallyModified?: boolean;
     isUncategorized?: boolean;
@@ -39,6 +46,7 @@ interface TransactionCardProps<T extends BaseTransaction> {
   onEdit?: () => void;
   onRemove?: () => void;
   onApply?: () => void;
+  onCategoryChange?: (transactionId: string, categoryId: string, categoryName: string) => Promise<void>;
 
   // Loading states
   isApplying?: boolean;
@@ -54,12 +62,16 @@ export function TransactionCard<T extends BaseTransaction>({
   showCategory = true,
   showActions = false,
   showMemo = true,
+  enableCategoryEdit = false,
   categoryName,
+  categoryId,
+  categories = [],
   categoryBadgeProps,
   statusBadge,
   onEdit,
   onRemove,
   onApply,
+  onCategoryChange,
   isApplying = false,
   isEditing = false,
   className = '',
@@ -117,7 +129,22 @@ export function TransactionCard<T extends BaseTransaction>({
         {showCategory && (
           <div className="flex items-center gap-2 min-w-0">
             <span className="text-sm font-medium whitespace-nowrap">Category:</span>
-            {isEditing ? (
+            {enableCategoryEdit && categories.length > 0 && onCategoryChange ? (
+              <CategoryEditor
+                currentCategoryName={categoryName}
+                currentCategoryId={categoryId}
+                categories={categories}
+                onSave={async (categoryId, categoryName) => {
+                  const transactionId = transaction.id || transaction.transaction_id;
+                  if (transactionId) {
+                    await onCategoryChange(transactionId, categoryId, categoryName);
+                  }
+                }}
+                isLoading={isEditing}
+                size="sm"
+                className="flex-shrink-0"
+              />
+            ) : isEditing ? (
               <div className="flex items-center gap-2">
                 <span className="loading loading-dots loading-sm"></span>
                 <span className="text-sm text-gray-500">Editing...</span>
