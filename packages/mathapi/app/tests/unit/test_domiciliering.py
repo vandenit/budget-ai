@@ -4,6 +4,21 @@ Test script for direct debit pattern preprocessing.
 """
 
 import pytest
+from unittest.mock import MagicMock
+import sys
+
+# Mock MongoDB dependencies at the module level before any imports
+sys.modules['pymongo'] = MagicMock()
+sys.modules['pymongo.errors'] = MagicMock()
+sys.modules['bson'] = MagicMock()
+sys.modules['bson.objectid'] = MagicMock()
+
+# Mock the models module to prevent MongoDB connection
+import app.models
+app.models.client = MagicMock()
+app.models.db = MagicMock()
+
+# Now we can safely import the modules we want to test
 from app.payee_mappings_mongo import MongoPayeeMappingsManager
 
 
