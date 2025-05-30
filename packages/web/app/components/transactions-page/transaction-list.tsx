@@ -31,7 +31,7 @@ export const TransactionList = ({
       // Update the local state to reflect the category change
       setUpdatedTransactions(prev =>
         prev.map(t =>
-          (t.uuid === transactionId || t.id === transactionId)
+          (t.uuid === transactionId)
             ? { ...t, categoryId: categories.find(c => c.name === categoryName)?._id || null }
             : t
         )
