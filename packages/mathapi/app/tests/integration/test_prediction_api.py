@@ -346,11 +346,10 @@ def test_process_need_categories():
 @pytest.fixture
 def base_projection():
     """Create a base projection for testing different spending scenarios."""
-    base_date = datetime.now().date()
+    # Create projection for 2 years starting from Jan 1, 2025
+    start_date = datetime(2025, 1, 1).date()
     projection = {}
     
-    # Create projection starting from the first of the current month
-    start_date = base_date.replace(day=1)
     # Create projection for 2 years
     for day in range(730):
         date = (start_date + timedelta(days=day)).isoformat()
@@ -555,4 +554,94 @@ def test_spending_with_scheduled_transactions(base_projection):
     scheduled = next(c for c in changes if c["reason"] == "Scheduled Transaction")
     remaining = next(c for c in changes if c["reason"] == "Future Month Target")
     assert scheduled["amount"] == -50.0
-    assert remaining["amount"] == -50.0  # Remaining amount to reach target 
+    assert remaining["amount"] == -50.0  # Remaining amount to reach target
+
+def test_current_month_salary_prediction_without_balance(base_projection):
+    """Test salary predictions for current month (without balance) and future month."""
+    # Set current date to May 2, 2025
+    today = datetime(2025, 5, 2).date()
+    
+    category = {
+        "name": "Salery",
+        "balance": 0,
+        "target": {
+            "goal_type": "NEED",
+            "goal_target": 7348210,  # €7348.21 (in milliunits)
+            "goal_cadence": 1,
+            "goal_cadence_frequency": 1,
+            "goal_day": 4,
+            "goal_target_month": None,
+            "goal_overall_left": 7348210
+        }
+    }
+    
+    apply_need_category_spending(
+        base_projection,
+        category,
+        category["target"],
+        0,  # current_balance
+        7348.21,  # target_amount (in regular units)
+        60,  # days_ahead
+        7348.21  # global_overall_left (in regular units)
+    )
+    
+    # Check May 4th (current month)
+    may_date = datetime(2025, 5, 4).date().isoformat()
+    may_changes = [c for c in base_projection[may_date]["changes"] 
+                  if c["category"] == "Salery"]
+    assert len(may_changes) == 1, "Should have salary entry for May 4th"
+    assert may_changes[0]["amount"] == -7348.21, "May salary amount should be correct"
+    assert may_changes[0]["reason"] == "Current Month Target", "May should be marked as Current Month Target"
+    
+    # Check June 4th (next month)
+    june_date = datetime(2025, 6, 4).date().isoformat()
+    june_changes = [c for c in base_projection[june_date]["changes"] 
+                   if c["category"] == "Salery"]
+    assert len(june_changes) == 1, "Should have salary entry for June 4th"
+    assert june_changes[0]["amount"] == -7348.21, "June salary amount should be correct"
+    assert june_changes[0]["reason"] == "Future Month Target", "June should be marked as Future Month Target"
+
+def test_current_month_salary_prediction_with_balance(base_projection):
+    """Test salary predictions when there is a current balance."""
+    # Set current date to May 2, 2025
+    today = datetime(2025, 5, 2).date()
+    
+    category = {
+        "name": "Salery",
+        "balance": 3674105,  # Half of the target amount (in milliunits)
+        "target": {
+            "goal_type": "NEED",
+            "goal_target": 7348210,  # €7348.21 (in milliunits)
+            "goal_cadence": 1,
+            "goal_cadence_frequency": 1,
+            "goal_day": 4,
+            "goal_target_month": None,
+            "goal_overall_left": 7348210
+        }
+    }
+    
+    apply_need_category_spending(
+        base_projection,
+        category,
+        category["target"],
+        3674.105,  # current_balance (in regular units)
+        7348.21,  # target_amount (in regular units)
+        60,  # days_ahead
+        7348.21  # global_overall_left (in regular units)
+    )
+    
+    # Check May 4th (current month)
+    may_date = datetime(2025, 5, 4).date().isoformat()
+    may_changes = [c for c in base_projection[may_date]["changes"] 
+                  if c["category"] == "Salery"]
+    assert len(may_changes) == 1, "Should have salary entry for May 4th"
+    assert may_changes[0]["amount"] == -3674.105, "May salary should use current_balance"
+    assert may_changes[0]["reason"] == "Current Month Balance", "May should use current balance"
+    
+    # Check June 4th (next month)
+    june_date = datetime(2025, 6, 4).date().isoformat()
+    june_changes = [c for c in base_projection[june_date]["changes"] 
+                   if c["category"] == "Salery"]
+    assert len(june_changes) == 1, "Should have salary entry for June 4th"
+    assert june_changes[0]["amount"] == -7348.21, "June salary should use full target amount"
+    assert june_changes[0]["reason"] == "Future Month Target", "June should be marked as Future Month Target" 

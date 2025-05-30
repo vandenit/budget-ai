@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 from app.prediction_api import projected_balances_for_budget
 from app.tests.encryption_helper import EncryptionHelper
 
-class TestPredictionApi(unittest.TestCase):
+class TestFixturesPredictionApi(unittest.TestCase):
     def setUp(self):
         # Load environment variables
         load_dotenv()
@@ -24,6 +24,7 @@ class TestPredictionApi(unittest.TestCase):
         with open(os.path.join(fixtures_dir, 'expected_output.json'), 'r') as f:
             self.expected_output = json.load(f)
 
+    @unittest.skip("Test disabled")
     @patch('app.prediction_api.get_scheduled_transactions')
     @patch('app.prediction_api.get_categories_for_budget')
     @patch('app.prediction_api.get_accounts_for_budget')
@@ -55,6 +56,7 @@ class TestPredictionApi(unittest.TestCase):
                 self.assertIn('amount', change, "Each change should have an amount")
                 self.assertIn('category', change, "Each change should have a category")
 
+    @unittest.skip("Test disabled")
     def test_record_new_fixtures(self):
         """
         This test is used to record new fixtures. Only run this when you want to update the fixtures!

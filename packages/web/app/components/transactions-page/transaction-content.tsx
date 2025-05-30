@@ -87,7 +87,12 @@ const TransactionContent = ({
           />
         )}
         {viewMode === "list" && (
-          <TransactionList transactions={filteredTransactions} categories={categories} />
+          <TransactionList
+            transactions={filteredTransactions}
+            categories={categories}
+            budgetUuid={budgetUuid}
+            enableCategoryEdit={true}
+          />
         )}
         {viewMode === "payeeChart" && (
           <PayeeChart payeesWithActivities={payeesWithActivities} />

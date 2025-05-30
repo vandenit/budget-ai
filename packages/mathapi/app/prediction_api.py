@@ -261,9 +261,11 @@ def apply_need_category_spending(daily_projection, category, target, current_bal
 
         # Handle current month targets
         if is_current_month:
-            # For the current month, use the current balance as spending
+            remaining_amount = max(0, target_amount - scheduled_amount)
             if current_balance > 0:
                 apply_transaction(daily_projection, date_str, current_balance, category["name"], "Current Month Balance")
+            elif remaining_amount > 0:
+                apply_transaction(daily_projection, date_str, remaining_amount, category["name"], "Current Month Target")
             continue
 
         # Handle goal_target_month logic for non-yearly cadences

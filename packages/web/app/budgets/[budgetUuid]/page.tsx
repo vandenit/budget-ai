@@ -1,9 +1,15 @@
 import BudgetPage from "../../components/budget-page";
+import BudgetSubNavigation from "../../components/budget-sub-navigation";
 
 async function BudgetRoute({ params }: { params: { budgetUuid: string } }) {
   const { budgetUuid } = params;
 
-  return <BudgetPage budgetUuid={budgetUuid} />;
+  return (
+    <>
+      <BudgetSubNavigation budgetUuid={budgetUuid} />
+      <BudgetPage budgetUuid={budgetUuid} />
+    </>
+  );
 }
 
 export default BudgetRoute;
