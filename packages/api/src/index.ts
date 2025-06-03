@@ -29,6 +29,11 @@ const checkJwt = auth({
 app.use(cors());
 app.use(express.json());
 
+// Health check endpoint
+app.get("/health", (req, res) => {
+  res.json({ status: "ok", service: "budget-ai-api" });
+});
+
 // routes
 app.use("/budgets", checkJwt, budgetRoutes);
 
@@ -44,8 +49,6 @@ app.use("/scheduled-transactions", checkJwt, scheduledTransactionRoutes);
 
 // The error handler must be registered before any other error middleware and after all controllers
 Sentry.setupExpressErrorHandler(app);
-
-
 
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {

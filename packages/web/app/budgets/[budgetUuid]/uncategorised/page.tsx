@@ -1,7 +1,5 @@
-import { Suspense } from 'react';
-import Loading from '../../../components/Loading';
 import TransactionsPageWithTabs from './TransactionsPageWithTabs';
-import { getCachedSuggestions } from '../../../api/math.server';
+import { getUncategorizedTransactions } from '../../../api/ai-suggestions.server';
 import { getCategories } from '../../../api/categories.client';
 import { getUnapprovedTransactions } from './actions';
 import BudgetSubNavigation from '../../../components/budget-sub-navigation';
@@ -16,30 +14,28 @@ export default async function UncategorisedTransactionsPage({ params }: PageProp
     const budgetUuid = params.budgetUuid;
 
     try {
-        // Get categories, cached suggestions, and unapproved transactions in parallel
-        const [categories, cachedResult, unapprovedTransactions] = await Promise.all([
+        // Get categories, uncategorized transactions (with cached suggestions), and unapproved transactions in parallel
+        const [categories, uncategorizedTransactions, unapprovedTransactions] = await Promise.all([
             getCategories(budgetUuid),
-            getCachedSuggestions(budgetUuid),
+            getUncategorizedTransactions(budgetUuid),
             getUnapprovedTransactions(budgetUuid)
         ]);
 
-        // Transform cached suggestions into transaction format for frontend
-        const uncategorizedTransactions = cachedResult.uncategorized_transactions?.map((tx: any) => {
-            const suggestion = cachedResult.suggestions?.[tx.id];
+        // Transform Node.js response to match frontend expectations
+        const formattedUncategorizedTransactions = uncategorizedTransactions.map((tx: any) => ({
+            transaction_id: tx.transaction_id,
+            payee_name: tx.payee_name,
+            amount: tx.amount,
+            date: tx.date,
+            suggested_category_name: tx.ai_suggested_category || null,
+            loading_suggestion: !tx.ai_suggested_category, // Need to load if no cached suggestion
+            cached: !!tx.ai_suggested_category
+        }));
 
-            return {
-                transaction_id: tx.id,
-                payee_name: tx.payee_name,
-                amount: tx.amount,
-                date: tx.date,
-                suggested_category_name: suggestion?.suggested_category_name || null,
-                loading_suggestion: !suggestion, // Need to load if no cached suggestion
-                cached: suggestion?.cached || false
-            };
-        }) || [];
+        const cachedCount = formattedUncategorizedTransactions.filter(tx => tx.cached).length;
 
-        console.log(`🏦 Loaded transactions page with ${uncategorizedTransactions.length} uncategorized and ${unapprovedTransactions.length} unapproved transactions`);
-        console.log(`💾 ${cachedResult.cache_stats?.cached_count || 0} cached suggestions available`);
+        console.log(`🏦 Loaded transactions page with ${formattedUncategorizedTransactions.length} uncategorized and ${unapprovedTransactions.length} unapproved transactions`);
+        console.log(`💾 ${cachedCount} cached suggestions available`);
 
         return (
             <>
@@ -50,7 +46,7 @@ export default async function UncategorisedTransactionsPage({ params }: PageProp
                     <TransactionsPageWithTabs
                         budgetUuid={budgetUuid}
                         categories={categories}
-                        uncategorizedTransactions={uncategorizedTransactions}
+                        uncategorizedTransactions={formattedUncategorizedTransactions}
                         unapprovedTransactions={unapprovedTransactions}
                     />
                 </div>
@@ -70,4 +66,4 @@ export default async function UncategorisedTransactionsPage({ params }: PageProp
             </div>
         );
     }
-} 
+}
