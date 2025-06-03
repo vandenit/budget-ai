@@ -75,3 +75,171 @@ export const insertOrUpdateMissingTransaction = async (
     await LocalTransaction.updateOne({ uuid }, newData).exec();
   }
 };
+
+/**
+ * Get uncategorized transactions (transactions without a category)
+ */
+export const getUncategorizedTransactions = async (
+  budgetId: string
+): Promise<Transaction[]> => {
+  await connectDb();
+
+  const localTransactions = await LocalTransaction.find({
+    budgetId,
+    $or: [{ categoryId: null }, { categoryId: undefined }, { categoryId: "" }],
+  }).sort({ date: -1 });
+
+  return localTransactions.map((transaction) => ({
+    uuid: transaction.uuid,
+    accountName: transaction.accountName,
+    amount: transaction.amount,
+    date: transaction.date,
+    categoryId: transaction.categoryId,
+    payeeName: transaction.payeeName,
+    cleanPayeeName: extractPayeeName(transaction.payeeName),
+    memo: transaction.memo,
+  }));
+};
+
+/**
+ * Get cached AI suggestion for a transaction
+ * Uses same field structure as Python SimpleAISuggestionsService
+ */
+export const getCachedAISuggestion = async (
+  budgetId: string,
+  transactionId: string
+): Promise<string | null> => {
+  await connectDb();
+
+  const transaction = await LocalTransaction.findOne({
+    budgetId,
+    uuid: transactionId,
+    ai_suggested_category: { $exists: true, $ne: null },
+  });
+
+  if (transaction?.ai_suggested_category) {
+    // Check if suggestion is not too old (7 days, same as Python)
+    const suggestionDate = transaction.ai_suggestion_date;
+    if (suggestionDate) {
+      const age = Date.now() - suggestionDate.getTime();
+      const daysDiff = age / (1000 * 60 * 60 * 24);
+      if (daysDiff <= 7) {
+        return transaction.ai_suggested_category;
+      }
+      return null; // Expired
+    }
+    // Old suggestion without date - still valid
+    return transaction.ai_suggested_category;
+  }
+
+  return null;
+};
+
+/**
+ * Get cached AI suggestions for multiple transactions
+ * Uses same logic as Python SimpleAISuggestionsService.get_cached_suggestions_batch
+ */
+export const getCachedAISuggestionsBatch = async (
+  budgetId: string,
+  transactionIds: string[]
+): Promise<Record<string, string>> => {
+  await connectDb();
+
+  const transactions = await LocalTransaction.find({
+    budgetId,
+    uuid: { $in: transactionIds },
+    ai_suggested_category: { $exists: true, $ne: null },
+  });
+
+  const result: Record<string, string> = {};
+  const cutoffDate = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000); // 7 days ago
+
+  transactions.forEach((transaction) => {
+    const suggestionDate = transaction.ai_suggestion_date;
+
+    // Check if not expired (or no date = keep it, same as Python)
+    if (!suggestionDate || suggestionDate >= cutoffDate) {
+      result[transaction.uuid] = transaction.ai_suggested_category;
+    }
+  });
+
+  return result;
+};
+
+/**
+ * Get all cached AI suggestions for a budget
+ * Returns all cached suggestions without filtering by transaction IDs
+ */
+export const getAllCachedAISuggestionsForBudget = async (budgetId: string) => {
+  await connectDb();
+
+  const transactions = await LocalTransaction.find({
+    budgetId,
+    ai_suggested_category: { $exists: true, $ne: null },
+  })
+    .sort({ ai_suggestion_date: -1 })
+    .limit(1000);
+
+  return transactions.map((transaction) => ({
+    transaction_id: transaction.uuid,
+    payee_name: transaction.payeeName ?? "",
+    suggested_category_name: transaction.ai_suggested_category ?? "",
+    confidence: transaction.ai_suggestion_confidence ?? 0.8,
+    cached_at: transaction.ai_suggestion_date ?? new Date(),
+  }));
+};
+
+/**
+ * Store AI suggestion for a transaction
+ * Uses same logic as Python SimpleAISuggestionsService.store_suggestion
+ */
+export const storeAISuggestion = async (
+  budgetId: string,
+  transactionId: string,
+  payeeName: string,
+  suggestedCategory: string,
+  confidence: number = 0.8
+): Promise<boolean> => {
+  await connectDb();
+
+  try {
+    // Try to update existing transaction
+    const result = await LocalTransaction.findOneAndUpdate(
+      { budgetId, uuid: transactionId },
+      {
+        $set: {
+          ai_suggested_category: suggestedCategory,
+          ai_suggestion_date: new Date(),
+          ai_suggestion_confidence: confidence,
+        },
+      },
+      { upsert: false }
+    );
+
+    if (result) {
+      return true;
+    } else {
+      // Transaction might not exist in local collection yet
+      // Create a minimal document for caching (same as Python)
+      await LocalTransaction.findOneAndUpdate(
+        { budgetId, uuid: transactionId },
+        {
+          $set: {
+            budgetId,
+            uuid: transactionId,
+            payeeName,
+            ai_suggested_category: suggestedCategory,
+            ai_suggestion_date: new Date(),
+            ai_suggestion_confidence: confidence,
+            _cache_only: true, // Mark as cache-only document
+          },
+        },
+        { upsert: true }
+      );
+      return true;
+    }
+  } catch (error) {
+    console.error("Error storing AI suggestion:", error);
+    return false;
+  }
+};

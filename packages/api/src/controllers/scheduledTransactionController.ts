@@ -31,11 +31,16 @@ export const update = async (req: Request, res: Response) => {
 export const remove = async (req: RequestWithUser, res: Response) => {
     const { transactionId } = req.params;
 
-    // Check if user has access to this budget
-    const budget = await getBudgetFromReq(req);
-
+    const user = await getUserFromReq(req);
+    if (!user) {
+        throw new Error("no user found");
+    }
+    const budget = await getBudget(req.params.uuid, user);
+    if (!budget) {
+        throw new Error(`budget ${req.params.uuid} does not belong to user`);
+    } 
     await ynabService.deleteScheduledTransaction(
-        req.user,
+        user,
         budget.uuid,
         transactionId
     );

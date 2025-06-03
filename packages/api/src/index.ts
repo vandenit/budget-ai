@@ -1,4 +1,4 @@
-const { auth, requiredScopes } = require("express-oauth2-jwt-bearer");
+const { auth } = require("express-oauth2-jwt-bearer");
 require("./instrument.ts");
 const Sentry = require("@sentry/node");
 import express from "express";
@@ -29,6 +29,11 @@ const checkJwt = auth({
 app.use(cors());
 app.use(express.json());
 
+// Health check endpoint
+app.get("/health", (_req, res) => {
+  res.json({ status: "ok", service: "budget-ai-api" });
+});
+
 // routes
 app.use("/budgets", checkJwt, budgetRoutes);
 
@@ -45,15 +50,13 @@ app.use("/scheduled-transactions", checkJwt, scheduledTransactionRoutes);
 // The error handler must be registered before any other error middleware and after all controllers
 Sentry.setupExpressErrorHandler(app);
 
-
-
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
 
 // Add the /metrics endpoint
-app.get("/metrics", async (req, res) => {
+app.get("/metrics", async (_req, res) => {
   res.setHeader("Content-Type", register.contentType);
   res.send(await register.metrics());
 });

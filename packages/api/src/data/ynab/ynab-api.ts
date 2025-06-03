@@ -138,8 +138,59 @@ export const getUncategorizedOrUnApprovedTransactions = async (
   budgetId: string,
   user: UserType
 ): Promise<ynab.TransactionsResponseData> => {
-  const api = await getApi(user);
   return getTransactionsInternal({ budgetId, type: "uncategorized", user });
+};
+
+/**
+ * Get uncategorized transactions from YNAB API
+ */
+export const getUncategorizedTransactions = async (
+  budgetId: string,
+  user: UserType
+): Promise<ynab.TransactionDetail[]> => {
+  const data = await getTransactionsInternal({
+    budgetId,
+    type: "uncategorized",
+    user,
+  });
+
+  // Filter out transfers (payee_name starts with "Transfer :")
+  const filtered = data.transactions.filter(
+    (transaction) => !transaction.payee_name?.startsWith("Transfer :")
+  );
+
+  return filtered;
+};
+
+/**
+ * Get unapproved transactions from YNAB API
+ * Similar to Python implementation
+ */
+export const getUnapprovedTransactions = async (
+  budgetId: string,
+  user: UserType
+): Promise<ynab.TransactionDetail[]> => {
+  // Get all transactions and filter for unapproved ones
+  const data = await getTransactionsInternal({ budgetId, user });
+
+  const unapproved: ynab.TransactionDetail[] = [];
+  for (const transaction of data.transactions) {
+    // Handle None payee_name safely
+    const payeeName = transaction.payee_name || "";
+
+    if (payeeName.startsWith("Transfer :")) {
+      continue; // Skip transfers
+    }
+
+    // Check if transaction needs approval
+    const isApproved = transaction.approved ?? true; // Default to true if not specified
+
+    if (!isApproved) {
+      unapproved.push(transaction);
+    }
+  }
+
+  return unapproved;
 };
 
 type CategoriesWithKnowledge = {
@@ -208,16 +259,16 @@ export const updateScheduledTransaction = async (
 
   // Custom REST call to update a scheduled transaction
   const url = `${YNAB_API_BASE_URL}/budgets/${budgetId}/scheduled_transactions/${transactionId}`;
-  
+
   try {
     const response = await fetch(url, {
-      method: 'PUT',
+      method: "PUT",
       headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+        Accept: "application/json",
       },
-      body: JSON.stringify(data)
+      body: JSON.stringify(data),
     });
 
     if (!response.ok) {
@@ -227,7 +278,7 @@ export const updateScheduledTransaction = async (
 
     return await response.json();
   } catch (error) {
-    console.error('Error updating scheduled transaction:', error);
+    console.error("Error updating scheduled transaction:", error);
     throw error;
   }
 };
@@ -244,14 +295,14 @@ export const deleteScheduledTransaction = async (
 
   // Custom REST call to delete a scheduled transaction
   const url = `${YNAB_API_BASE_URL}/budgets/${budgetId}/scheduled_transactions/${transactionId}`;
-  
+
   try {
     const response = await fetch(url, {
-      method: 'DELETE',
+      method: "DELETE",
       headers: {
-        'Authorization': `Bearer ${token}`,
-        'Accept': 'application/json'
-      }
+        Authorization: `Bearer ${token}`,
+        Accept: "application/json",
+      },
     });
 
     if (!response.ok) {
@@ -261,7 +312,7 @@ export const deleteScheduledTransaction = async (
 
     return await response.json();
   } catch (error) {
-    console.error('Error deleting scheduled transaction:', error);
+    console.error("Error deleting scheduled transaction:", error);
     throw error;
   }
 };

@@ -21,6 +21,11 @@ const localTransactionSchema = new Schema({
   },
   payeeName: String,
   memo: String,
+  // AI suggestions caching (same as Python implementation)
+  ai_suggested_category: String,
+  ai_suggestion_date: Date,
+  ai_suggestion_confidence: Number,
+  _cache_only: Boolean, // For cache-only documents
 });
 
 export const LocalTransaction =

@@ -1,4 +1,5 @@
 import TransactionsPage from "../../../components/transactions-page";
+import BudgetSubNavigation from "../../../components/budget-sub-navigation";
 
 async function TransactionsRoute({
   params,
@@ -9,13 +10,17 @@ async function TransactionsRoute({
 }) {
   const { budgetUuid } = params;
   const { categoryUuid, month, dayOfMonth } = searchParams;
+
   return (
-    <TransactionsPage
-      budgetUuid={budgetUuid}
-      categoryUuid={categoryUuid}
-      month={month}
-      dayOfMonth={dayOfMonth}
-    />
+    <>
+      <BudgetSubNavigation budgetUuid={budgetUuid} />
+      <TransactionsPage
+        budgetUuid={budgetUuid}
+        categoryUuid={categoryUuid}
+        month={month}
+        dayOfMonth={dayOfMonth}
+      />
+    </>
   );
 }
 
