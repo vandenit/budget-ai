@@ -10,6 +10,16 @@ interface PageProps {
     };
 }
 
+interface FormattedTransaction {
+    transaction_id: string;
+    payee_name: string;
+    amount: number;
+    date: string;
+    suggested_category_name: string | null;
+    loading_suggestion: boolean;
+    cached: boolean;
+}
+
 export default async function UncategorisedTransactionsPage({ params }: PageProps) {
     const budgetUuid = params.budgetUuid;
 
@@ -22,7 +32,7 @@ export default async function UncategorisedTransactionsPage({ params }: PageProp
         ]);
 
         // Transform Node.js response to match frontend expectations
-        const formattedUncategorizedTransactions = uncategorizedTransactions.map((tx: any) => ({
+        const formattedUncategorizedTransactions: FormattedTransaction[] = uncategorizedTransactions.map((tx: any) => ({
             transaction_id: tx.transaction_id,
             payee_name: tx.payee_name,
             amount: tx.amount,
@@ -32,7 +42,7 @@ export default async function UncategorisedTransactionsPage({ params }: PageProp
             cached: !!tx.ai_suggested_category
         }));
 
-        const cachedCount = formattedUncategorizedTransactions.filter(tx => tx.cached).length;
+        const cachedCount = formattedUncategorizedTransactions.filter((tx: FormattedTransaction) => tx.cached).length;
 
         console.log(`🏦 Loaded transactions page with ${formattedUncategorizedTransactions.length} uncategorized and ${unapprovedTransactions.length} unapproved transactions`);
         console.log(`💾 ${cachedCount} cached suggestions available`);

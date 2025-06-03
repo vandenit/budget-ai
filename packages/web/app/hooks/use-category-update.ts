@@ -21,7 +21,7 @@ export const useCategoryUpdate = ({
 
   const updateCategory = async (
     transactionId: string,
-    categoryId: string,
+    _categoryId: string, // Not used but kept for API compatibility
     categoryName: string,
     isManualChange: boolean = true
   ) => {

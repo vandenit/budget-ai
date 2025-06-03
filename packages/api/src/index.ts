@@ -1,4 +1,4 @@
-const { auth, requiredScopes } = require("express-oauth2-jwt-bearer");
+const { auth } = require("express-oauth2-jwt-bearer");
 require("./instrument.ts");
 const Sentry = require("@sentry/node");
 import express from "express";
@@ -30,7 +30,7 @@ app.use(cors());
 app.use(express.json());
 
 // Health check endpoint
-app.get("/health", (req, res) => {
+app.get("/health", (_req, res) => {
   res.json({ status: "ok", service: "budget-ai-api" });
 });
 
@@ -56,7 +56,7 @@ app.listen(PORT, () => {
 });
 
 // Add the /metrics endpoint
-app.get("/metrics", async (req, res) => {
+app.get("/metrics", async (_req, res) => {
   res.setHeader("Content-Type", register.contentType);
   res.send(await register.metrics());
 });

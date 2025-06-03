@@ -138,7 +138,6 @@ export const getUncategorizedOrUnApprovedTransactions = async (
   budgetId: string,
   user: UserType
 ): Promise<ynab.TransactionsResponseData> => {
-  const api = await getApi(user);
   return getTransactionsInternal({ budgetId, type: "uncategorized", user });
 };
 
