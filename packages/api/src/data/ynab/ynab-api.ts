@@ -283,6 +283,66 @@ export const updateScheduledTransaction = async (
   }
 };
 
+/**
+ * Get scheduled transactions for a budget from YNAB API
+ */
+export const getScheduledTransactions = async (
+  budgetId: string,
+  user: UserType
+): Promise<ynab.ScheduledTransactionDetail[]> => {
+  const api = await getApi(user);
+  const { data } = await api.scheduledTransactions.getScheduledTransactions(
+    budgetId
+  );
+  return data.scheduled_transactions;
+};
+
+/**
+ * Update a single transaction in YNAB
+ */
+export const updateTransaction = async (
+  budgetId: string,
+  transactionId: string,
+  transactionData: {
+    category_id?: string;
+    payee_name?: string;
+    memo?: string;
+    approved?: boolean;
+  },
+  user: UserType
+): Promise<ynab.TransactionDetail> => {
+  const api = await getApi(user);
+  const { data } = await api.transactions.updateTransaction(
+    budgetId,
+    transactionId,
+    {
+      transaction: transactionData,
+    }
+  );
+  return data.transaction;
+};
+
+/**
+ * Update multiple transactions in YNAB
+ */
+export const updateTransactions = async (
+  budgetId: string,
+  transactions: Array<{
+    id: string;
+    category_id?: string;
+    payee_name?: string;
+    memo?: string;
+    approved?: boolean;
+  }>,
+  user: UserType
+): Promise<ynab.TransactionDetail[]> => {
+  const api = await getApi(user);
+  const { data } = await api.transactions.updateTransactions(budgetId, {
+    transactions: transactions,
+  });
+  return data.transactions || [];
+};
+
 export const deleteScheduledTransaction = async (
   budgetId: string,
   transactionId: string,

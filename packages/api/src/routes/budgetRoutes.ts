@@ -10,6 +10,14 @@ import {
   getUncategorizedTransactionsForBudget,
   getUnapprovedTransactionsForBudget,
   getCachedSuggestionsForBudget,
+  suggestSingleTransaction,
+  getSuggestionsAsync,
+  applySingleCategory,
+  approveSingleTransaction,
+  approveAllTransactions,
+  applyCategories,
+  applyAllCategories,
+  suggestCategoriesForUncategorized,
 } from "../controllers/aiSuggestionsController";
 
 const router = Router();
@@ -41,6 +49,50 @@ router.get(
 router.get(
   "/:uuid/ai-suggestions/cached",
   handleRequest(getCachedSuggestionsForBudget)
+);
+
+// OpenAI-powered AI suggestion endpoints
+router.post(
+  "/:uuid/ai-suggestions/suggest-single",
+  handleRequest(suggestSingleTransaction)
+);
+
+router.post(
+  "/:uuid/ai-suggestions/suggestions-async",
+  handleRequest(getSuggestionsAsync)
+);
+
+// Transaction categorization and approval endpoints
+router.post(
+  "/:uuid/ai-suggestions/apply-single",
+  handleRequest(applySingleCategory)
+);
+
+router.post(
+  "/:uuid/transactions/approve-single",
+  handleRequest(approveSingleTransaction)
+);
+
+router.post(
+  "/:uuid/transactions/approve-all",
+  handleRequest(approveAllTransactions)
+);
+
+// Bulk categorization endpoints
+router.post(
+  "/:uuid/ai-suggestions/apply-categories",
+  handleRequest(applyCategories)
+);
+
+router.post(
+  "/:uuid/ai-suggestions/apply-all-categories",
+  handleRequest(applyAllCategories)
+);
+
+// Batch suggestion endpoint
+router.get(
+  "/:uuid/ai-suggestions/suggest-categories",
+  handleRequest(suggestCategoriesForUncategorized)
 );
 
 export default router;

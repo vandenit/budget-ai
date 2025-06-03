@@ -388,7 +388,19 @@ export const updateScheduledTransaction = async (
     );
     return response.data.scheduled_transaction;
   } catch (error) {
-    console.error('Failed to update scheduled transaction:', error);
+    console.error("Failed to update scheduled transaction:", error);
+    throw error;
+  }
+};
+
+export const getScheduledTransactions = async (
+  user: UserType,
+  budgetId: string
+) => {
+  try {
+    return await ynabApi.getScheduledTransactions(budgetId, user);
+  } catch (error) {
+    console.error("Failed to get scheduled transactions:", error);
     throw error;
   }
 };
@@ -401,7 +413,7 @@ export const deleteScheduledTransaction = async (
   try {
     await ynabApi.deleteScheduledTransaction(budgetId, transactionId, user);
   } catch (error) {
-    console.error('Failed to delete scheduled transaction:', error);
+    console.error("Failed to delete scheduled transaction:", error);
     throw error;
   }
 };

@@ -1,4 +1,4 @@
-import { getToken } from "./client";
+import { getToken, apiFetch } from "./client";
 import { handleServerApiResponse } from "./utils.server";
 
 const mathApiFetch = async (
@@ -41,30 +41,27 @@ export const getPrediction = async (
     `balance-prediction/data?budget_id=${budgetId}&days_ahead=${daysAhead}`
   );
 
-export const getScheduledTransactions = async (budgetId: string) =>
-  mathApiFetch(`sheduled-transactions?budget_id=${budgetId}`);
-
 // These endpoints have been migrated to Node.js API
-// Import from ai-suggestions.server.ts instead
+// Import from respective client modules instead
 export {
   getUncategorizedTransactions as getUncategorisedTransactions,
   getUnapprovedTransactions,
   getCachedSuggestions,
 } from "./ai-suggestions.server";
 
+export { getScheduledTransactions } from "./scheduledTransactions.client";
+
+// These endpoints have been migrated to Node.js API
 export const getSuggestionsAsync = async (
   budgetId: string,
   transactionIds: string[]
 ) => {
-  return mathApiFetch(
-    `uncategorised-transactions/suggestions-async?budget_id=${budgetId}`,
-    {
-      method: "POST",
-      body: JSON.stringify({
-        transaction_ids: transactionIds,
-      }),
-    }
-  );
+  return apiFetch(`budgets/${budgetId}/ai-suggestions/suggestions-async`, {
+    method: "POST",
+    body: JSON.stringify({
+      transaction_ids: transactionIds,
+    }),
+  });
 };
 
 export const getSingleSuggestion = async (
@@ -77,69 +74,58 @@ export const getSingleSuggestion = async (
     body.transaction = transaction;
   }
 
-  return mathApiFetch(
-    `uncategorised-transactions/suggest-single?budget_id=${budgetId}`,
-    {
-      method: "POST",
-      body: JSON.stringify(body),
-    }
-  );
+  return apiFetch(`budgets/${budgetId}/ai-suggestions/suggest-single`, {
+    method: "POST",
+    body: JSON.stringify(body),
+  });
 };
 
+// Migrated to Node.js API
 export const applySingleCategory = async (
   budgetId: string,
   transactionId: string,
   categoryName: string,
   isManualChange: boolean = false
 ) => {
-  return mathApiFetch(
-    `uncategorised-transactions/apply-single?budget_id=${budgetId}`,
-    {
-      method: "POST",
-      body: JSON.stringify({
-        transaction_id: transactionId,
-        category_name: categoryName,
-        is_manual_change: isManualChange,
-      }),
-    }
-  );
+  return apiFetch(`budgets/${budgetId}/ai-suggestions/apply-single`, {
+    method: "POST",
+    body: JSON.stringify({
+      transaction_id: transactionId,
+      category_name: categoryName,
+      is_manual_change: isManualChange,
+    }),
+  });
 };
 
+// Migrated to Node.js API
 export const suggestCategories = async (budgetId: string) =>
-  mathApiFetch(
-    `uncategorised-transactions/suggest-categories?budget_id=${budgetId}`
-  );
+  apiFetch(`budgets/${budgetId}/ai-suggestions/suggest-categories`);
 
-export const applyCategories = async (budgetId: string) =>
-  mathApiFetch(
-    `uncategorised-transactions/apply-categories?budget_id=${budgetId}`,
-    { method: "POST" }
-  );
+// Migrated to Node.js API
+export const applyCategories = async (budgetId: string, transactions: any[]) =>
+  apiFetch(`budgets/${budgetId}/ai-suggestions/apply-categories`, {
+    method: "POST",
+    body: JSON.stringify({ transactions }),
+  });
 
-export const applyAllCategories = async (
-  budgetId: string,
-  transactions: any[]
-) =>
-  mathApiFetch(
-    `uncategorised-transactions/apply-all-categories?budget_id=${budgetId}`,
-    {
-      method: "POST",
-      body: JSON.stringify({ transactions }),
-    }
-  );
+export const applyAllCategories = async (budgetId: string) =>
+  apiFetch(`budgets/${budgetId}/ai-suggestions/apply-all-categories`, {
+    method: "POST",
+  });
 
+// Migrated to Node.js API
 export const approveSingleTransaction = async (
   budgetId: string,
   transactionId: string
 ) => {
-  return mathApiFetch(`transactions/approve-single?budget_id=${budgetId}`, {
+  return apiFetch(`budgets/${budgetId}/transactions/approve-single`, {
     method: "POST",
     body: JSON.stringify({ transaction_id: transactionId }),
   });
 };
 
 export const approveAllTransactions = async (budgetId: string) => {
-  return mathApiFetch(`transactions/approve-all?budget_id=${budgetId}`, {
+  return apiFetch(`budgets/${budgetId}/transactions/approve-all`, {
     method: "POST",
   });
 };
