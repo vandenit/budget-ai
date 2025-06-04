@@ -51,6 +51,18 @@ router.get(
   handleRequest(getCachedSuggestionsForBudget)
 );
 
+// Debug endpoint to test JSON parsing
+router.post("/:uuid/debug-json", (req, res) => {
+  console.log("🔍 Debug endpoint - req.body:", req.body);
+  console.log("🔍 Debug endpoint - req.headers:", req.headers);
+  console.log("🔍 Debug endpoint - content-type:", req.headers["content-type"]);
+  res.json({
+    received_body: req.body,
+    body_keys: Object.keys(req.body || {}),
+    content_type: req.headers["content-type"],
+  });
+});
+
 // OpenAI-powered AI suggestion endpoints
 router.post(
   "/:uuid/ai-suggestions/suggest-single",

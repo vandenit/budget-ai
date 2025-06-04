@@ -23,6 +23,9 @@ export const approveSingleTransaction = async (
   return apiFetch(`budgets/${budgetId}/transactions/approve-single`, {
     method: "POST",
     body: JSON.stringify({ transaction_id: transactionId }),
+    headers: {
+      "Content-Type": "application/json",
+    },
   });
 };
 
@@ -32,5 +35,8 @@ export const approveSingleTransaction = async (
 export const approveAllTransactions = async (budgetId: string) => {
   return apiFetch(`budgets/${budgetId}/transactions/approve-all`, {
     method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
   });
 };

@@ -164,25 +164,40 @@ export const getCachedSuggestionsForBudget = async (
  */
 export const suggestSingleTransaction = async (req: Request, res: Response) => {
   try {
+    console.log(
+      `🔍 suggestSingleTransaction called for budget ${req.params.uuid}`
+    );
+    console.log(`📝 Request body:`, JSON.stringify(req.body, null, 2));
+
     const user = await getUserFromReq(req);
     if (!user) {
+      console.log("❌ Unauthorized - no user found");
       return res.status(401).json({ error: "Unauthorized" });
     }
 
     const budgetUuid = req.params.uuid;
     const budget = await getBudget(budgetUuid, user);
     if (!budget) {
+      console.log(`❌ Budget ${budgetUuid} not found or access denied`);
       return res
         .status(404)
         .json({ error: "Budget not found or access denied" });
     }
 
-    const { transaction } = req.body;
-    if (!transaction || !transaction.id) {
-      return res.status(400).json({ error: "Transaction data is required" });
+    const { transaction_id, transaction } = req.body;
+    console.log(
+      `🔍 Extracted from body: transaction_id=${transaction_id}, transaction=${
+        transaction ? "provided" : "not provided"
+      }`
+    );
+    console.log(`🔍 Full req.body keys:`, Object.keys(req.body || {}));
+
+    if (!transaction_id) {
+      console.log("❌ transaction_id is required but not provided");
+      return res.status(400).json({ error: "transaction_id is required" });
     }
 
-    const transactionId = transaction.id;
+    const transactionId = transaction_id;
     const startTime = Date.now();
 
     // Check cache first
@@ -208,6 +223,31 @@ export const suggestSingleTransaction = async (req: Request, res: Response) => {
       });
     }
 
+    // Get transaction data if not provided
+    let transactionData = transaction;
+    if (!transactionData) {
+      // Get uncategorized transactions to find the specific transaction
+      const uncategorizedTransactions = await getYnabUncategorizedTransactions(
+        budgetUuid,
+        user
+      );
+
+      const foundTransaction = uncategorizedTransactions.find(
+        (tx) => tx.id === transactionId
+      );
+      if (!foundTransaction) {
+        return res.status(404).json({ error: "Transaction not found" });
+      }
+
+      transactionData = {
+        id: foundTransaction.id,
+        payee_name: foundTransaction.payee_name || "",
+        amount: foundTransaction.amount,
+        date: foundTransaction.date,
+        memo: foundTransaction.memo || "",
+      };
+    }
+
     // Get categories for this budget
     const categoriesData = await getCategories(budgetUuid, 0, user);
     const categories = categoriesData.categories;
@@ -220,7 +260,7 @@ export const suggestSingleTransaction = async (req: Request, res: Response) => {
 
     // Generate new suggestion using OpenAI
     const suggestedCategory = await openAIService.suggestCategory(
-      transaction,
+      transactionData,
       categories,
       mappingsContext
     );
@@ -232,7 +272,7 @@ export const suggestSingleTransaction = async (req: Request, res: Response) => {
       await storeAISuggestion(
         budget._id.toString(),
         transactionId,
-        transaction.payee_name || "",
+        transactionData.payee_name || "",
         suggestedCategory,
         0.8
       );
@@ -248,8 +288,20 @@ export const suggestSingleTransaction = async (req: Request, res: Response) => {
       processing_time_ms: processingTime,
     });
   } catch (error) {
-    console.error("Error getting single suggestion:", error);
-    res.status(500).json({ error: "Internal server error" });
+    console.error("❌ Error getting single suggestion:", error);
+    console.error(
+      "❌ Error stack:",
+      error instanceof Error ? error.stack : "No stack trace"
+    );
+    console.error("❌ Request details:", {
+      budgetUuid: req.params.uuid,
+      body: req.body,
+      headers: req.headers,
+    });
+    res.status(500).json({
+      error: "Internal server error",
+      details: error instanceof Error ? error.message : "Unknown error",
+    });
   }
 };
 
@@ -390,6 +442,11 @@ export const getSuggestionsAsync = async (req: Request, res: Response) => {
  */
 export const applySingleCategory = async (req: Request, res: Response) => {
   try {
+    console.log(
+      `🔍 applySingleCategory - req.body keys:`,
+      Object.keys(req.body || {})
+    );
+
     const user = await getUserFromReq(req);
     if (!user) {
       return res.status(401).json({ error: "Unauthorized" });

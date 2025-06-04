@@ -34,6 +34,9 @@ export const getSuggestionsAsync = async (
     body: JSON.stringify({
       transaction_ids: transactionIds,
     }),
+    headers: {
+      "Content-Type": "application/json",
+    },
   });
 };
 
@@ -53,6 +56,9 @@ export const getSingleSuggestion = async (
   return apiFetch(`budgets/${budgetId}/ai-suggestions/suggest-single`, {
     method: "POST",
     body: JSON.stringify(body),
+    headers: {
+      "Content-Type": "application/json",
+    },
   });
 };
 
@@ -78,6 +84,9 @@ export const applySingleCategory = async (
       category_name: categoryName,
       is_manual_change: isManualChange,
     }),
+    headers: {
+      "Content-Type": "application/json",
+    },
   });
 };
 
@@ -88,6 +97,9 @@ export const applyCategories = async (budgetId: string, transactions: any[]) =>
   apiFetch(`budgets/${budgetId}/ai-suggestions/apply-categories`, {
     method: "POST",
     body: JSON.stringify({ transactions }),
+    headers: {
+      "Content-Type": "application/json",
+    },
   });
 
 /**
@@ -96,4 +108,7 @@ export const applyCategories = async (budgetId: string, transactions: any[]) =>
 export const applyAllCategories = async (budgetId: string) =>
   apiFetch(`budgets/${budgetId}/ai-suggestions/apply-all-categories`, {
     method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
   });
