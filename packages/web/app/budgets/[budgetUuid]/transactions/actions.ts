@@ -1,7 +1,7 @@
-'use server';
+"use server";
 
 import { revalidatePath } from "next/cache";
-import { applySingleCategory } from '../../../api/math.server';
+import { applySingleCategory } from "../../../api/ai-suggestions.server";
 
 export interface CategoryUpdateResult {
   success: boolean;
@@ -22,7 +22,7 @@ export async function updateTransactionCategory(
     if (!budgetId || !transactionId || !categoryName) {
       return {
         success: false,
-        error: 'Missing required fields: budgetId, transactionId, categoryName'
+        error: "Missing required fields: budgetId, transactionId, categoryName",
       };
     }
 
@@ -37,25 +37,25 @@ export async function updateTransactionCategory(
     if (result.success) {
       // Revalidate the transactions page to show updated data
       revalidatePath(`/budgets/${budgetId}/transactions`);
-      
+
       return {
         success: true,
         transactionId,
         categoryName,
-        message: result.message || `Applied '${categoryName}' to transaction`
+        message: result.message || `Applied '${categoryName}' to transaction`,
       };
     } else {
       return {
         success: false,
-        error: result.error || 'Failed to update category'
+        error: result.error || "Failed to update category",
       };
     }
   } catch (error) {
-    console.error('Error updating transaction category:', error);
-    
+    console.error("Error updating transaction category:", error);
+
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Internal server error'
+      error: error instanceof Error ? error.message : "Internal server error",
     };
   }
 }

@@ -10,9 +10,7 @@ export type ScheduledTransactionUpdate = {
  * Get scheduled transactions for a budget from Node.js API
  */
 export const getScheduledTransactions = async (budgetUuid: string) => {
-  return apiGet(
-    `/scheduled-transactions/budgets/${budgetUuid}/scheduled-transactions`
-  );
+  return apiGet(`budgets/${budgetUuid}/scheduled-transactions`);
 };
 
 export const updateScheduledTransaction = async (
@@ -21,7 +19,7 @@ export const updateScheduledTransaction = async (
   updates: ScheduledTransactionUpdate
 ) => {
   return apiPut(
-    `/scheduled-transactions/budgets/${budgetUuid}/scheduled-transactions/${transactionId}`,
+    `budgets/${budgetUuid}/scheduled-transactions/${transactionId}`,
     updates
   );
 };
@@ -31,6 +29,6 @@ export const deleteScheduledTransaction = async (
   transactionId: string
 ) => {
   return apiDelete(
-    `/scheduled-transactions/budgets/${budgetUuid}/scheduled-transactions/${transactionId}`
+    `budgets/${budgetUuid}/scheduled-transactions/${transactionId}`
   );
 };
