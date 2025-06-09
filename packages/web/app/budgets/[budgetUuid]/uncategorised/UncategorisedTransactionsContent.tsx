@@ -90,7 +90,7 @@ export default function UncategorisedTransactionsContent({
 
                         if (isCurrentlyManuallyModified) {
                             console.log(`🚫 Skipping AI suggestion for manually modified transaction: ${transaction.payee_name}`);
-                        // Just update loading state but keep the manual category
+                            // Just update loading state but keep the manual category
                             return prev.map(tx =>
                                 tx.transaction_id === transaction.transaction_id
                                     ? {
@@ -187,14 +187,9 @@ export default function UncategorisedTransactionsContent({
     const handleApplyAllSuggestions = async () => {
         setIsApplying(true);
         try {
-            // Enhance transactions with manual modification info to avoid unnecessary AI calls
-            const transactionsWithManualFlags = suggestedTransactions.map(tx => ({
-                ...tx,
-                is_manual_change: manuallyModified.has(tx.transaction_id)
-            }));
-
-            // Use new endpoint that handles both AI suggestions and manual changes
-            const result = await applyAllCategories(budgetUuid, transactionsWithManualFlags);
+            // Apply all categories (both AI suggestions and manual changes)
+            // The endpoint will automatically handle cached suggestions and manual changes
+            const result = await applyAllCategories(budgetUuid);
             setLastApplyResult(result);
 
             // Show success message and refresh data
@@ -222,7 +217,14 @@ export default function UncategorisedTransactionsContent({
     const handleApplyAISuggestionsOnly = async () => {
         setIsApplying(true);
         try {
-            const result = await applyCategories(budgetUuid);
+            // Get transactions with manual changes marked
+            const transactionsWithManualFlags = suggestedTransactions.map(tx => ({
+                transaction_id: tx.transaction_id,
+                category_name: tx.suggested_category_name,
+                is_manual_change: manuallyModified.has(tx.transaction_id)
+            }));
+
+            const result = await applyCategories(budgetUuid, transactionsWithManualFlags);
             setLastApplyResult(result);
 
             // Show success message and refresh data
@@ -400,17 +402,17 @@ export default function UncategorisedTransactionsContent({
                     <p className="text-gray-600">No uncategorised transactions found.</p>
                 </div>
             ) : (
-                    <UncategorisedTransactionsList
+                <UncategorisedTransactionsList
                     transactions={suggestedTransactions}
                     categories={categories}
-                        manuallyModified={manuallyModified}
-                        applyingTransactions={applyingTransactions}
+                    manuallyModified={manuallyModified}
+                    applyingTransactions={applyingTransactions}
                     onCategoryChange={handleManualCategoryChange}
                     onRemoveTransaction={handleRemoveTransaction}
-                        onApplySingleCategory={handleApplySingleCategory}
-                        onApplyManualCategory={handleApplyManualCategory}
+                    onApplySingleCategory={handleApplySingleCategory}
+                    onApplyManualCategory={handleApplyManualCategory}
                 />
             )}
         </div>
     );
-} 
+}
