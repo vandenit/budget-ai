@@ -5,6 +5,7 @@ import { Category } from 'common-ts';
 import UnapprovedTransactionsList from './UnapprovedTransactionsList';
 import UnapprovedStats from './UnapprovedStats';
 import { approveSingleTransaction, approveAllTransactions, applySingleCategory } from './actions';
+import { useRouter } from 'next/navigation';
 
 export interface UnapprovedTransaction {
     transaction_id: string;
@@ -28,7 +29,8 @@ export default function UnapprovedTransactionsContent({
     categories,
     initialTransactions
 }: Props) {
-    const [unapprovedTransactions, setUnapprovedTransactions] = useState<UnapprovedTransaction[]>(initialTransactions);
+    const router = useRouter();
+    const [unapprovedTransactions] = useState<UnapprovedTransaction[]>(initialTransactions);
     const [isApproving, setIsApproving] = useState(false);
     const [approvingTransactions, setApprovingTransactions] = useState<Set<string>>(new Set());
     const [lastApproveResult, setLastApproveResult] = useState<any>(null);
@@ -39,9 +41,9 @@ export default function UnapprovedTransactionsContent({
             const result = await approveAllTransactions(budgetUuid);
             setLastApproveResult(result);
 
-            // Remove approved transactions from the list
+            // Refresh the page to get updated data from server
             if (result.success && result.approved_count > 0) {
-                setUnapprovedTransactions([]);
+                router.refresh();
             }
         } catch (error) {
             console.error('Error approving all transactions:', error);
@@ -59,10 +61,8 @@ export default function UnapprovedTransactionsContent({
             const result = await approveSingleTransaction(budgetUuid, transactionId);
 
             if (result.success) {
-                // Remove the transaction from our list since it's now approved
-                setUnapprovedTransactions(prev =>
-                    prev.filter(t => t.transaction_id !== transactionId)
-                );
+                // Refresh the page to get updated data from server
+                router.refresh();
 
                 // Show success message
                 setLastApproveResult({
@@ -96,10 +96,8 @@ export default function UnapprovedTransactionsContent({
             const result = await applySingleCategory(budgetUuid, transactionId, categoryName);
 
             if (result.success) {
-                // Remove the transaction from our list since it's now categorized and approved
-                setUnapprovedTransactions(prev =>
-                    prev.filter(t => t.transaction_id !== transactionId)
-                );
+                // Refresh the page to get updated data from server
+                router.refresh();
 
                 // Show success message
                 setLastApproveResult({

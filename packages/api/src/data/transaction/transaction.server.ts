@@ -243,3 +243,32 @@ export const storeAISuggestion = async (
     return false;
   }
 };
+
+/**
+ * Update local transaction category after YNAB update
+ * This ensures immediate consistency without waiting for the scheduler
+ */
+export const updateLocalTransactionCategory = async (
+  budgetId: string,
+  transactionId: string,
+  categoryId: string
+): Promise<boolean> => {
+  await connectDb();
+
+  try {
+    const result = await LocalTransaction.findOneAndUpdate(
+      { budgetId, uuid: transactionId },
+      {
+        $set: {
+          categoryId: categoryId,
+        },
+      },
+      { upsert: false }
+    );
+
+    return !!result;
+  } catch (error) {
+    console.error("Error updating local transaction category:", error);
+    return false;
+  }
+};

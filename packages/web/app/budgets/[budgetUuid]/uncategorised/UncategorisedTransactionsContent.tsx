@@ -5,6 +5,7 @@ import { Category } from 'common-ts';
 import { applyCategories, applyAllCategories, getSuggestionsAsync, getSingleSuggestion, applySingleCategory } from './actions';
 import UncategorisedTransactionsList from './UncategorisedTransactionsList';
 import UncategorisedStats from './UncategorisedStats';
+import { useRouter } from 'next/navigation';
 
 export interface SuggestedTransaction {
     transaction_id: string;
@@ -27,6 +28,7 @@ export default function UncategorisedTransactionsContent({
     categories,
     initialTransactions
 }: Props) {
+    const router = useRouter();
     const [suggestedTransactions, setSuggestedTransactions] = useState<SuggestedTransaction[]>(initialTransactions);
     const [manuallyModified, setManuallyModified] = useState<Set<string>>(new Set());
     const [isApplying, setIsApplying] = useState(false);
@@ -194,17 +196,8 @@ export default function UncategorisedTransactionsContent({
 
             // Show success message and refresh data
             if (result.updated_transactions && result.updated_transactions.length > 0) {
-                // Remove applied transactions from the list
-                const appliedTransactionIds = result.updated_transactions.map((r: any) => r.transaction_id);
-                setSuggestedTransactions(prev =>
-                    prev.filter(t => !appliedTransactionIds.includes(t.transaction_id))
-                );
-                // Clear manual modifications for applied transactions
-                setManuallyModified(prev => {
-                    const newSet = new Set(prev);
-                    appliedTransactionIds.forEach((id: string) => newSet.delete(id));
-                    return newSet;
-                });
+                // Refresh the page to get updated data from server
+                router.refresh();
             }
         } catch (error) {
             console.error('Error applying suggestions:', error);
@@ -229,17 +222,8 @@ export default function UncategorisedTransactionsContent({
 
             // Show success message and refresh data
             if (result.length > 0) {
-                // Remove applied transactions from the list
-                const appliedTransactionIds = result.map((r: any) => r.transaction_id);
-                setSuggestedTransactions(prev =>
-                    prev.filter(t => !appliedTransactionIds.includes(t.transaction_id))
-                );
-                // Clear manual modifications for applied transactions
-                setManuallyModified(prev => {
-                    const newSet = new Set(prev);
-                    appliedTransactionIds.forEach((id: string) => newSet.delete(id));
-                    return newSet;
-                });
+                // Refresh the page to get updated data from server
+                router.refresh();
             }
         } catch (error) {
             console.error('Error applying AI suggestions:', error);
@@ -282,17 +266,8 @@ export default function UncategorisedTransactionsContent({
             const result = await applySingleCategory(budgetUuid, transactionId, categoryName, false);
 
             if (result.success) {
-                // Remove the transaction from our list since it's now categorized
-                setSuggestedTransactions(prev =>
-                    prev.filter(t => t.transaction_id !== transactionId)
-                );
-
-                // Remove from manually modified set if present
-                setManuallyModified(prev => {
-                    const newSet = new Set(prev);
-                    newSet.delete(transactionId);
-                    return newSet;
-                });
+                // Refresh the page to get updated data from server
+                router.refresh();
 
                 // Show success message
                 setLastApplyResult({
@@ -326,17 +301,8 @@ export default function UncategorisedTransactionsContent({
             const result = await applySingleCategory(budgetUuid, transactionId, categoryName, true);
 
             if (result.success) {
-                // Remove the transaction from our list since it's now categorized
-                setSuggestedTransactions(prev =>
-                    prev.filter(t => t.transaction_id !== transactionId)
-                );
-
-                // Remove from manually modified set if present
-                setManuallyModified(prev => {
-                    const newSet = new Set(prev);
-                    newSet.delete(transactionId);
-                    return newSet;
-                });
+                // Refresh the page to get updated data from server
+                router.refresh();
 
                 // Show success message with learning info
                 const learningInfo = result.learned_mapping ? ' (learned for future)' : '';

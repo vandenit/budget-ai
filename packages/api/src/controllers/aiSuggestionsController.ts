@@ -6,6 +6,7 @@ import {
   getAllCachedAISuggestionsForBudget,
   storeAISuggestion,
   getCachedAISuggestion,
+  updateLocalTransactionCategory,
 } from "../data/transaction/transaction.server";
 import {
   getUncategorizedTransactions as getYnabUncategorizedTransactions,
@@ -16,6 +17,31 @@ import {
 } from "../data/ynab/ynab-api";
 import { openAIService } from "../services/openai.service";
 import { createPayeeMappingsService } from "../services/payeeMappings.service";
+
+/**
+ * Helper function to update local transactions after YNAB updates
+ * Reduces duplicate code across apply functions
+ */
+const updateLocalTransactionsAfterYnabUpdate = async (
+  budgetId: string,
+  transactions: Array<{ id: string; category_id: string }>
+) => {
+  for (const transaction of transactions) {
+    try {
+      await updateLocalTransactionCategory(
+        budgetId,
+        transaction.id,
+        transaction.category_id
+      );
+      console.log(`Updated local transaction ${transaction.id} with category`);
+    } catch (error) {
+      console.warn(
+        `Failed to update local transaction ${transaction.id}:`,
+        error
+      );
+    }
+  }
+};
 
 /**
  * Get uncategorized transactions for a budget via YNAB API
@@ -489,6 +515,11 @@ export const applySingleCategory = async (req: Request, res: Response) => {
       user
     );
 
+    // Also update local transaction for immediate consistency
+    await updateLocalTransactionsAfterYnabUpdate(budget._id.toString(), [
+      { id: transaction_id, category_id: category.id },
+    ]);
+
     // Learn from manual changes (if specified)
     if (is_manual_change) {
       try {
@@ -724,6 +755,12 @@ export const applyCategories = async (req: Request, res: Response) => {
       user
     );
 
+    // Also update local transactions for immediate consistency
+    await updateLocalTransactionsAfterYnabUpdate(
+      budget._id.toString(),
+      transactionsToUpdate
+    );
+
     res.json({
       message: `Updated ${updatedTransactions.length} transactions successfully`,
       updated_count: updatedTransactions.length,
@@ -840,6 +877,12 @@ export const applyAllCategories = async (req: Request, res: Response) => {
       budgetUuid,
       transactionsToUpdate,
       user
+    );
+
+    // Also update local transactions for immediate consistency
+    await updateLocalTransactionsAfterYnabUpdate(
+      budget._id.toString(),
+      transactionsToUpdate
     );
 
     res.json({
