@@ -262,8 +262,10 @@ def apply_need_category_spending(daily_projection, category, target, current_bal
         # Handle current month targets
         if is_current_month:
             remaining_amount = max(0, target_amount - scheduled_amount)
-            if current_balance > 0:
-                apply_transaction(daily_projection, date_str, current_balance, category["name"], "Current Month Balance")
+            # Calculate effective balance after scheduled transactions for current month
+            effective_balance = max(0, current_balance - scheduled_amount)
+            if effective_balance > 0:
+                apply_transaction(daily_projection, date_str, effective_balance, category["name"], "Current Month Balance")
             elif remaining_amount > 0:
                 apply_transaction(daily_projection, date_str, remaining_amount, category["name"], "Current Month Target")
             continue
@@ -289,8 +291,10 @@ def apply_need_category_spending(daily_projection, category, target, current_bal
         # If no goal_target_month is provided, apply spending at the specific day or end of the month
         if not goal_target_month:
             if is_current_month:
-                if current_balance > 0:
-                    apply_transaction(daily_projection, date_str, current_balance, category["name"], "Current Month Balance")
+                # Calculate effective balance after scheduled transactions for current month
+                effective_balance = max(0, current_balance - scheduled_amount)
+                if effective_balance > 0:
+                    apply_transaction(daily_projection, date_str, effective_balance, category["name"], "Current Month Balance")
             else:
                 remaining_amount = max(0, target_amount - scheduled_amount)
                 if remaining_amount > 0:

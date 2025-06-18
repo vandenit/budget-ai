@@ -558,9 +558,9 @@ def test_spending_with_scheduled_transactions(base_projection):
 
 def test_current_month_salary_prediction_without_balance(base_projection):
     """Test salary predictions for current month (without balance) and future month."""
-    # Set current date to May 2, 2025
-    today = datetime(2025, 5, 2).date()
-    
+    # Use current date for testing
+    today = datetime.now().date()
+
     category = {
         "name": "Salery",
         "balance": 0,
@@ -574,7 +574,7 @@ def test_current_month_salary_prediction_without_balance(base_projection):
             "goal_overall_left": 7348210
         }
     }
-    
+
     apply_need_category_spending(
         base_projection,
         category,
@@ -584,28 +584,29 @@ def test_current_month_salary_prediction_without_balance(base_projection):
         60,  # days_ahead
         7348.21  # global_overall_left (in regular units)
     )
-    
-    # Check May 4th (current month)
-    may_date = datetime(2025, 5, 4).date().isoformat()
-    may_changes = [c for c in base_projection[may_date]["changes"] 
+
+    # Check current month (4th day)
+    current_month_date = today.replace(day=4).isoformat()
+    current_month_changes = [c for c in base_projection[current_month_date]["changes"]
                   if c["category"] == "Salery"]
-    assert len(may_changes) == 1, "Should have salary entry for May 4th"
-    assert may_changes[0]["amount"] == -7348.21, "May salary amount should be correct"
-    assert may_changes[0]["reason"] == "Current Month Target", "May should be marked as Current Month Target"
-    
-    # Check June 4th (next month)
-    june_date = datetime(2025, 6, 4).date().isoformat()
-    june_changes = [c for c in base_projection[june_date]["changes"] 
+    assert len(current_month_changes) == 1, "Should have salary entry for current month 4th"
+    assert current_month_changes[0]["amount"] == -7348.21, "Current month salary amount should be correct"
+    assert current_month_changes[0]["reason"] == "Current Month Target", "Current month should be marked as Current Month Target"
+
+    # Check next month (4th day)
+    next_month = (today.replace(day=1) + timedelta(days=32)).replace(day=4)
+    next_month_date = next_month.isoformat()
+    next_month_changes = [c for c in base_projection[next_month_date]["changes"]
                    if c["category"] == "Salery"]
-    assert len(june_changes) == 1, "Should have salary entry for June 4th"
-    assert june_changes[0]["amount"] == -7348.21, "June salary amount should be correct"
-    assert june_changes[0]["reason"] == "Future Month Target", "June should be marked as Future Month Target"
+    assert len(next_month_changes) == 1, "Should have salary entry for next month 4th"
+    assert next_month_changes[0]["amount"] == -7348.21, "Next month salary amount should be correct"
+    assert next_month_changes[0]["reason"] == "Future Month Target", "Next month should be marked as Future Month Target"
 
 def test_current_month_salary_prediction_with_balance(base_projection):
     """Test salary predictions when there is a current balance."""
-    # Set current date to May 2, 2025
-    today = datetime(2025, 5, 2).date()
-    
+    # Use current date for testing
+    today = datetime.now().date()
+
     category = {
         "name": "Salery",
         "balance": 3674105,  # Half of the target amount (in milliunits)
@@ -619,7 +620,7 @@ def test_current_month_salary_prediction_with_balance(base_projection):
             "goal_overall_left": 7348210
         }
     }
-    
+
     apply_need_category_spending(
         base_projection,
         category,
@@ -629,19 +630,133 @@ def test_current_month_salary_prediction_with_balance(base_projection):
         60,  # days_ahead
         7348.21  # global_overall_left (in regular units)
     )
-    
-    # Check May 4th (current month)
-    may_date = datetime(2025, 5, 4).date().isoformat()
-    may_changes = [c for c in base_projection[may_date]["changes"] 
+
+    # Check current month (4th day)
+    current_month_date = today.replace(day=4).isoformat()
+    current_month_changes = [c for c in base_projection[current_month_date]["changes"]
                   if c["category"] == "Salery"]
-    assert len(may_changes) == 1, "Should have salary entry for May 4th"
-    assert may_changes[0]["amount"] == -3674.105, "May salary should use current_balance"
-    assert may_changes[0]["reason"] == "Current Month Balance", "May should use current balance"
-    
-    # Check June 4th (next month)
-    june_date = datetime(2025, 6, 4).date().isoformat()
-    june_changes = [c for c in base_projection[june_date]["changes"] 
+    assert len(current_month_changes) == 1, "Should have salary entry for current month 4th"
+    assert current_month_changes[0]["amount"] == -3674.105, "Current month salary should use current_balance"
+    assert current_month_changes[0]["reason"] == "Current Month Balance", "Current month should use current balance"
+
+    # Check next month (4th day)
+    next_month = (today.replace(day=1) + timedelta(days=32)).replace(day=4)
+    next_month_date = next_month.isoformat()
+    next_month_changes = [c for c in base_projection[next_month_date]["changes"]
                    if c["category"] == "Salery"]
-    assert len(june_changes) == 1, "Should have salary entry for June 4th"
-    assert june_changes[0]["amount"] == -7348.21, "June salary should use full target amount"
-    assert june_changes[0]["reason"] == "Future Month Target", "June should be marked as Future Month Target" 
+    assert len(next_month_changes) == 1, "Should have salary entry for next month 4th"
+    assert next_month_changes[0]["amount"] == -7348.21, "Next month salary should use full target amount"
+    assert next_month_changes[0]["reason"] == "Future Month Target", "Next month should be marked as Future Month Target"
+
+
+def test_current_month_balance_with_scheduled_transactions_exceeding_balance(base_projection):
+    """Test current month balance when scheduled transactions exceed the current balance.
+
+    This reproduces the bug where a category has a positive balance but scheduled transactions
+    that will consume more than the balance, resulting in a negative effective balance.
+    In this case, no additional spending should be predicted.
+
+    Example: Sociale bijdrage Afbetaling has €579.92 balance but €1000 in scheduled transactions.
+    """
+    today = datetime.now().date()
+    # Use end of month for spending prediction
+    spending_day = 30 if today.month != 2 else 28  # Simplified for test
+    current_month_date = today.replace(day=spending_day).isoformat()
+
+    # Add scheduled transactions that exceed the current balance
+    # Two transactions of €500 each = €1000 total
+    base_projection[today.replace(day=20).isoformat()]["changes"].append({
+        "reason": "Scheduled Transaction",
+        "amount": -500.0,  # €500
+        "category": "Sociale bijdrage Afbetaling"
+    })
+    base_projection[today.replace(day=29).isoformat()]["changes"].append({
+        "reason": "Scheduled Transaction",
+        "amount": -500.0,  # €500
+        "category": "Sociale bijdrage Afbetaling"
+    })
+
+    category = {
+        "name": "Sociale bijdrage Afbetaling",
+        "balance": 579920,  # €579.92 (in milliunits)
+        "target": {
+            "goal_type": "NEED",
+            "goal_target": 1350000,  # €1350 (in milliunits)
+            "goal_cadence": 1,
+            "goal_cadence_frequency": 1,
+            "goal_day": None,  # End of month
+            "goal_target_month": None,
+            "goal_overall_left": 432890  # €432.89 (in milliunits)
+        }
+    }
+
+    apply_need_category_spending(
+        base_projection,
+        category,
+        category["target"],
+        579.92,  # current_balance (in regular units)
+        1350.0,  # target_amount (in regular units)
+        30,  # days_ahead
+        432.89  # global_overall_left (in regular units)
+    )
+
+    # Check end of current month - should have NO additional spending prediction
+    # because scheduled transactions (€1000) exceed current balance (€579.92)
+    changes = [c for c in base_projection[current_month_date]["changes"]
+              if c["category"] == "Sociale bijdrage Afbetaling" and c["reason"] == "Current Month Balance"]
+
+    assert len(changes) == 0, "Should not predict additional spending when scheduled transactions exceed balance"
+
+
+def test_current_month_balance_with_scheduled_transactions_partial_consumption(base_projection):
+    """Test current month balance when scheduled transactions partially consume the balance.
+
+    This tests the case where scheduled transactions consume part of the balance,
+    but there's still a positive effective balance remaining.
+
+    Example: Eating Out has €188.35 balance with €100 in scheduled transactions.
+    Should predict spending of remaining €88.35.
+    """
+    today = datetime.now().date()
+    # Use end of month for spending prediction
+    spending_day = 30 if today.month != 2 else 28  # Simplified for test
+    current_month_date = today.replace(day=spending_day).isoformat()
+
+    # Add scheduled transaction that partially consumes the balance
+    base_projection[today.replace(day=15).isoformat()]["changes"].append({
+        "reason": "Scheduled Transaction",
+        "amount": -100.0,  # €100
+        "category": "Eating Out"
+    })
+
+    category = {
+        "name": "Eating Out",
+        "balance": 188350,  # €188.35 (in milliunits)
+        "target": {
+            "goal_type": "NEED",
+            "goal_target": 600000,  # €600 (in milliunits)
+            "goal_cadence": 1,
+            "goal_cadence_frequency": 1,
+            "goal_day": None,  # End of month
+            "goal_target_month": None,
+            "goal_overall_left": 0  # Already fully funded
+        }
+    }
+
+    apply_need_category_spending(
+        base_projection,
+        category,
+        category["target"],
+        188.35,  # current_balance (in regular units)
+        600.0,  # target_amount (in regular units)
+        30,  # days_ahead
+        0  # global_overall_left (in regular units)
+    )
+
+    # Check end of current month - should predict spending of remaining balance after scheduled transactions
+    # Effective balance = €188.35 - €100 = €88.35
+    changes = [c for c in base_projection[current_month_date]["changes"]
+              if c["category"] == "Eating Out" and c["reason"] == "Current Month Balance"]
+
+    assert len(changes) == 1, "Should predict spending of remaining balance"
+    assert abs(changes[0]["amount"] - (-88.35)) < 0.01, f"Should spend remaining balance of €88.35, got {changes[0]['amount']}"
