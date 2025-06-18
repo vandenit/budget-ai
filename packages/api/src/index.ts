@@ -45,7 +45,7 @@ app.use("/sync", syncRoutes);
 app.use("/simulations", checkJwt, simulationRoutes);
 
 // Add scheduled transaction routes
-app.use("/scheduled-transactions", checkJwt, scheduledTransactionRoutes);
+app.use("/budgets", checkJwt, scheduledTransactionRoutes);
 
 // The error handler must be registered before any other error middleware and after all controllers
 Sentry.setupExpressErrorHandler(app);
