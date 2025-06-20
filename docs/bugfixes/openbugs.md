@@ -1,5 +1,7 @@
 # open bugs
-
+## apply all doesn't take into account changed categories
+- I changed some categories in the ai assistant screen. when I then pressed apply all they were not applied. only with a single apply
+- when applying a change in the uncategorised or unapproved only the number on top in the badge is updated, but the transaction itself and the number below are only upated after a refresh
 ## wrong payee mapping
 
 ### description
@@ -20,3 +22,5 @@ The mapped payee mapping should be "vandent it" or "vandent IT BV" instead of "v
 ### proposed solution
 
 Improve the preprocessing of the payee name to remove bank-specific details and keep only the core merchant name. Make sure the part "gezamelijke overschrijvingsopdracht" is not hardcoded but part of the country specific configuration.
+Also take into account the sign of the amount to link with a payee
+
