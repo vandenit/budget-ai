@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import BudgetPage from "./components/budget-page";
+import BudgetSubNavigation from "./components/budget-sub-navigation";
 import {
   getLoggedInUserPreferredBudgetId as getLoggedInUserPreferredBudgetUuid,
   isYnabTokenExpired
@@ -20,5 +21,10 @@ export default async function Home() {
   if (!budgetUuid) {
     return <div>No budgets found</div>;
   }
-  return <BudgetPage budgetUuid={budgetUuid} />;
+  return (
+    <>
+      <BudgetSubNavigation budgetUuid={budgetUuid} />
+      <BudgetPage budgetUuid={budgetUuid} />
+    </>
+  );
 }
