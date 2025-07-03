@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { SignOut } from "./login";
-import { useParams } from "next/navigation";
+import { useParams, usePathname } from "next/navigation";
 import { Budget } from "common-ts";
 
 type Props = {
@@ -12,7 +12,22 @@ type Props = {
 const BudgetNavigation = ({ budgets, loggedIn }: Props) => {
   const signOut = loggedIn ? <SignOut /> : "";
   const params = useParams();
+  const pathname = usePathname();
   const currentBudgetId = params ? params.budgetUuid : "";
+
+  // Extract the sub-route from current pathname to preserve it when switching budgets
+  const getSubRoute = () => {
+    if (pathname === "/") return "";
+
+    // Match patterns like /budgets/[uuid]/subpath
+    const match = pathname.match(/^\/budgets\/[^\/]+\/(.+)$/);
+    return match ? `/${match[1]}` : "";
+  };
+
+  const getBudgetHref = (budgetUuid: string) => {
+    const subRoute = getSubRoute();
+    return `/budgets/${budgetUuid}${subRoute}`;
+  };
 
   const getActiveClass = (budgetId: string) =>
     `link ${currentBudgetId === budgetId ? "active" : ""}`;
@@ -44,7 +59,7 @@ const BudgetNavigation = ({ budgets, loggedIn }: Props) => {
               <li className="mr-6" key={budget.uuid}>
                 <Link
                   className={getActiveClass(budget.uuid)}
-                  href={`/budgets/${budget.uuid}`}
+                  href={getBudgetHref(budget.uuid)}
                 >
                   {budget.name}
                 </Link>
@@ -62,7 +77,7 @@ const BudgetNavigation = ({ budgets, loggedIn }: Props) => {
             <li className="mr-6" key={budget.uuid}>
               <Link
                 className={getActiveClass(budget.uuid)}
-                href={`/budgets/${budget.uuid}`}
+                href={getBudgetHref(budget.uuid)}
               >
                 {budget.name}
               </Link>
