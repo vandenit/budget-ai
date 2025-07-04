@@ -434,9 +434,11 @@ def test_current_month_balance_with_scheduled_transactions_partial_consumption(b
     Should predict spending of remaining €88.35.
     """
     today = datetime.now().date()
-    # Use end of month for spending prediction  
-    spending_day = 30 if today.month != 2 else 28  # Simplified for test
-    current_month_date = today.replace(day=spending_day).isoformat()
+    # Use actual end of month for spending prediction
+    import calendar
+    days_in_month = calendar.monthrange(today.year, today.month)[1]
+    current_month_date = today.replace(day=days_in_month).isoformat()
+
     
     # Add scheduled transaction that partially consumes the balance
     base_projection[today.replace(day=15).isoformat()]["changes"].append({

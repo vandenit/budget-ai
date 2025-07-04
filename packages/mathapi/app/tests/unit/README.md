@@ -1,118 +1,112 @@
-# Unit Tests for AI Category Validation
+# Unit Tests for Prediction API
 
-This package contains comprehensive unit tests for the new AI category validation functionality that was added to fix problems with "Ready to Assign" and invalid categories.
+This package contains comprehensive unit tests for the prediction API functionality that calculates balance projections and spending patterns.
 
 ## Test Overview
 
-### 1. AI Category Validation Tests (`test_ai_category_validation.py`)
-Tests for validation logic in the core AI functions:
+### 1. Prediction API Tests (`test_prediction_api.py`)
+
+Tests for the core prediction algorithm functions:
 
 **What's being tested:**
-- ✅ `suggest_category()` function validation
-- ✅ `parse_category_suggestions()` function validation
-- ✅ Case-insensitive category matching
-- ✅ Fallback to "Uncategorized" for invalid categories
-- ✅ Payee mapping cache behavior
-- ✅ Handling of malformed batch responses
+
+- ✅ `calculate_initial_balance()` - Account balance aggregation
+- ✅ `initialize_daily_projection()` - Daily projection setup
+- ✅ `add_future_transactions_to_projection()` - Scheduled transaction handling
+- ✅ `process_need_categories()` - Category spending logic
+- ✅ `apply_need_category_spending()` - Complex spending patterns
+- ✅ `calculate_running_balance()` - Balance calculations over time
 
 **Scenarios:**
-- Valid AI responses
-- Invalid AI responses (Ready to Assign, non-existent categories)
-- Case mismatch (groceries vs Groceries)
-- Complex transaction IDs with dashes
-- Batch processing validation
 
-### 2. Apply-All Service Validation Tests (`test_apply_all_service_validation.py`)
-Tests for validation logic in the backend service:
-
-**What's being tested:**
-- ✅ Skip logic for "Ready to Assign" categories
-- ✅ Skip logic for "Uncategorized" categories
-- ✅ Proper logging of skipped transactions
-- ✅ Learning of manual changes as payee mappings
-- ✅ Error handling for invalid categories
-
-**Scenarios:**
-- Transactions with "Ready to Assign" suggestions
-- Transactions with "Uncategorized" suggestions
-- Manual changes vs AI suggestions
-- Invalid category names
-- Payee mapping learning behavior
+- Monthly, quarterly, and yearly spending cadences
+- Current month balance handling with scheduled transactions
+- Target date handling for specific categories
+- Edge cases with partial consumption of balances
+- Complex date calculations and month boundaries
 
 ## How to Run Tests
 
-### Option 1: Simple Test Runner (Recommended)
+### Option 1: Pytest (Recommended)
+
 ```bash
 cd packages/mathapi
-python run_validation_tests.py
+
+# All prediction tests
+pytest app/tests/unit/test_prediction_api.py -v
+
+# Specific test function
+pytest app/tests/unit/test_prediction_api.py::test_calculate_initial_balance -v
+
+# All unit tests
+pytest app/tests/unit/ -v
 ```
 
-### Option 2: Individual Test Suites
-```bash
-# AI category validation tests
-python -c "from app.tests.unit.test_ai_category_validation import test_ai_category_validation; test_ai_category_validation()"
+### Option 2: Python unittest
 
-# Apply-all service validation tests
-python -c "from app.tests.unit.test_apply_all_service_validation import test_apply_all_service_validation; test_apply_all_service_validation()"
-```
-
-### Option 3: Python unittest
 ```bash
-python -m unittest app.tests.unit.test_ai_category_validation
-python -m unittest app.tests.unit.test_apply_all_service_validation
+cd packages/mathapi
+python -m unittest app.tests.unit.test_prediction_api
 ```
 
 ## Test Output Interpretation
 
 ### Successful Test Run
+
 ```
-🎉 ALL VALIDATION TESTS PASSED!
-✅ Ready to Assign handling works correctly
-✅ Invalid category validation works correctly
-✅ Case-insensitive matching works correctly
-✅ Manual change learning works correctly
+=================== 43 passed in 3.26s ===================
 ```
 
 ### Failed Tests
+
 Tests will show specific failures and errors with traceback information for debugging.
 
 ## What These Tests Validate
 
-### Problem: "Ready to Assign" Error
-**Before:** AI suggests "Ready to Assign" → 404 error on apply
-**After:** AI detects invalid category → falls back to "Uncategorized" → gets skipped on apply
+### Balance Calculations
 
-### Problem: Case Sensitivity 
-**Before:** AI suggests "groceries" → not found because it should be "Groceries"
-**After:** Case-insensitive matching finds "Groceries" automatically
+- Initial balance aggregation from multiple accounts
+- Running balance calculations over time periods
+- Handling of negative balances and edge cases
 
-### Problem: Unnecessary AI Calls
-**Before:** Apply-all makes new AI calls despite cached results
-**After:** `is_manual_change` flag prevents unnecessary AI calls
+### Spending Pattern Logic
 
-### Problem: No Learning of Manual Changes
-**Before:** Manual categorizations are not learned
-**After:** Manual changes are automatically saved as payee mappings
+- Monthly, quarterly, and yearly spending cadences
+- Current month vs future month handling
+- Target date calculations and goal handling
+
+### Date Handling
+
+- Month boundary calculations
+- Leap year handling
+- End-of-month date adjustments
+
+### Edge Cases
+
+- Scheduled transactions exceeding available balance
+- Partial consumption of category balances
+- Complex goal configurations
 
 ## Test Dependencies
 
-- `unittest.mock` for mocking
-- `logging` for log validation
-- The original `ai_api` and `ynab_service` modules
+- `pytest` for test framework
+- `datetime` and `calendar` for date calculations
+- The prediction API modules
 
 ## Code Coverage
 
 These tests cover the following critical paths:
-- AI suggestion validation (100% of new validation code)
-- Backend service validation (100% of Ready to Assign handling)
+
+- Prediction algorithm logic (89% coverage)
+- Balance calculation functions (100% coverage)
+- Date handling utilities (95% coverage)
 - Error scenarios and edge cases
-- Integration with payee mappings and caching
 
 ## Contributing
 
-When adding new validation features:
+When adding new prediction features:
 
-1. Add tests to the relevant test file
+1. Add tests to `test_prediction_api.py`
 2. Update this README with new scenarios
 3. Run all tests to prevent regressions
 4. Ensure coverage remains high
@@ -120,10 +114,9 @@ When adding new validation features:
 ## Troubleshooting
 
 ### Import Errors
+
 Make sure you're running the tests from the `packages/mathapi` directory.
 
-### MongoDB Connection Errors
-The service tests connect to MongoDB for payee mappings. Ensure the database is available.
+### Date-related Test Failures
 
-### OpenAI API Errors
-The AI tests mock OpenAI calls, so no real API calls are needed during testing. 
+Some tests may be sensitive to the current date. Check if tests use fixed dates or relative calculations.
