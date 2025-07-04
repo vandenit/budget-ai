@@ -438,6 +438,7 @@ def test_current_month_balance_with_scheduled_transactions_partial_consumption(b
     import calendar
     days_in_month = calendar.monthrange(today.year, today.month)[1]
     current_month_date = today.replace(day=days_in_month).isoformat()
+
     
     # Add scheduled transaction that partially consumes the balance
     base_projection[today.replace(day=15).isoformat()]["changes"].append({
@@ -472,23 +473,9 @@ def test_current_month_balance_with_scheduled_transactions_partial_consumption(b
     
     # Check end of current month - should predict spending of remaining balance after scheduled transactions
     # Effective balance = €188.35 - €100 = €88.35
-
-    # Debug: Print all changes for this date
-    print(f"Debug: All changes for {current_month_date}:")
-    if current_month_date in base_projection:
-        for change in base_projection[current_month_date]["changes"]:
-            print(f"  {change}")
-    else:
-        print(f"  Date {current_month_date} not found in projection")
-
-    # Debug: Print all dates in projection
-    print(f"Debug: All dates in projection: {list(base_projection.keys())}")
-
-    changes = [c for c in base_projection[current_month_date]["changes"]
+    changes = [c for c in base_projection[current_month_date]["changes"] 
               if c["category"] == "Eating Out" and c["reason"] == "Current Month Balance"]
-
-    print(f"Debug: Found {len(changes)} 'Current Month Balance' changes for 'Eating Out'")
-
+    
     assert len(changes) == 1, "Should predict spending of remaining balance"
     assert abs(changes[0]["amount"] - (-88.35)) < 0.01, f"Should spend remaining balance of €88.35, got {changes[0]['amount']}"
 
