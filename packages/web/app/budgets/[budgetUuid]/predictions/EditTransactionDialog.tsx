@@ -6,6 +6,124 @@ import { Category } from 'common-ts';
 import { ScheduledTransactionUpdate, ScheduledTransactionCreate } from '../../../api/scheduledTransactions.client';
 import { Account, getAccounts } from '../../../api/accounts.client';
 
+// Reusable form field components
+const FormField = ({
+    label,
+    required = false,
+    children
+}: {
+    label: string;
+    required?: boolean;
+    children: React.ReactNode;
+}) => (
+    <div className="form-control">
+        <label className="label">
+            <span className="label-text">
+                {label} {required && <span className="text-error">*</span>}
+            </span>
+        </label>
+        {children}
+    </div>
+);
+
+const NumberInput = ({
+    value,
+    onChange,
+    placeholder,
+    required = false
+}: {
+    value: number;
+    onChange: (value: number) => void;
+    placeholder?: string;
+    required?: boolean;
+}) => (
+    <input
+        type="number"
+        step="0.01"
+        value={value || ''}
+        onChange={(e) => onChange(Number(e.target.value))}
+        className="input input-bordered w-full"
+        placeholder={placeholder}
+        required={required}
+    />
+);
+
+const TextInput = ({
+    value,
+    onChange,
+    placeholder,
+    required = false
+}: {
+    value: string;
+    onChange: (value: string) => void;
+    placeholder?: string;
+    required?: boolean;
+}) => (
+    <input
+        type="text"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="input input-bordered w-full"
+        placeholder={placeholder}
+        required={required}
+    />
+);
+
+const DateInput = ({
+    value,
+    onChange,
+    required = false
+}: {
+    value: string;
+    onChange: (value: string) => void;
+    required?: boolean;
+}) => (
+    <input
+        type="date"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="input input-bordered w-full"
+        required={required}
+    />
+);
+
+const SelectInput = ({
+    value,
+    onChange,
+    options,
+    placeholder,
+    required = false
+}: {
+    value: string;
+    onChange: (value: string) => void;
+    options: { value: string; label: string }[];
+    placeholder?: string;
+    required?: boolean;
+}) => (
+    <select
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="select select-bordered w-full"
+        required={required}
+    >
+        {placeholder && <option value="">{placeholder}</option>}
+        {options.map((option) => (
+            <option key={option.value} value={option.value}>
+                {option.label}
+            </option>
+        ))}
+    </select>
+);
+
+type TransactionData = {
+    amount: number;
+    categoryId: string;
+    date: string;
+    payeeName?: string;
+    memo?: string;
+    accountId?: string;
+};
+
 type Props = {
     isOpen: boolean;
     onClose: () => void;
@@ -13,60 +131,93 @@ type Props = {
     onCreate?: (data: ScheduledTransactionCreate) => Promise<void>;
     categories: Category[];
     budgetUuid: string;
-    transaction?: {
-        amount: number;
-        categoryId: string;
-        date: string;
-    };
+    transaction?: TransactionData;
     mode?: 'edit' | 'create';
 };
 
+// Custom hook for form state management
+const useTransactionForm = (transaction?: TransactionData, mode: 'edit' | 'create' = 'edit') => {
+    const [formData, setFormData] = useState<TransactionData>({
+        amount: 0,
+        categoryId: '',
+        date: new Date().toISOString().split('T')[0],
+        payeeName: '',
+        memo: '',
+        accountId: '',
+    });
+
+    const updateField = (field: keyof TransactionData, value: string | number) => {
+        setFormData(prev => ({ ...prev, [field]: value }));
+    };
+
+    const resetForm = () => {
+        if (mode === 'edit' && transaction) {
+            setFormData({
+                amount: transaction.amount,
+                categoryId: transaction.categoryId,
+                date: transaction.date,
+                payeeName: transaction.payeeName || '',
+                memo: transaction.memo || '',
+                accountId: transaction.accountId || '',
+            });
+        } else {
+            setFormData({
+                amount: 0,
+                categoryId: '',
+                date: new Date().toISOString().split('T')[0],
+                payeeName: '',
+                memo: '',
+                accountId: '',
+            });
+        }
+    };
+
+    return { formData, updateField, resetForm };
+};
+
 export const EditTransactionDialog = ({ isOpen, onClose, onSave, onCreate, categories, budgetUuid, transaction, mode = 'edit' }: Props) => {
-    const [amount, setAmount] = useState(transaction?.amount || 0);
-    const [categoryId, setCategoryId] = useState(transaction?.categoryId || '');
-    const [date, setDate] = useState(transaction?.date || new Date().toISOString().split('T')[0]);
-    const [payeeName, setPayeeName] = useState('');
-    const [memo, setMemo] = useState('');
-    const [accountId, setAccountId] = useState('');
+    const { formData, updateField, resetForm } = useTransactionForm(transaction, mode);
     const [accounts, setAccounts] = useState<Account[]>([]);
     const [isSaving, setIsSaving] = useState(false);
     const [error, setError] = useState('');
 
-    // Load accounts when dialog opens for create mode
+    // Load accounts and reset form when dialog opens
     useEffect(() => {
-        if (isOpen && mode === 'create') {
-            const loadAccounts = async () => {
+        if (!isOpen) return;
+
+        const initializeDialog = async () => {
+            // Reset form data
+            resetForm();
+            setError('');
+
+            // Load accounts for create mode
+            if (mode === 'create') {
                 try {
                     const accountsData = await getAccounts(budgetUuid);
                     setAccounts(accountsData);
                     // Set first account as default
                     if (accountsData.length > 0) {
-                        setAccountId(accountsData[0].uuid);
+                        updateField('accountId', accountsData[0].uuid);
                     }
                 } catch (error) {
                     console.error('Failed to load accounts:', error);
                     setError('Failed to load accounts');
                 }
-            };
-            loadAccounts();
-        }
-    }, [isOpen, mode, budgetUuid]);
+            }
+        };
 
-    useEffect(() => {
-        if (transaction && mode === 'edit') {
-            setAmount(transaction.amount);
-            setCategoryId(transaction.categoryId);
-            setDate(transaction.date);
-        } else if (mode === 'create') {
-            // Reset form for create mode
-            setAmount(0);
-            setCategoryId('');
-            setDate(new Date().toISOString().split('T')[0]);
-            setPayeeName('');
-            setMemo('');
-            setAccountId('');
+        initializeDialog();
+    }, [isOpen, mode, budgetUuid, transaction, resetForm, updateField]);
+
+    const validateForm = (): string | null => {
+        if (!formData.amount || !formData.categoryId || !formData.date) {
+            return 'Please fill in all required fields';
         }
-    }, [transaction, mode]);
+        if (mode === 'create' && !formData.accountId) {
+            return 'Please select an account';
+        }
+        return null;
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -74,29 +225,29 @@ export const EditTransactionDialog = ({ isOpen, onClose, onSave, onCreate, categ
         setIsSaving(true);
 
         try {
+            const validationError = validateForm();
+            if (validationError) {
+                setError(validationError);
+                return;
+            }
+
             if (mode === 'create' && onCreate) {
-                if (!accountId) {
-                    setError('Please select an account');
-                    setIsSaving(false);
-                    return;
-                }
                 await onCreate({
-                    amount,
-                    categoryId,
-                    date,
-                    payeeName: payeeName || undefined,
-                    memo: memo || undefined,
-                    accountId
+                    amount: formData.amount,
+                    categoryId: formData.categoryId,
+                    date: formData.date,
+                    payeeName: formData.payeeName || undefined,
+                    memo: formData.memo || undefined,
+                    accountId: formData.accountId!,
                 });
             } else if (mode === 'edit' && onSave) {
                 await onSave({
-                    amount,
-                    categoryId,
-                    date
+                    amount: formData.amount,
+                    categoryId: formData.categoryId,
+                    date: formData.date,
                 });
             } else {
                 setError('Invalid operation mode');
-                setIsSaving(false);
                 return;
             }
             onClose();
@@ -127,100 +278,60 @@ export const EditTransactionDialog = ({ isOpen, onClose, onSave, onCreate, categ
 
                 <div className="flex-1 overflow-y-auto p-6 pt-4">
                 <form id="transaction-form" onSubmit={handleSubmit} className="space-y-4">
-                    <div className="form-control">
-                        <label className="label">
-                            <span className="label-text">Amount</span>
-                        </label>
-                        <input
-                            type="number"
-                            step="0.01"
-                            value={amount}
-                            onChange={(e) => setAmount(parseFloat(e.target.value))}
-                            className="input input-bordered w-full"
+                    <FormField label="Amount" required>
+                        <NumberInput
+                            value={formData.amount}
+                            onChange={(value) => updateField('amount', value)}
+                            placeholder="0.00"
                             required
                         />
-                    </div>
+                    </FormField>
 
-                    <div className="form-control">
-                        <label className="label">
-                            <span className="label-text">Category</span>
-                        </label>
-                        <select
-                            value={categoryId}
-                            onChange={(e) => setCategoryId(e.target.value)}
-                            className="select select-bordered w-full"
-                            required
-                        >
-                            <option value="">Select a category</option>
-                            {categories.map((category) => (
-                                <option key={category.uuid} value={category.uuid}>
-                                    {category.name}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-
-                    <div className="form-control">
-                        <label className="label">
-                            <span className="label-text">Date</span>
-                        </label>
-                        <input
-                            type="date"
-                            value={date}
-                            onChange={(e) => setDate(e.target.value)}
-                            className="input input-bordered w-full"
+                    <FormField label="Category" required>
+                        <SelectInput
+                            value={formData.categoryId}
+                            onChange={(value) => updateField('categoryId', value)}
+                            options={categories.map(cat => ({ value: cat.uuid, label: cat.name }))}
+                            placeholder="Select a category"
                             required
                         />
-                    </div>
+                    </FormField>
+
+                    <FormField label="Date" required>
+                        <DateInput
+                            value={formData.date}
+                            onChange={(value) => updateField('date', value)}
+                            required
+                        />
+                    </FormField>
 
                     {mode === 'create' && (
-                        <>
-                            <div className="form-control">
-                                <label className="label">
-                                    <span className="label-text">Account</span>
-                                </label>
-                                <select
-                                    value={accountId}
-                                    onChange={(e) => setAccountId(e.target.value)}
-                                    className="select select-bordered w-full"
-                                    required
-                                >
-                                    <option value="">Select an account</option>
-                                    {accounts.map((account) => (
-                                        <option key={account.uuid} value={account.uuid}>
-                                            {account.name}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-
-                            <div className="form-control">
-                                <label className="label">
-                                    <span className="label-text">Payee (optional)</span>
-                                </label>
-                                <input
-                                    type="text"
-                                    value={payeeName}
-                                    onChange={(e) => setPayeeName(e.target.value)}
-                                    className="input input-bordered w-full"
-                                    placeholder="Enter payee name"
-                                />
-                            </div>
-
-                            <div className="form-control">
-                                <label className="label">
-                                    <span className="label-text">Memo (optional)</span>
-                                </label>
-                                <input
-                                    type="text"
-                                    value={memo}
-                                    onChange={(e) => setMemo(e.target.value)}
-                                    className="input input-bordered w-full"
-                                    placeholder="Enter memo"
-                                />
-                            </div>
-                        </>
+                        <FormField label="Account" required>
+                            <SelectInput
+                                value={formData.accountId || ''}
+                                onChange={(value) => updateField('accountId', value)}
+                                options={accounts.map(acc => ({ value: acc.uuid, label: acc.name }))}
+                                placeholder="Select an account"
+                                required
+                            />
+                        </FormField>
                     )}
+
+                    <FormField label="Payee">
+                        <TextInput
+                            value={formData.payeeName || ''}
+                            onChange={(value) => updateField('payeeName', value)}
+                            placeholder="Enter payee name"
+                        />
+                    </FormField>
+
+                    <FormField label="Memo">
+                        <TextInput
+                            value={formData.memo || ''}
+                            onChange={(value) => updateField('memo', value)}
+                            placeholder="Enter memo"
+                        />
+                    </FormField>
 
                     {error && (
                         <div className="alert alert-error">

@@ -50,6 +50,9 @@ export const FutureChangesTable = ({ predictionData, budgetUuid, categories }: P
         amount: number;
         categoryId: string;
         date: string;
+        payeeName?: string;
+        memo?: string;
+        accountId?: string;
     } | undefined>(undefined);
     const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
 
