@@ -9,7 +9,7 @@ import { Account, getAccounts } from '../../../api/accounts.client';
 type Props = {
     isOpen: boolean;
     onClose: () => void;
-    onSave: (updates: ScheduledTransactionUpdate) => Promise<void>;
+    onSave?: (updates: ScheduledTransactionUpdate) => Promise<void>;
     onCreate?: (data: ScheduledTransactionCreate) => Promise<void>;
     categories: Category[];
     budgetUuid: string;
@@ -88,12 +88,16 @@ export const EditTransactionDialog = ({ isOpen, onClose, onSave, onCreate, categ
                     memo: memo || undefined,
                     accountId
                 });
-            } else {
+            } else if (mode === 'edit' && onSave) {
                 await onSave({
                     amount,
                     categoryId,
                     date
                 });
+            } else {
+                setError('Invalid operation mode');
+                setIsSaving(false);
+                return;
             }
             onClose();
         } catch (err) {
@@ -106,9 +110,9 @@ export const EditTransactionDialog = ({ isOpen, onClose, onSave, onCreate, categ
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-base-100 rounded-lg p-6 w-full max-w-md relative">
-                <div className="flex justify-between items-center mb-4">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-base-100 rounded-lg w-full max-w-md relative max-h-[90vh] flex flex-col">
+                <div className="flex justify-between items-center p-6 pb-4 border-b border-base-200">
                     <h3 className="text-lg font-bold">
                         {mode === 'create' ? 'Add Scheduled Transaction' : 'Edit Transaction'}
                     </h3>
@@ -121,7 +125,8 @@ export const EditTransactionDialog = ({ isOpen, onClose, onSave, onCreate, categ
                     </button>
                 </div>
 
-                <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="flex-1 overflow-y-auto p-6 pt-4">
+                <form id="transaction-form" onSubmit={handleSubmit} className="space-y-4">
                     <div className="form-control">
                         <label className="label">
                             <span className="label-text">Amount</span>
@@ -222,8 +227,11 @@ export const EditTransactionDialog = ({ isOpen, onClose, onSave, onCreate, categ
                             <span>{error}</span>
                         </div>
                     )}
+                </form>
+                </div>
 
-                    <div className="flex justify-end gap-2 mt-6">
+                <div className="border-t border-base-200 p-6 pt-4">
+                    <div className="flex justify-end gap-2">
                         <button
                             type="button"
                             onClick={onClose}
@@ -234,6 +242,7 @@ export const EditTransactionDialog = ({ isOpen, onClose, onSave, onCreate, categ
                         </button>
                         <button
                             type="submit"
+                            form="transaction-form"
                             className="btn btn-primary"
                             disabled={isSaving}
                         >
@@ -243,7 +252,7 @@ export const EditTransactionDialog = ({ isOpen, onClose, onSave, onCreate, categ
                             }
                         </button>
                     </div>
-                </form>
+                </div>
             </div>
         </div>
     );
