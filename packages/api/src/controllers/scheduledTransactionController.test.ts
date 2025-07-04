@@ -49,6 +49,7 @@ const mockCreatedTransaction = {
   memo: "Test memo",
   amount: 10000, // In milliunits
   date: "2024-01-15",
+  frequency: "never",
 };
 
 describe("scheduledTransactionController.create", () => {

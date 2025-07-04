@@ -310,6 +310,7 @@ export const createScheduledTransaction = async (
       memo?: string;
       amount: number;
       date: string;
+      frequency?: string;
     };
   },
   user: UserType

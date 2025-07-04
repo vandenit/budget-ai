@@ -428,6 +428,7 @@ export const createScheduledTransaction = async (
           memo: transactionData.memo,
           amount: transactionData.amount * 1000, // Convert to milliunits
           date: transactionData.date,
+          frequency: 'never', // One-time transaction (not recurring)
         },
       },
       user
