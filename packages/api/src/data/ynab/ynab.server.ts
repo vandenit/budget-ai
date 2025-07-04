@@ -440,15 +440,7 @@ export const createScheduledTransaction = async (
   }
 };
 
-export const getAccounts = async (user: UserType, budgetId: string) => {
-  try {
-    const accountsData = await ynabApi.getAccounts(budgetId, 0, user);
-    return accountsData.accounts;
-  } catch (error) {
-    console.error("Failed to get accounts:", error);
-    throw error;
-  }
-};
+
 
 export const deleteScheduledTransaction = async (
   user: UserType,

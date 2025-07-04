@@ -1,16 +1,13 @@
 import { apiGet } from "./client";
 
 export type Account = {
-  id: string;
+  _id?: string;
+  uuid: string;
   name: string;
-  type: string;
   balance: number;
   cleared_balance: number;
   uncleared_balance: number;
-  closed: boolean;
-  note?: string;
-  on_budget: boolean;
-  deleted: boolean;
+  budgetId: string;
 };
 
 /**

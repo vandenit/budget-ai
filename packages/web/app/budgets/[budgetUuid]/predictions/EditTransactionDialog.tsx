@@ -41,7 +41,7 @@ export const EditTransactionDialog = ({ isOpen, onClose, onSave, onCreate, categ
                     setAccounts(accountsData);
                     // Set first account as default
                     if (accountsData.length > 0) {
-                        setAccountId(accountsData[0].id);
+                        setAccountId(accountsData[0].uuid);
                     }
                 } catch (error) {
                     console.error('Failed to load accounts:', error);
@@ -187,7 +187,7 @@ export const EditTransactionDialog = ({ isOpen, onClose, onSave, onCreate, categ
                                 >
                                     <option value="">Select an account</option>
                                     {accounts.map((account) => (
-                                        <option key={account.id} value={account.id}>
+                                        <option key={account.uuid} value={account.uuid}>
                                             {account.name}
                                         </option>
                                     ))}

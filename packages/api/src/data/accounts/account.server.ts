@@ -8,6 +8,14 @@ export const getAccount = async (
   return localAccount;
 };
 
+export const findAccounts = async (
+  budgetId: string
+): Promise<LocalAccountType[]> => {
+  await connectDb();
+  const accounts = await LocalAccount.find({ budgetId }).exec();
+  return accounts;
+};
+
 export const saveNewAccount = async (account: LocalAccountType) => {
   connectDb();
   const localAccount = new LocalAccount({
