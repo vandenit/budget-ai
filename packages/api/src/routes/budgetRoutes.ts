@@ -3,6 +3,7 @@ import {
   findBudgetsForUser,
   getBudgetForUser,
   handleGetBudgetOverviewForUser,
+  getAccountsForBudget,
 } from "../controllers/budgetController";
 import { handleRequest } from "../controllers/utils";
 import { getFilteredTransactionsWithCategories } from "../controllers/transactionController";
@@ -29,6 +30,9 @@ router.get("/:uuid", handleRequest(getBudgetForUser));
 
 // budget data overview for user
 router.get("/:uuid/overview", handleRequest(handleGetBudgetOverviewForUser));
+
+// get accounts for a budget
+router.get("/:uuid/accounts", handleRequest(getAccountsForBudget));
 
 router.get(
   "/:uuid/transactions",

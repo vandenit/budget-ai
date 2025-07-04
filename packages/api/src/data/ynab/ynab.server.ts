@@ -405,6 +405,50 @@ export const getScheduledTransactions = async (
   }
 };
 
+export const createScheduledTransaction = async (
+  user: UserType,
+  budgetId: string,
+  transactionData: {
+    amount: number;
+    categoryId: string;
+    date: string;
+    payeeName?: string;
+    memo?: string;
+    accountId: string;
+  }
+) => {
+  try {
+    const response = await ynabApi.createScheduledTransaction(
+      budgetId,
+      {
+        scheduled_transaction: {
+          account_id: transactionData.accountId,
+          category_id: transactionData.categoryId,
+          payee_name: transactionData.payeeName,
+          memo: transactionData.memo,
+          amount: transactionData.amount * 1000, // Convert to milliunits
+          date: transactionData.date,
+        },
+      },
+      user
+    );
+    return response.data.scheduled_transaction;
+  } catch (error) {
+    console.error("Failed to create scheduled transaction:", error);
+    throw error;
+  }
+};
+
+export const getAccounts = async (user: UserType, budgetId: string) => {
+  try {
+    const accountsData = await ynabApi.getAccounts(budgetId, 0, user);
+    return accountsData.accounts;
+  } catch (error) {
+    console.error("Failed to get accounts:", error);
+    throw error;
+  }
+};
+
 export const deleteScheduledTransaction = async (
   user: UserType,
   budgetId: string,
