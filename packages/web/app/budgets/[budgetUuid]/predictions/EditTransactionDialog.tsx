@@ -2,118 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import { FiX } from 'react-icons/fi';
-import { Category } from 'common-ts';
+import { Category, FormField, NumberInput, TextInput, DateInput, SelectInput } from 'common-ts';
 import { ScheduledTransactionUpdate, ScheduledTransactionCreate } from '../../../api/scheduledTransactions.client';
-import { Account, getAccounts } from '../../../api/accounts.client';
-
-// Reusable form field components
-const FormField = ({
-    label,
-    required = false,
-    children
-}: {
-    label: string;
-    required?: boolean;
-    children: React.ReactNode;
-}) => (
-    <div className="form-control">
-        <label className="label">
-            <span className="label-text">
-                {label} {required && <span className="text-error">*</span>}
-            </span>
-        </label>
-        {children}
-    </div>
-);
-
-const NumberInput = ({
-    value,
-    onChange,
-    placeholder,
-    required = false
-}: {
-    value: number;
-    onChange: (value: number) => void;
-    placeholder?: string;
-    required?: boolean;
-}) => (
-    <input
-        type="number"
-        step="0.01"
-        value={value || ''}
-        onChange={(e) => onChange(Number(e.target.value))}
-        className="input input-bordered w-full"
-        placeholder={placeholder}
-        required={required}
-    />
-);
-
-const TextInput = ({
-    value,
-    onChange,
-    placeholder,
-    required = false
-}: {
-    value: string;
-    onChange: (value: string) => void;
-    placeholder?: string;
-    required?: boolean;
-}) => (
-    <input
-        type="text"
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className="input input-bordered w-full"
-        placeholder={placeholder}
-        required={required}
-    />
-);
-
-const DateInput = ({
-    value,
-    onChange,
-    required = false
-}: {
-    value: string;
-    onChange: (value: string) => void;
-    required?: boolean;
-}) => (
-    <input
-        type="date"
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className="input input-bordered w-full"
-        required={required}
-    />
-);
-
-const SelectInput = ({
-    value,
-    onChange,
-    options,
-    placeholder,
-    required = false
-}: {
-    value: string;
-    onChange: (value: string) => void;
-    options: { value: string; label: string }[];
-    placeholder?: string;
-    required?: boolean;
-}) => (
-    <select
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className="select select-bordered w-full"
-        required={required}
-    >
-        {placeholder && <option value="">{placeholder}</option>}
-        {options.map((option) => (
-            <option key={option.value} value={option.value}>
-                {option.label}
-            </option>
-        ))}
-    </select>
-);
+import { Account } from '../../../api/accounts.client';
 
 type TransactionData = {
     amount: number;
@@ -130,6 +21,7 @@ type Props = {
     onSave?: (updates: ScheduledTransactionUpdate) => Promise<void>;
     onCreate?: (data: ScheduledTransactionCreate) => Promise<void>;
     categories: Category[];
+    accounts: Account[];
     budgetUuid: string;
     transaction?: TransactionData;
     mode?: 'edit' | 'create';
@@ -175,37 +67,24 @@ const useTransactionForm = (transaction?: TransactionData, mode: 'edit' | 'creat
     return { formData, updateField, resetForm };
 };
 
-export const EditTransactionDialog = ({ isOpen, onClose, onSave, onCreate, categories, budgetUuid, transaction, mode = 'edit' }: Props) => {
+export const EditTransactionDialog = ({ isOpen, onClose, onSave, onCreate, categories, accounts, budgetUuid, transaction, mode = 'edit' }: Props) => {
     const { formData, updateField, resetForm } = useTransactionForm(transaction, mode);
-    const [accounts, setAccounts] = useState<Account[]>([]);
     const [isSaving, setIsSaving] = useState(false);
     const [error, setError] = useState('');
 
-    // Load accounts and reset form when dialog opens
+    // Reset form when dialog opens
     useEffect(() => {
         if (!isOpen) return;
 
-        const initializeDialog = async () => {
-            // Reset form data
-            resetForm();
-            setError('');
+        // Reset form data
+        resetForm();
+        setError('');
 
-            // Load accounts for both modes
-            try {
-                const accountsData = await getAccounts(budgetUuid);
-                setAccounts(accountsData);
-                // Set first account as default only for create mode
-                if (mode === 'create' && accountsData.length > 0) {
-                    updateField('accountId', accountsData[0].uuid);
-                }
-            } catch (error) {
-                console.error('Failed to load accounts:', error);
-                setError('Failed to load accounts');
-            }
-        };
-
-        initializeDialog();
-    }, [isOpen, mode, budgetUuid, transaction, resetForm, updateField]);
+        // Set first account as default for create mode
+        if (mode === 'create' && accounts.length > 0) {
+            updateField('accountId', accounts[0].uuid);
+        }
+    }, [isOpen, mode, accounts, transaction, resetForm, updateField]);
 
     const validateForm = (): string | null => {
         if (!formData.amount || !formData.categoryId || !formData.date) {

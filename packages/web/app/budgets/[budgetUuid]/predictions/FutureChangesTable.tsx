@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { FiEdit2, FiTrash2, FiPlus } from 'react-icons/fi';
 import { updateScheduledTransaction, deleteScheduledTransaction, createScheduledTransaction, ScheduledTransactionUpdate, ScheduledTransactionCreate } from '../../../api/scheduledTransactions.client';
 import { Category } from 'common-ts';
+import { Account } from '../../../api/accounts.client';
 import { EditTransactionDialog } from './EditTransactionDialog';
 
 type Change = {
@@ -42,9 +43,10 @@ type Props = {
     predictionData: PredictionData;
     budgetUuid: string;
     categories: Category[];
+    accounts: Account[];
 };
 
-export const FutureChangesTable = ({ predictionData, budgetUuid, categories }: Props) => {
+export const FutureChangesTable = ({ predictionData, budgetUuid, categories, accounts }: Props) => {
     const [editingTransaction, setEditingTransaction] = useState<string | null>(null);
     const [selectedTransaction, setSelectedTransaction] = useState<{
         amount: number;
@@ -141,10 +143,16 @@ export const FutureChangesTable = ({ predictionData, budgetUuid, categories }: P
         const categoryId = categories.find(cat => cat.name === change.category)?.uuid;
 
         setEditingTransaction(change.id);
+        // Find account based on change.account if available
+        const accountId = change.account ? accounts.find(acc => acc.name === change.account)?.uuid : undefined;
+
         setSelectedTransaction({
             amount: change.amount,
             categoryId: categoryId || '',
-            date: date
+            date: date,
+            payeeName: change.payee || '',
+            memo: change.memo || '',
+            accountId: accountId || ''
         });
         console.log('Dialog state set:', {
             editingTransaction: change.id,
@@ -267,6 +275,7 @@ export const FutureChangesTable = ({ predictionData, budgetUuid, categories }: P
                 }}
                 onSave={handleDialogSave}
                 categories={categories}
+                accounts={accounts}
                 budgetUuid={budgetUuid}
                 transaction={selectedTransaction}
                 mode="edit"
@@ -277,6 +286,7 @@ export const FutureChangesTable = ({ predictionData, budgetUuid, categories }: P
                 onClose={() => setIsCreateDialogOpen(false)}
                 onCreate={handleCreate}
                 categories={categories}
+                accounts={accounts}
                 budgetUuid={budgetUuid}
                 mode="create"
             />
