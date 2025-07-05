@@ -1,7 +1,7 @@
 import { Suspense } from 'react';
 import { PredictionChart } from '@/components/charts/prediction-chart';
 import { getCategories } from '@/app/api/categories.client';
-import { getAccounts } from '@/app/api/accounts.client';
+import { getAccounts } from '@/app/api/accounts.server';
 import { getPrediction } from '@/app/api/math.server';
 import InteractiveSimulations from './InteractiveSimulations';
 import { getSimulations } from './actions';

@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { FiX } from 'react-icons/fi';
 import { Category, FormField, NumberInput, TextInput, DateInput, SelectInput } from 'common-ts';
 import { ScheduledTransactionUpdate, ScheduledTransactionCreate } from '../../../api/scheduledTransactions.client';
-import { Account } from '../../../api/accounts.client';
+import { Account } from '../../../api/accounts.server';
 
 type TransactionData = {
     amount: number;

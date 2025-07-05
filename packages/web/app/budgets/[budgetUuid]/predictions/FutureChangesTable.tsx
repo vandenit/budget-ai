@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { FiEdit2, FiTrash2, FiPlus } from 'react-icons/fi';
 import { updateScheduledTransaction, deleteScheduledTransaction, createScheduledTransaction, ScheduledTransactionUpdate, ScheduledTransactionCreate } from '../../../api/scheduledTransactions.client';
 import { Category } from 'common-ts';
-import { Account } from '../../../api/accounts.client';
+import { Account } from '../../../api/accounts.server';
 import { EditTransactionDialog } from './EditTransactionDialog';
 
 type Change = {
