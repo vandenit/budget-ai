@@ -190,19 +190,17 @@ export const EditTransactionDialog = ({ isOpen, onClose, onSave, onCreate, categ
             resetForm();
             setError('');
 
-            // Load accounts for create mode
-            if (mode === 'create') {
-                try {
-                    const accountsData = await getAccounts(budgetUuid);
-                    setAccounts(accountsData);
-                    // Set first account as default
-                    if (accountsData.length > 0) {
-                        updateField('accountId', accountsData[0].uuid);
-                    }
-                } catch (error) {
-                    console.error('Failed to load accounts:', error);
-                    setError('Failed to load accounts');
+            // Load accounts for both modes
+            try {
+                const accountsData = await getAccounts(budgetUuid);
+                setAccounts(accountsData);
+                // Set first account as default only for create mode
+                if (mode === 'create' && accountsData.length > 0) {
+                    updateField('accountId', accountsData[0].uuid);
                 }
+            } catch (error) {
+                console.error('Failed to load accounts:', error);
+                setError('Failed to load accounts');
             }
         };
 
@@ -305,17 +303,15 @@ export const EditTransactionDialog = ({ isOpen, onClose, onSave, onCreate, categ
                         />
                     </FormField>
 
-                    {mode === 'create' && (
-                        <FormField label="Account" required>
-                            <SelectInput
-                                value={formData.accountId || ''}
-                                onChange={(value) => updateField('accountId', value)}
-                                options={accounts.map(acc => ({ value: acc.uuid, label: acc.name }))}
-                                placeholder="Select an account"
-                                required
-                            />
-                        </FormField>
-                    )}
+                    <FormField label="Account" required={mode === 'create'}>
+                        <SelectInput
+                            value={formData.accountId || ''}
+                            onChange={(value) => updateField('accountId', value)}
+                            options={accounts.map(acc => ({ value: acc.uuid, label: acc.name }))}
+                            placeholder="Select an account"
+                            required={mode === 'create'}
+                        />
+                    </FormField>
 
                     <FormField label="Payee">
                         <TextInput
