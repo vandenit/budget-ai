@@ -267,6 +267,7 @@ export const FutureChangesTable = ({ predictionData, budgetUuid, categories, acc
             </div>
 
             <EditTransactionDialog
+                key={`edit-${editingTransaction}`}
                 isOpen={!!editingTransaction}
                 onClose={() => {
                     console.log('Dialog closing');
@@ -282,6 +283,7 @@ export const FutureChangesTable = ({ predictionData, budgetUuid, categories, acc
             />
 
             <EditTransactionDialog
+                key="create"
                 isOpen={isCreateDialogOpen}
                 onClose={() => setIsCreateDialogOpen(false)}
                 onCreate={handleCreate}

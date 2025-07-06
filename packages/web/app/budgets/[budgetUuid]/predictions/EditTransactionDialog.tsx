@@ -29,63 +29,31 @@ type Props = {
 
 // Custom hook for form state management
 const useTransactionForm = (transaction?: TransactionData, mode: 'edit' | 'create' = 'edit') => {
-    const [formData, setFormData] = useState<TransactionData>({
+    // Initialize with transaction data or defaults
+    const initialData = mode === 'edit' && transaction ? {
+        amount: transaction.amount,
+        categoryId: transaction.categoryId,
+        date: transaction.date,
+        payeeName: transaction.payeeName || '',
+        memo: transaction.memo || '',
+        accountId: transaction.accountId || '',
+    } : {
         amount: 0,
         categoryId: '',
         date: new Date().toISOString().split('T')[0],
         payeeName: '',
         memo: '',
         accountId: '',
-    });
+    };
+
+    const [formData, setFormData] = useState<TransactionData>(initialData);
 
     const updateField = (field: keyof TransactionData, value: string | number) => {
         setFormData(prev => ({ ...prev, [field]: value }));
     };
 
-    // Initialize form data when transaction changes
-    useEffect(() => {
-        if (mode === 'edit' && transaction) {
-            setFormData({
-                amount: transaction.amount,
-                categoryId: transaction.categoryId,
-                date: transaction.date,
-                payeeName: transaction.payeeName || '',
-                memo: transaction.memo || '',
-                accountId: transaction.accountId || '',
-            });
-        } else {
-            setFormData({
-                amount: 0,
-                categoryId: '',
-                date: new Date().toISOString().split('T')[0],
-                payeeName: '',
-                memo: '',
-                accountId: '',
-            });
-        }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [mode, transaction?.amount, transaction?.categoryId, transaction?.date, transaction?.payeeName, transaction?.memo, transaction?.accountId]);
-
     const resetForm = () => {
-        if (mode === 'edit' && transaction) {
-            setFormData({
-                amount: transaction.amount,
-                categoryId: transaction.categoryId,
-                date: transaction.date,
-                payeeName: transaction.payeeName || '',
-                memo: transaction.memo || '',
-                accountId: transaction.accountId || '',
-            });
-        } else {
-            setFormData({
-                amount: 0,
-                categoryId: '',
-                date: new Date().toISOString().split('T')[0],
-                payeeName: '',
-                memo: '',
-                accountId: '',
-            });
-        }
+        setFormData(initialData);
     };
 
     return { formData, updateField, resetForm };
@@ -96,19 +64,15 @@ export const EditTransactionDialog = ({ isOpen, onClose, onSave, onCreate, categ
     const [isSaving, setIsSaving] = useState(false);
     const [error, setError] = useState('');
 
-    // Reset form when dialog opens
+    // Set first account as default for create mode when dialog opens
     useEffect(() => {
-        if (!isOpen) return;
-
-        // Reset form data
-        resetForm();
-        setError('');
-
-        // Set first account as default for create mode
-        if (mode === 'create' && accounts.length > 0) {
+        if (isOpen && mode === 'create' && accounts.length > 0 && !formData.accountId) {
             updateField('accountId', accounts[0].uuid);
         }
-    }, [isOpen, mode, accounts, transaction, resetForm, updateField]);
+        if (isOpen) {
+            setError('');
+        }
+    }, [isOpen, mode, accounts, formData.accountId, updateField]);
 
     const validateForm = (): string | null => {
         if (!formData.amount || !formData.categoryId || !formData.date) {
