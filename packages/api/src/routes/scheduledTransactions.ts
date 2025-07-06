@@ -10,6 +10,12 @@ router.get(
   handleRequest(scheduledTransactionController.getScheduledTransactions)
 );
 
+// Create a new scheduled transaction
+router.post(
+  "/:uuid/scheduled-transactions",
+  handleRequest(scheduledTransactionController.create)
+);
+
 // Update a scheduled transaction
 router.put(
   "/:uuid/scheduled-transactions/:transactionId",

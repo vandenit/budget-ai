@@ -3,6 +3,7 @@ import { getBudgetOverviewForUser } from "../data/main.budget.server";
 import { Request, Response } from "express";
 import { getUserFromReq } from "./utils";
 import { Budget } from "common-ts";
+import { findAccounts } from "../data/accounts/account.server";
 
 export const getBudgetFromReq = async (req: Request): Promise<Budget> => {
   const user = await getUserFromReq(req);
@@ -42,4 +43,19 @@ export const handleGetBudgetOverviewForUser = async (
   // get budget overview for user
   const budgetOverview = await getBudgetOverviewForUser(budget._id);
   res.json(budgetOverview);
+};
+
+export const getAccountsForBudget = async (req: Request, res: Response) => {
+  const user = await getUserFromReq(req);
+  if (!user) {
+    throw new Error("no user found");
+  }
+
+  const budget = await getBudget(req.params.uuid, user);
+  if (!budget) {
+    throw new Error(`budget ${req.params.uuid} does not belong to user`);
+  }
+
+  const accounts = await findAccounts(budget._id);
+  res.json(accounts);
 };
