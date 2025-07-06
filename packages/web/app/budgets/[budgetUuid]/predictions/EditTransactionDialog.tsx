@@ -2,35 +2,87 @@
 
 import { useState, useEffect } from 'react';
 import { FiX } from 'react-icons/fi';
-import { Category } from 'common-ts';
-import { ScheduledTransactionUpdate } from '../../../api/scheduledTransactions.client';
+import { Category, FormField, NumberInput, TextInput, DateInput, SelectInput } from 'common-ts';
+import { ScheduledTransactionUpdate, ScheduledTransactionCreate } from '../../../api/scheduledTransactions.client';
+import { Account } from '../../../api/accounts.server';
+
+type TransactionData = {
+    amount: number;
+    categoryId: string;
+    date: string;
+    payeeName?: string;
+    memo?: string;
+    accountId?: string;
+};
 
 type Props = {
     isOpen: boolean;
     onClose: () => void;
-    onSave: (updates: ScheduledTransactionUpdate) => Promise<void>;
+    onSave?: (updates: ScheduledTransactionUpdate) => Promise<void>;
+    onCreate?: (data: ScheduledTransactionCreate) => Promise<void>;
     categories: Category[];
-    transaction?: {
-        amount: number;
-        categoryId: string;
-        date: string;
-    };
+    accounts: Account[];
+    budgetUuid: string;
+    transaction?: TransactionData;
+    mode?: 'edit' | 'create';
 };
 
-export const EditTransactionDialog = ({ isOpen, onClose, onSave, categories, transaction }: Props) => {
-    const [amount, setAmount] = useState(transaction?.amount || 0);
-    const [categoryId, setCategoryId] = useState(transaction?.categoryId || '');
-    const [date, setDate] = useState(transaction?.date || '');
+// Custom hook for form state management
+const useTransactionForm = (transaction?: TransactionData, mode: 'edit' | 'create' = 'edit') => {
+    // Initialize with transaction data or defaults
+    const initialData = mode === 'edit' && transaction ? {
+        amount: transaction.amount,
+        categoryId: transaction.categoryId,
+        date: transaction.date,
+        payeeName: transaction.payeeName || '',
+        memo: transaction.memo || '',
+        accountId: transaction.accountId || '',
+    } : {
+        amount: 0,
+        categoryId: '',
+        date: new Date().toISOString().split('T')[0],
+        payeeName: '',
+        memo: '',
+        accountId: '',
+    };
+
+    const [formData, setFormData] = useState<TransactionData>(initialData);
+
+    const updateField = (field: keyof TransactionData, value: string | number) => {
+        setFormData(prev => ({ ...prev, [field]: value }));
+    };
+
+    const resetForm = () => {
+        setFormData(initialData);
+    };
+
+    return { formData, updateField, resetForm };
+};
+
+export const EditTransactionDialog = ({ isOpen, onClose, onSave, onCreate, categories, accounts, budgetUuid, transaction, mode = 'edit' }: Props) => {
+    const { formData, updateField, resetForm } = useTransactionForm(transaction, mode);
     const [isSaving, setIsSaving] = useState(false);
     const [error, setError] = useState('');
 
+    // Set first account as default for create mode when dialog opens
     useEffect(() => {
-        if (transaction) {
-            setAmount(transaction.amount);
-            setCategoryId(transaction.categoryId);
-            setDate(transaction.date);
+        if (isOpen && mode === 'create' && accounts.length > 0 && !formData.accountId) {
+            updateField('accountId', accounts[0].uuid);
         }
-    }, [transaction]);
+        if (isOpen) {
+            setError('');
+        }
+    }, [isOpen, mode, accounts, formData.accountId, updateField]);
+
+    const validateForm = (): string | null => {
+        if (!formData.amount || !formData.categoryId || !formData.date) {
+            return 'Please fill in all required fields';
+        }
+        if (mode === 'create' && !formData.accountId) {
+            return 'Please select an account';
+        }
+        return null;
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -38,14 +90,37 @@ export const EditTransactionDialog = ({ isOpen, onClose, onSave, categories, tra
         setIsSaving(true);
 
         try {
-            await onSave({
-                amount,
-                categoryId,
-                date
-            });
+            const validationError = validateForm();
+            if (validationError) {
+                setError(validationError);
+                return;
+            }
+
+            if (mode === 'create' && onCreate) {
+                await onCreate({
+                    amount: formData.amount,
+                    categoryId: formData.categoryId,
+                    date: formData.date,
+                    payeeName: formData.payeeName || undefined,
+                    memo: formData.memo || undefined,
+                    accountId: formData.accountId!,
+                });
+            } else if (mode === 'edit' && onSave) {
+                await onSave({
+                    amount: formData.amount,
+                    categoryId: formData.categoryId,
+                    date: formData.date,
+                    payeeName: formData.payeeName,
+                    memo: formData.memo,
+                    accountId: formData.accountId,
+                });
+            } else {
+                setError('Invalid operation mode');
+                return;
+            }
             onClose();
         } catch (err) {
-            setError('Failed to save changes');
+            setError(mode === 'create' ? 'Failed to create transaction' : 'Failed to save changes');
         } finally {
             setIsSaving(false);
         }
@@ -54,10 +129,12 @@ export const EditTransactionDialog = ({ isOpen, onClose, onSave, categories, tra
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-base-100 rounded-lg p-6 w-full max-w-md relative">
-                <div className="flex justify-between items-center mb-4">
-                    <h3 className="text-lg font-bold">Edit Transaction</h3>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-base-100 rounded-lg w-full max-w-md relative max-h-[90vh] flex flex-col">
+                <div className="flex justify-between items-center p-6 pb-4 border-b border-base-200">
+                    <h3 className="text-lg font-bold">
+                        {mode === 'create' ? 'Add Scheduled Transaction' : 'Edit Transaction'}
+                    </h3>
                     <button
                         onClick={onClose}
                         className="btn btn-ghost btn-sm"
@@ -67,60 +144,71 @@ export const EditTransactionDialog = ({ isOpen, onClose, onSave, categories, tra
                     </button>
                 </div>
 
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    <div className="form-control">
-                        <label className="label">
-                            <span className="label-text">Amount</span>
-                        </label>
-                        <input
-                            type="number"
-                            step="0.01"
-                            value={amount}
-                            onChange={(e) => setAmount(parseFloat(e.target.value))}
-                            className="input input-bordered w-full"
+                <div className="flex-1 overflow-y-auto p-6 pt-4">
+                <form id="transaction-form" onSubmit={handleSubmit} className="space-y-4">
+                    <FormField label="Amount" required>
+                        <NumberInput
+                            value={formData.amount}
+                            onChange={(value) => updateField('amount', value)}
+                            placeholder="0.00"
                             required
                         />
-                    </div>
+                    </FormField>
 
-                    <div className="form-control">
-                        <label className="label">
-                            <span className="label-text">Category</span>
-                        </label>
-                        <select
-                            value={categoryId}
-                            onChange={(e) => setCategoryId(e.target.value)}
-                            className="select select-bordered w-full"
-                            required
-                        >
-                            <option value="">Select a category</option>
-                            {categories.map((category) => (
-                                <option key={category.uuid} value={category.uuid}>
-                                    {category.name}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-
-                    <div className="form-control">
-                        <label className="label">
-                            <span className="label-text">Date</span>
-                        </label>
-                        <input
-                            type="date"
-                            value={date}
-                            onChange={(e) => setDate(e.target.value)}
-                            className="input input-bordered w-full"
+                    <FormField label="Category" required>
+                        <SelectInput
+                            value={formData.categoryId}
+                            onChange={(value) => updateField('categoryId', value)}
+                            options={categories.map(cat => ({ value: cat.uuid, label: cat.name }))}
+                            placeholder="Select a category"
                             required
                         />
-                    </div>
+                    </FormField>
+
+                    <FormField label="Date" required>
+                        <DateInput
+                            value={formData.date}
+                            onChange={(value) => updateField('date', value)}
+                            required
+                        />
+                    </FormField>
+
+                    <FormField label="Account" required={mode === 'create'}>
+                        <SelectInput
+                            value={formData.accountId || ''}
+                            onChange={(value) => updateField('accountId', value)}
+                            options={accounts.map(acc => ({ value: acc.uuid, label: acc.name }))}
+                            placeholder="Select an account"
+                            required={mode === 'create'}
+                        />
+                    </FormField>
+
+                    <FormField label="Payee">
+                        <TextInput
+                            value={formData.payeeName || ''}
+                            onChange={(value) => updateField('payeeName', value)}
+                            placeholder="Enter payee name"
+                        />
+                    </FormField>
+
+                    <FormField label="Memo">
+                        <TextInput
+                            value={formData.memo || ''}
+                            onChange={(value) => updateField('memo', value)}
+                            placeholder="Enter memo"
+                        />
+                    </FormField>
 
                     {error && (
                         <div className="alert alert-error">
                             <span>{error}</span>
                         </div>
                     )}
+                </form>
+                </div>
 
-                    <div className="flex justify-end gap-2 mt-6">
+                <div className="border-t border-base-200 p-6 pt-4">
+                    <div className="flex justify-end gap-2">
                         <button
                             type="button"
                             onClick={onClose}
@@ -131,13 +219,17 @@ export const EditTransactionDialog = ({ isOpen, onClose, onSave, categories, tra
                         </button>
                         <button
                             type="submit"
+                            form="transaction-form"
                             className="btn btn-primary"
                             disabled={isSaving}
                         >
-                            {isSaving ? 'Saving...' : 'Save Changes'}
+                            {isSaving
+                                ? (mode === 'create' ? 'Creating...' : 'Saving...')
+                                : (mode === 'create' ? 'Create Transaction' : 'Save Changes')
+                            }
                         </button>
                     </div>
-                </form>
+                </div>
             </div>
         </div>
     );

@@ -1,9 +1,21 @@
-import { apiGet, apiPut, apiDelete } from "./client";
+import { apiGet, apiPut, apiDelete, apiPost } from "./client";
 
 export type ScheduledTransactionUpdate = {
   amount?: number;
   categoryId?: string;
   date?: string;
+  payeeName?: string;
+  memo?: string;
+  accountId?: string;
+};
+
+export type ScheduledTransactionCreate = {
+  amount: number;
+  categoryId: string;
+  date: string;
+  payeeName?: string;
+  memo?: string;
+  accountId: string;
 };
 
 /**
@@ -11,6 +23,16 @@ export type ScheduledTransactionUpdate = {
  */
 export const getScheduledTransactions = async (budgetUuid: string) => {
   return apiGet(`budgets/${budgetUuid}/scheduled-transactions`);
+};
+
+export const createScheduledTransaction = async (
+  budgetUuid: string,
+  transactionData: ScheduledTransactionCreate
+) => {
+  return apiPost(
+    `budgets/${budgetUuid}/scheduled-transactions`,
+    transactionData
+  );
 };
 
 export const updateScheduledTransaction = async (

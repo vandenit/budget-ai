@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from 'react';
-import { FiEdit2, FiTrash2 } from 'react-icons/fi';
-import { updateScheduledTransaction, deleteScheduledTransaction, ScheduledTransactionUpdate } from '../../../api/scheduledTransactions.client';
+import { FiEdit2, FiTrash2, FiPlus } from 'react-icons/fi';
+import { updateScheduledTransaction, deleteScheduledTransaction, createScheduledTransaction, ScheduledTransactionUpdate, ScheduledTransactionCreate } from '../../../api/scheduledTransactions.client';
 import { Category } from 'common-ts';
+import { Account } from '../../../api/accounts.server';
 import { EditTransactionDialog } from './EditTransactionDialog';
 
 type Change = {
@@ -42,15 +43,20 @@ type Props = {
     predictionData: PredictionData;
     budgetUuid: string;
     categories: Category[];
+    accounts: Account[];
 };
 
-export const FutureChangesTable = ({ predictionData, budgetUuid, categories }: Props) => {
+export const FutureChangesTable = ({ predictionData, budgetUuid, categories, accounts }: Props) => {
     const [editingTransaction, setEditingTransaction] = useState<string | null>(null);
     const [selectedTransaction, setSelectedTransaction] = useState<{
         amount: number;
         categoryId: string;
         date: string;
+        payeeName?: string;
+        memo?: string;
+        accountId?: string;
     } | undefined>(undefined);
+    const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
 
     const handleEdit = async (transactionId: string, updates: ScheduledTransactionUpdate) => {
         if (!transactionId) return;
@@ -75,6 +81,20 @@ export const FutureChangesTable = ({ predictionData, budgetUuid, categories }: P
         } catch (error) {
             console.error('Failed to delete transaction:', error);
             // TODO: Add error toast
+        }
+    };
+
+    const handleCreate = async (data: ScheduledTransactionCreate) => {
+        try {
+            await createScheduledTransaction(budgetUuid, data);
+            // TODO: Add toast notification
+            setIsCreateDialogOpen(false);
+            // Refresh the data by calling the parent's onUpdate if available
+            // For now, we'll just close the dialog
+        } catch (error) {
+            console.error('Failed to create transaction:', error);
+            // TODO: Add error toast
+            throw error; // Re-throw to let the dialog handle the error
         }
     };
 
@@ -123,33 +143,41 @@ export const FutureChangesTable = ({ predictionData, budgetUuid, categories }: P
         const categoryId = categories.find(cat => cat.name === change.category)?.uuid;
 
         setEditingTransaction(change.id);
+        // Find account based on change.account if available
+        const accountId = change.account ? accounts.find(acc => acc.name === change.account)?.uuid : undefined;
+
         setSelectedTransaction({
             amount: change.amount,
             categoryId: categoryId || '',
-            date: date
-        });
-        console.log('Dialog state set:', {
-            editingTransaction: change.id,
-            selectedTransaction: {
-                amount: change.amount,
-                categoryId: categoryId || '',
-                date: date
-            }
+            date: date,
+            payeeName: change.payee || '',
+            memo: change.memo || '',
+            accountId: accountId || ''
         });
     };
 
     return (
         <div className="space-y-4">
-            <div className="tabs tabs-boxed justify-start">
-                {simulations.map((simulation) => (
-                    <button
-                        key={simulation}
-                        className={`tab ${selectedSimulation === simulation ? 'tab-active' : ''}`}
-                        disabled={simulation !== selectedSimulation}
-                    >
-                        {formatSimulationName(simulation)}
-                    </button>
-                ))}
+            <div className="flex justify-between items-center">
+                <div className="tabs tabs-boxed justify-start">
+                    {simulations.map((simulation) => (
+                        <button
+                            key={simulation}
+                            className={`tab ${selectedSimulation === simulation ? 'tab-active' : ''}`}
+                            disabled={simulation !== selectedSimulation}
+                        >
+                            {formatSimulationName(simulation)}
+                        </button>
+                    ))}
+                </div>
+
+                <button
+                    onClick={() => setIsCreateDialogOpen(true)}
+                    className="btn btn-primary btn-sm"
+                >
+                    <FiPlus className="h-4 w-4" />
+                    Add Transaction
+                </button>
             </div>
 
             <div className="overflow-x-auto">
@@ -231,6 +259,7 @@ export const FutureChangesTable = ({ predictionData, budgetUuid, categories }: P
             </div>
 
             <EditTransactionDialog
+                key={`edit-${editingTransaction}`}
                 isOpen={!!editingTransaction}
                 onClose={() => {
                     console.log('Dialog closing');
@@ -239,7 +268,21 @@ export const FutureChangesTable = ({ predictionData, budgetUuid, categories }: P
                 }}
                 onSave={handleDialogSave}
                 categories={categories}
+                accounts={accounts}
+                budgetUuid={budgetUuid}
                 transaction={selectedTransaction}
+                mode="edit"
+            />
+
+            <EditTransactionDialog
+                key="create"
+                isOpen={isCreateDialogOpen}
+                onClose={() => setIsCreateDialogOpen(false)}
+                onCreate={handleCreate}
+                categories={categories}
+                accounts={accounts}
+                budgetUuid={budgetUuid}
+                mode="create"
             />
         </div>
     );

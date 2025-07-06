@@ -248,6 +248,9 @@ export const updateScheduledTransaction = async (
       amount?: number;
       category_id?: string;
       date?: string;
+      payee_name?: string;
+      memo?: string;
+      account_id?: string;
     };
   },
   user: UserType
@@ -295,6 +298,55 @@ export const getScheduledTransactions = async (
     budgetId
   );
   return data.scheduled_transactions;
+};
+
+/**
+ * Create a scheduled transaction in YNAB API
+ */
+export const createScheduledTransaction = async (
+  budgetId: string,
+  data: {
+    scheduled_transaction: {
+      account_id: string;
+      category_id: string;
+      payee_name?: string;
+      memo?: string;
+      amount: number;
+      date: string;
+      frequency?: string;
+    };
+  },
+  user: UserType
+) => {
+  const token = user?.ynab?.connection.accessToken;
+  if (!token) {
+    throw new Error("No token found");
+  }
+
+  // Custom REST call to create a scheduled transaction
+  const url = `${YNAB_API_BASE_URL}/budgets/${budgetId}/scheduled_transactions`;
+
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(`YNAB API error: ${JSON.stringify(errorData)}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error creating scheduled transaction:", error);
+    throw error;
+  }
 };
 
 /**
