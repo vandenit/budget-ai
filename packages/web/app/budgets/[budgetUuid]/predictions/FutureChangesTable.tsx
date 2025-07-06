@@ -146,6 +146,10 @@ export const FutureChangesTable = ({ predictionData, budgetUuid, categories, acc
         // Find account based on change.account if available
         const accountId = change.account ? accounts.find(acc => acc.name === change.account)?.uuid : undefined;
 
+        console.log('Change object:', change);
+        console.log('Payee from change:', change.payee);
+        console.log('Memo from change:', change.memo);
+
         setSelectedTransaction({
             amount: change.amount,
             categoryId: categoryId || '',
@@ -159,7 +163,10 @@ export const FutureChangesTable = ({ predictionData, budgetUuid, categories, acc
             selectedTransaction: {
                 amount: change.amount,
                 categoryId: categoryId || '',
-                date: date
+                date: date,
+                payeeName: change.payee || '',
+                memo: change.memo || '',
+                accountId: accountId || ''
             }
         });
     };
