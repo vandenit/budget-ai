@@ -371,6 +371,9 @@ export const updateScheduledTransaction = async (
     amount?: number;
     categoryId?: string;
     date?: string;
+    payeeName?: string;
+    memo?: string;
+    accountId?: string;
   }
 ) => {
   try {
@@ -382,6 +385,9 @@ export const updateScheduledTransaction = async (
           amount: updates.amount ? updates.amount * 1000 : undefined, // Convert to milliunits
           category_id: updates.categoryId,
           date: updates.date,
+          payee_name: updates.payeeName,
+          memo: updates.memo,
+          account_id: updates.accountId,
         },
       },
       user

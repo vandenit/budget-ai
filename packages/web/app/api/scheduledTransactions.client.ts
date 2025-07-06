@@ -4,6 +4,9 @@ export type ScheduledTransactionUpdate = {
   amount?: number;
   categoryId?: string;
   date?: string;
+  payeeName?: string;
+  memo?: string;
+  accountId?: string;
 };
 
 export type ScheduledTransactionCreate = {

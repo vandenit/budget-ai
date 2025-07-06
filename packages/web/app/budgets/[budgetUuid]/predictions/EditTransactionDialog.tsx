@@ -110,6 +110,9 @@ export const EditTransactionDialog = ({ isOpen, onClose, onSave, onCreate, categ
                     amount: formData.amount,
                     categoryId: formData.categoryId,
                     date: formData.date,
+                    payeeName: formData.payeeName,
+                    memo: formData.memo,
+                    accountId: formData.accountId,
                 });
             } else {
                 setError('Invalid operation mode');

@@ -248,6 +248,9 @@ export const updateScheduledTransaction = async (
       amount?: number;
       category_id?: string;
       date?: string;
+      payee_name?: string;
+      memo?: string;
+      account_id?: string;
     };
   },
   user: UserType
