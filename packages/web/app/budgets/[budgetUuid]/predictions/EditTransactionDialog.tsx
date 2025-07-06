@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { FiX } from 'react-icons/fi';
 import { Category, FormField, NumberInput, TextInput, DateInput, SelectInput } from 'common-ts';
 import { ScheduledTransactionUpdate, ScheduledTransactionCreate } from '../../../api/scheduledTransactions.client';
@@ -42,7 +42,8 @@ const useTransactionForm = (transaction?: TransactionData, mode: 'edit' | 'creat
         setFormData(prev => ({ ...prev, [field]: value }));
     };
 
-    const resetForm = useCallback(() => {
+    // Initialize form data when transaction changes
+    useEffect(() => {
         if (mode === 'edit' && transaction) {
             setFormData({
                 amount: transaction.amount,
@@ -62,12 +63,30 @@ const useTransactionForm = (transaction?: TransactionData, mode: 'edit' | 'creat
                 accountId: '',
             });
         }
-    }, [mode, transaction]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [mode, transaction?.amount, transaction?.categoryId, transaction?.date, transaction?.payeeName, transaction?.memo, transaction?.accountId]);
 
-    // Initialize form data when transaction changes
-    useEffect(() => {
-        resetForm();
-    }, [resetForm]);
+    const resetForm = () => {
+        if (mode === 'edit' && transaction) {
+            setFormData({
+                amount: transaction.amount,
+                categoryId: transaction.categoryId,
+                date: transaction.date,
+                payeeName: transaction.payeeName || '',
+                memo: transaction.memo || '',
+                accountId: transaction.accountId || '',
+            });
+        } else {
+            setFormData({
+                amount: 0,
+                categoryId: '',
+                date: new Date().toISOString().split('T')[0],
+                payeeName: '',
+                memo: '',
+                accountId: '',
+            });
+        }
+    };
 
     return { formData, updateField, resetForm };
 };
