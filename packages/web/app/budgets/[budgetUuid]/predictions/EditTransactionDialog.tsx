@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { FiX } from 'react-icons/fi';
 import { Category, FormField, NumberInput, TextInput, DateInput, SelectInput } from 'common-ts';
 import { ScheduledTransactionUpdate, ScheduledTransactionCreate } from '../../../api/scheduledTransactions.client';
@@ -42,7 +42,7 @@ const useTransactionForm = (transaction?: TransactionData, mode: 'edit' | 'creat
         setFormData(prev => ({ ...prev, [field]: value }));
     };
 
-    const resetForm = () => {
+    const resetForm = useCallback(() => {
         if (mode === 'edit' && transaction) {
             setFormData({
                 amount: transaction.amount,
@@ -62,7 +62,12 @@ const useTransactionForm = (transaction?: TransactionData, mode: 'edit' | 'creat
                 accountId: '',
             });
         }
-    };
+    }, [mode, transaction]);
+
+    // Initialize form data when transaction changes
+    useEffect(() => {
+        resetForm();
+    }, [resetForm]);
 
     return { formData, updateField, resetForm };
 };
