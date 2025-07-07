@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Category } from 'common-ts';
 import UnapprovedTransactionsList from './UnapprovedTransactionsList';
 import UnapprovedStats from './UnapprovedStats';
@@ -33,16 +33,24 @@ export default function UnapprovedTransactionsContent({
     const [approvingTransactions, setApprovingTransactions] = useState<Set<string>>(new Set());
     const [lastApproveResult, setLastApproveResult] = useState<any>(null);
 
+    // ✅ Sync local state with server data when it changes (after revalidatePath)
+    useEffect(() => {
+        console.log('🔄 Server data changed, syncing unapproved transactions...');
+        setUnapprovedTransactions(initialTransactions);
+    }, [initialTransactions]);
+
+    // Sync local state with props when server data changes (after revalidatePath)
+    useEffect(() => {
+        setUnapprovedTransactions(initialTransactions);
+    }, [initialTransactions]);
+
     const handleApproveAll = async () => {
         setIsApproving(true);
         try {
             const result = await approveAllTransactions(budgetUuid);
             setLastApproveResult(result);
 
-            // Remove approved transactions from the list
-            if (result.success && result.approved_count > 0) {
-                setUnapprovedTransactions([]);
-            }
+            // Server data will refresh via revalidatePath - no need to manually update state
         } catch (error) {
             console.error('Error approving all transactions:', error);
             setLastApproveResult({ error: 'Failed to approve all transactions' });
@@ -59,12 +67,7 @@ export default function UnapprovedTransactionsContent({
             const result = await approveSingleTransaction(budgetUuid, transactionId);
 
             if (result.success) {
-                // Remove the transaction from our list since it's now approved
-                setUnapprovedTransactions(prev =>
-                    prev.filter(t => t.transaction_id !== transactionId)
-                );
-
-                // Show success message
+                // Show success message - server data will refresh via revalidatePath
                 setLastApproveResult({
                     message: `✅ Transaction approved`,
                     approved_count: 1
@@ -96,12 +99,7 @@ export default function UnapprovedTransactionsContent({
             const result = await applySingleCategory(budgetUuid, transactionId, categoryName);
 
             if (result.success) {
-                // Remove the transaction from our list since it's now categorized and approved
-                setUnapprovedTransactions(prev =>
-                    prev.filter(t => t.transaction_id !== transactionId)
-                );
-
-                // Show success message
+                // Show success message - server data will refresh via revalidatePath
                 setLastApproveResult({
                     message: `✅ Applied '${categoryName}' and approved transaction`,
                     approved_count: 1
