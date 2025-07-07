@@ -130,7 +130,11 @@ export const PredictionChart = ({
                 labels: {
                     font: {
                         size: variant === 'detail' ? 12 : 10
-                    }
+                    },
+                    // Better mobile legend layout
+                    boxWidth: variant === 'detail' ? 12 : 10,
+                    padding: variant === 'detail' ? 15 : 10,
+                    usePointStyle: true
                 }
             },
             title: {
@@ -138,6 +142,10 @@ export const PredictionChart = ({
                 text: "Balance Prediction",
                 font: {
                     size: variant === 'detail' ? 20 : 16
+                },
+                padding: {
+                    top: 10,
+                    bottom: variant === 'detail' ? 20 : 15
                 }
             },
             tooltip: {
@@ -221,10 +229,11 @@ export const PredictionChart = ({
                     maxRotation: 0,
                     minRotation: 0,
                     autoSkip: true,
-                    maxTicksLimit: variant === 'detail' ? 12 : 6,
+                    // Responsive tick limits based on screen size
+                    maxTicksLimit: variant === 'detail' ? 8 : 4,
                     align: 'start',
                     font: {
-                        size: variant === 'detail' ? 12 : 11
+                        size: variant === 'detail' ? 11 : 10
                     },
                     display: variant === 'detail'
                 }
@@ -241,9 +250,10 @@ export const PredictionChart = ({
                     callback: function (tickValue: string | number): string {
                         return `€${Number(tickValue).toFixed(0)}`;
                     },
-                    maxTicksLimit: variant === 'detail' ? 10 : 8,
+                    // Responsive tick limits for mobile
+                    maxTicksLimit: variant === 'detail' ? 8 : 6,
                     font: {
-                        size: variant === 'detail' ? 12 : 11
+                        size: variant === 'detail' ? 11 : 10
                     }
                 },
                 grid: {
@@ -261,7 +271,11 @@ export const PredictionChart = ({
 
     return (
         <div className="space-y-4">
-            <div className={variant === 'detail' ? 'h-[600px]' : 'h-[400px]'}>
+            {/* Responsive chart height - smaller on mobile */}
+            <div className={variant === 'detail'
+                ? 'h-[300px] sm:h-[400px] lg:h-[500px]'
+                : 'h-[250px] sm:h-[350px]'
+            }>
                 <Line options={chartOptions} data={chartData} />
             </div>
         </div>
