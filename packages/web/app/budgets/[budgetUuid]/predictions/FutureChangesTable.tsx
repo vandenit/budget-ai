@@ -180,7 +180,87 @@ export const FutureChangesTable = ({ predictionData, budgetUuid, categories, acc
                 </button>
             </div>
 
-            <div className="overflow-x-auto">
+            {/* Mobile Card View */}
+            <div className="block lg:hidden space-y-4">
+                {changes.map((dayChange, dayIndex) => (
+                    <div key={dayIndex} className="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
+                        {/* Date Header */}
+                        <div className="bg-gradient-to-r from-slate-50 to-gray-50 dark:from-slate-800 dark:to-gray-800 p-4 border-b border-slate-200 dark:border-slate-700">
+                            <div className="flex justify-between items-center">
+                                <h3 className="font-semibold text-lg">
+                                    {new Date(dayChange.date).toLocaleDateString('en-US', {
+                                        day: '2-digit',
+                                        month: 'long',
+                                        year: 'numeric'
+                                    })}
+                                </h3>
+                                <div className="text-right">
+                                    <div className="font-semibold">€{dayChange.balance.toFixed(2)}</div>
+                                    <div className={`text-sm ${dayChange.balance_diff >= 0 ? 'text-success' : 'text-error'}`}>
+                                        {dayChange.balance_diff >= 0 ? '+' : ''}{dayChange.balance_diff.toFixed(2)}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Changes */}
+                        <div className="divide-y divide-slate-200 dark:divide-slate-700">
+                            {dayChange.changes.map((change, changeIndex) => (
+                                <div key={changeIndex} className="p-4">
+                                    <div className="flex justify-between items-start gap-3">
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex items-center gap-2 mb-2">
+                                                {change.is_simulation && (
+                                                    <span className="badge badge-sm">Simulation</span>
+                                                )}
+                                                <span className="font-medium">{change.reason}</span>
+                                            </div>
+
+                                            {change.payee && (
+                                                <div className="text-sm text-base-content/70 mb-1">{change.payee}</div>
+                                            )}
+
+                                            {change.memo && (
+                                                <div className="text-sm text-base-content/70 mb-2">{change.memo}</div>
+                                            )}
+
+                                            <div className="text-sm text-base-content/80">{change.category}</div>
+                                        </div>
+
+                                        <div className="flex items-center gap-2">
+                                            {change.reason === "Scheduled Transaction" && (
+                                                <div className="flex items-center gap-1">
+                                                    <button
+                                                        onClick={() => {
+                                                            console.log('Edit button clicked for:', change);
+                                                            handleEditClick(change, dayChange.date);
+                                                        }}
+                                                        className="btn btn-ghost btn-xs"
+                                                    >
+                                                        <FiEdit2 className="h-4 w-4" />
+                                                    </button>
+                                                    <button
+                                                        onClick={() => change.id && handleDelete(change.id)}
+                                                        className="btn btn-ghost btn-xs text-error"
+                                                    >
+                                                        <FiTrash2 className="h-4 w-4" />
+                                                    </button>
+                                                </div>
+                                            )}
+                                            <div className={`text-right font-semibold ${change.amount >= 0 ? 'text-success' : 'text-error'}`}>
+                                                {change.amount >= 0 ? '+' : ''}€{change.amount.toFixed(2)}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                ))}
+            </div>
+
+            {/* Desktop Table View */}
+            <div className="hidden lg:block overflow-x-auto">
                 <table className="table table-zebra w-full">
                     <thead>
                         <tr>
@@ -241,7 +321,7 @@ export const FutureChangesTable = ({ predictionData, budgetUuid, categories, acc
                                     </td>
                                     <td>{change.category}</td>
                                     <td className={`text-right ${change.amount >= 0 ? 'text-success' : 'text-error'}`}>
-                                        {change.amount >= 0 ? '+' : ''}{change.amount.toFixed(2)}
+                                        {change.amount >= 0 ? '+' : ''}€{change.amount.toFixed(2)}
                                     </td>
                                     {changeIndex === 0 && (
                                         <td rowSpan={dayChange.changes.length} className="text-right">
