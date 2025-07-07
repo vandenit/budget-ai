@@ -39,13 +39,13 @@ export default function UnapprovedTransactionsContent({
         setUnapprovedTransactions(initialTransactions);
     }, [initialTransactions]);
 
-    // Sync local state with props when server data changes (after revalidatePath)
-    useEffect(() => {
-        setUnapprovedTransactions(initialTransactions);
-    }, [initialTransactions]);
-
     const handleApproveAll = async () => {
         setIsApproving(true);
+
+        // ✅ Show all transactions as approving during Approve All
+        const allTransactionIds = unapprovedTransactions.map(tx => tx.transaction_id);
+        setApprovingTransactions(new Set(allTransactionIds));
+
         try {
             const result = await approveAllTransactions(budgetUuid);
             setLastApproveResult(result);
@@ -56,6 +56,8 @@ export default function UnapprovedTransactionsContent({
             setLastApproveResult({ error: 'Failed to approve all transactions' });
         } finally {
             setIsApproving(false);
+            // ✅ Clear approving state for all transactions
+            setApprovingTransactions(new Set());
         }
     };
 

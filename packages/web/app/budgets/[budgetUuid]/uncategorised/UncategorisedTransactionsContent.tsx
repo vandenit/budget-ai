@@ -195,6 +195,11 @@ export default function UncategorisedTransactionsContent({
 
     const handleApplyAllSuggestions = async () => {
         setIsApplying(true);
+
+        // ✅ Show all transactions as applying during Apply All
+        const allTransactionIds = suggestedTransactions.map(tx => tx.transaction_id);
+        setApplyingTransactions(new Set(allTransactionIds));
+
         try {
             // Apply all categories (both AI suggestions and manual changes)
             // The endpoint will automatically handle cached suggestions and manual changes
@@ -216,11 +221,18 @@ export default function UncategorisedTransactionsContent({
             setLastApplyResult({ error: 'Failed to apply suggestions' });
         } finally {
             setIsApplying(false);
+            // ✅ Clear applying state for all transactions
+            setApplyingTransactions(new Set());
         }
     };
 
     const handleApplyAISuggestionsOnly = async () => {
         setIsApplying(true);
+
+        // ✅ Show all transactions as applying during Apply AI Only
+        const allTransactionIds = suggestedTransactions.map(tx => tx.transaction_id);
+        setApplyingTransactions(new Set(allTransactionIds));
+
         try {
             // Get transactions with manual changes marked
             const transactionsWithManualFlags = suggestedTransactions.map(tx => ({
@@ -247,6 +259,8 @@ export default function UncategorisedTransactionsContent({
             setLastApplyResult({ error: 'Failed to apply AI suggestions' });
         } finally {
             setIsApplying(false);
+            // ✅ Clear applying state for all transactions
+            setApplyingTransactions(new Set());
         }
     };
 
@@ -368,6 +382,14 @@ export default function UncategorisedTransactionsContent({
                 isApplying={isApplying}
                 lastResult={lastApplyResult}
             />
+
+            {/* AI Loading Alert */}
+            {isLoadingSuggestions && (
+                <div className="alert alert-info">
+                    <span className="loading loading-spinner loading-sm"></span>
+                    <span>Loading AI suggestions for uncategorized transactions...</span>
+                </div>
+            )}
 
             {/* Results Alert */}
             {lastApplyResult && (
