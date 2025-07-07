@@ -211,7 +211,9 @@ export default function UncategorisedTransactionsContent({
             setLastApplyResult(result);
 
             // Show success message - server data will refresh via revalidatePath
+            // Show success message - server data will refresh via revalidatePath
             if (result.updated_transactions && result.updated_transactions.length > 0) {
+                // Clear manual modifications for applied transactions
                 // Clear manual modifications for applied transactions
                 const appliedTransactionIds = result.updated_transactions.map((r: any) => r.transaction_id);
                 setManuallyModified(prev => {
@@ -249,7 +251,9 @@ export default function UncategorisedTransactionsContent({
             setLastApplyResult(result);
 
             // Show success message - server data will refresh via revalidatePath
+            // Show success message - server data will refresh via revalidatePath
             if (result.length > 0) {
+                // Clear manual modifications for applied transactions
                 // Clear manual modifications for applied transactions
                 const appliedTransactionIds = result.map((r: any) => r.transaction_id);
                 setManuallyModified(prev => {
@@ -309,6 +313,7 @@ export default function UncategorisedTransactionsContent({
                 });
 
                 // Show success message - server data will refresh via revalidatePath
+                // Show success message - server data will refresh via revalidatePath
                 setLastApplyResult({
                     message: `✅ Applied '${categoryName}' to transaction`,
                     applied_count: 1
@@ -347,6 +352,7 @@ export default function UncategorisedTransactionsContent({
                     return newSet;
                 });
 
+                // Show success message with learning info - server data will refresh via revalidatePath
                 // Show success message with learning info - server data will refresh via revalidatePath
                 const learningInfo = result.learned_mapping ? ' (learned for future)' : '';
                 setLastApplyResult({
