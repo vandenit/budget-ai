@@ -27,6 +27,7 @@ export default function UncategorisedTransactionsContent({
     categories,
     initialTransactions
 }: Props) {
+    // ✅ Hybrid approach: local state for AI suggestions, but sync with server data
     const [suggestedTransactions, setSuggestedTransactions] = useState<SuggestedTransaction[]>(initialTransactions);
     const [manuallyModified, setManuallyModified] = useState<Set<string>>(new Set());
     const [isApplying, setIsApplying] = useState(false);
@@ -35,6 +36,14 @@ export default function UncategorisedTransactionsContent({
     const [lastApplyResult, setLastApplyResult] = useState<any>(null);
     const hasLoadedSuggestions = useRef(false);
     const manuallyModifiedRef = useRef(manuallyModified);
+
+    // ✅ Sync local state with server data when it changes (after revalidatePath)
+    useEffect(() => {
+        console.log('🔄 Server data changed, syncing local state...');
+        setSuggestedTransactions(initialTransactions);
+        // Reset AI loading state when server data changes
+        hasLoadedSuggestions.current = false;
+    }, [initialTransactions]);
 
     // Keep ref in sync with state
     useEffect(() => {
@@ -192,14 +201,10 @@ export default function UncategorisedTransactionsContent({
             const result = await applyAllCategories(budgetUuid);
             setLastApplyResult(result);
 
-            // Show success message and refresh data
+            // Show success message - server data will refresh via revalidatePath
             if (result.updated_transactions && result.updated_transactions.length > 0) {
-                // Remove applied transactions from the list
-                const appliedTransactionIds = result.updated_transactions.map((r: any) => r.transaction_id);
-                setSuggestedTransactions(prev =>
-                    prev.filter(t => !appliedTransactionIds.includes(t.transaction_id))
-                );
                 // Clear manual modifications for applied transactions
+                const appliedTransactionIds = result.updated_transactions.map((r: any) => r.transaction_id);
                 setManuallyModified(prev => {
                     const newSet = new Set(prev);
                     appliedTransactionIds.forEach((id: string) => newSet.delete(id));
@@ -227,14 +232,10 @@ export default function UncategorisedTransactionsContent({
             const result = await applyCategories(budgetUuid, transactionsWithManualFlags);
             setLastApplyResult(result);
 
-            // Show success message and refresh data
+            // Show success message - server data will refresh via revalidatePath
             if (result.length > 0) {
-                // Remove applied transactions from the list
-                const appliedTransactionIds = result.map((r: any) => r.transaction_id);
-                setSuggestedTransactions(prev =>
-                    prev.filter(t => !appliedTransactionIds.includes(t.transaction_id))
-                );
                 // Clear manual modifications for applied transactions
+                const appliedTransactionIds = result.map((r: any) => r.transaction_id);
                 setManuallyModified(prev => {
                     const newSet = new Set(prev);
                     appliedTransactionIds.forEach((id: string) => newSet.delete(id));
@@ -282,11 +283,6 @@ export default function UncategorisedTransactionsContent({
             const result = await applySingleCategory(budgetUuid, transactionId, categoryName, false);
 
             if (result.success) {
-                // Remove the transaction from our list since it's now categorized
-                setSuggestedTransactions(prev =>
-                    prev.filter(t => t.transaction_id !== transactionId)
-                );
-
                 // Remove from manually modified set if present
                 setManuallyModified(prev => {
                     const newSet = new Set(prev);
@@ -294,7 +290,7 @@ export default function UncategorisedTransactionsContent({
                     return newSet;
                 });
 
-                // Show success message
+                // Show success message - server data will refresh via revalidatePath
                 setLastApplyResult({
                     message: `✅ Applied '${categoryName}' to transaction`,
                     applied_count: 1
@@ -326,11 +322,6 @@ export default function UncategorisedTransactionsContent({
             const result = await applySingleCategory(budgetUuid, transactionId, categoryName, true);
 
             if (result.success) {
-                // Remove the transaction from our list since it's now categorized
-                setSuggestedTransactions(prev =>
-                    prev.filter(t => t.transaction_id !== transactionId)
-                );
-
                 // Remove from manually modified set if present
                 setManuallyModified(prev => {
                     const newSet = new Set(prev);
@@ -338,7 +329,7 @@ export default function UncategorisedTransactionsContent({
                     return newSet;
                 });
 
-                // Show success message with learning info
+                // Show success message with learning info - server data will refresh via revalidatePath
                 const learningInfo = result.learned_mapping ? ' (learned for future)' : '';
                 setLastApplyResult({
                     message: `✅ Applied '${categoryName}' to transaction${learningInfo}`,
