@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import {
   applyCategories as applyCategoriesApi,
   applyAllCategories as applyAllCategoriesApi,
@@ -16,7 +17,12 @@ import {
 
 export async function applyCategories(budgetId: string, transactions: any[]) {
   try {
-    return await applyCategoriesApi(budgetId, transactions);
+    const result = await applyCategoriesApi(budgetId, transactions);
+
+    // Invalidate the cache for the uncategorised page
+    revalidatePath(`/budgets/${budgetId}/uncategorised`);
+
+    return result;
   } catch (error) {
     console.error("Error applying categories:", error);
     throw error;
@@ -25,7 +31,12 @@ export async function applyCategories(budgetId: string, transactions: any[]) {
 
 export async function applyAllCategories(budgetId: string) {
   try {
-    return await applyAllCategoriesApi(budgetId);
+    const result = await applyAllCategoriesApi(budgetId);
+
+    // Invalidate the cache for the uncategorised page
+    revalidatePath(`/budgets/${budgetId}/uncategorised`);
+
+    return result;
   } catch (error) {
     console.error("Error applying all categories:", error);
     throw error;
@@ -64,12 +75,17 @@ export async function applySingleCategory(
   isManualChange: boolean = false
 ) {
   try {
-    return await applySingleCategoryApi(
+    const result = await applySingleCategoryApi(
       budgetId,
       transactionId,
       categoryName,
       isManualChange
     );
+
+    // Invalidate the cache for the uncategorised page
+    revalidatePath(`/budgets/${budgetId}/uncategorised`);
+
+    return result;
   } catch (error) {
     console.error("Error applying single category:", error);
     throw error;
@@ -81,7 +97,12 @@ export async function approveSingleTransaction(
   transactionId: string
 ) {
   try {
-    return await approveSingleTransactionApi(budgetId, transactionId);
+    const result = await approveSingleTransactionApi(budgetId, transactionId);
+
+    // Invalidate the cache for the uncategorised page
+    revalidatePath(`/budgets/${budgetId}/uncategorised`);
+
+    return result;
   } catch (error) {
     console.error("Error approving single transaction:", error);
     throw error;
@@ -90,7 +111,12 @@ export async function approveSingleTransaction(
 
 export async function approveAllTransactions(budgetId: string) {
   try {
-    return await approveAllTransactionsApi(budgetId);
+    const result = await approveAllTransactionsApi(budgetId);
+
+    // Invalidate the cache for the uncategorised page
+    revalidatePath(`/budgets/${budgetId}/uncategorised`);
+
+    return result;
   } catch (error) {
     console.error("Error approving all transactions:", error);
     throw error;
