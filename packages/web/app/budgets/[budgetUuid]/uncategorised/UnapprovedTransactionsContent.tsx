@@ -37,26 +37,33 @@ export default function UnapprovedTransactionsContent({
     useEffect(() => {
         console.log('🔄 Server data changed, syncing unapproved transactions...');
         setUnapprovedTransactions(initialTransactions);
-    }, [initialTransactions]);
 
-    // Sync local state with props when server data changes (after revalidatePath)
-    useEffect(() => {
-        setUnapprovedTransactions(initialTransactions);
+        // ✅ Clear approving states when server data refreshes (transactions are gone)
+        setApprovingTransactions(new Set());
+        setIsApproving(false);
     }, [initialTransactions]);
 
     const handleApproveAll = async () => {
         setIsApproving(true);
+
+        // ✅ Show all transactions as approving during Approve All
+        const allTransactionIds = unapprovedTransactions.map(tx => tx.transaction_id);
+        setApprovingTransactions(new Set(allTransactionIds));
+
         try {
             const result = await approveAllTransactions(budgetUuid);
             setLastApproveResult(result);
 
             // Server data will refresh via revalidatePath - no need to manually update state
+            // Server data will refresh via revalidatePath - no need to manually update state
         } catch (error) {
             console.error('Error approving all transactions:', error);
             setLastApproveResult({ error: 'Failed to approve all transactions' });
-        } finally {
+            // ✅ Only clear loading on error - success will be cleared by server refresh
             setIsApproving(false);
+            setApprovingTransactions(new Set());
         }
+        // ✅ Don't clear loading states on success - let server refresh handle it
     };
 
     const handleApproveSingle = async (transactionId: string) => {
@@ -67,6 +74,7 @@ export default function UnapprovedTransactionsContent({
             const result = await approveSingleTransaction(budgetUuid, transactionId);
 
             if (result.success) {
+                // Show success message - server data will refresh via revalidatePath
                 // Show success message - server data will refresh via revalidatePath
                 setLastApproveResult({
                     message: `✅ Transaction approved`,
@@ -80,14 +88,14 @@ export default function UnapprovedTransactionsContent({
             setLastApproveResult({
                 error: `Failed to approve transaction: ${error}`
             });
-        } finally {
-            // Remove from approving set
+            // ✅ Only clear loading on error - success will be cleared by server refresh
             setApprovingTransactions(prev => {
                 const newSet = new Set(prev);
                 newSet.delete(transactionId);
                 return newSet;
             });
         }
+        // ✅ Don't clear loading state on success - let server refresh handle it
     };
 
     const handleCategorizeAndApprove = async (transactionId: string, categoryName: string) => {
@@ -99,6 +107,7 @@ export default function UnapprovedTransactionsContent({
             const result = await applySingleCategory(budgetUuid, transactionId, categoryName);
 
             if (result.success) {
+                // Show success message - server data will refresh via revalidatePath
                 // Show success message - server data will refresh via revalidatePath
                 setLastApproveResult({
                     message: `✅ Applied '${categoryName}' and approved transaction`,
@@ -112,14 +121,14 @@ export default function UnapprovedTransactionsContent({
             setLastApproveResult({
                 error: `Failed to categorize and approve transaction: ${error}`
             });
-        } finally {
-            // Remove from approving set
+            // ✅ Only clear loading on error - success will be cleared by server refresh
             setApprovingTransactions(prev => {
                 const newSet = new Set(prev);
                 newSet.delete(transactionId);
                 return newSet;
             });
         }
+        // ✅ Don't clear loading state on success - let server refresh handle it
     };
 
     const totalCount = unapprovedTransactions.length;

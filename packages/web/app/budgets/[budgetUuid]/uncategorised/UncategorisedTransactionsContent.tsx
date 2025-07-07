@@ -43,6 +43,10 @@ export default function UncategorisedTransactionsContent({
         setSuggestedTransactions(initialTransactions);
         // Reset AI loading state when server data changes
         hasLoadedSuggestions.current = false;
+
+        // ✅ Clear applying states when server data refreshes (transactions are gone)
+        setApplyingTransactions(new Set());
+        setIsApplying(false);
     }, [initialTransactions]);
 
     // Keep ref in sync with state
@@ -195,6 +199,11 @@ export default function UncategorisedTransactionsContent({
 
     const handleApplyAllSuggestions = async () => {
         setIsApplying(true);
+
+        // ✅ Show all transactions as applying during Apply All
+        const allTransactionIds = suggestedTransactions.map(tx => tx.transaction_id);
+        setApplyingTransactions(new Set(allTransactionIds));
+
         try {
             // Apply all categories (both AI suggestions and manual changes)
             // The endpoint will automatically handle cached suggestions and manual changes
@@ -202,7 +211,9 @@ export default function UncategorisedTransactionsContent({
             setLastApplyResult(result);
 
             // Show success message - server data will refresh via revalidatePath
+            // Show success message - server data will refresh via revalidatePath
             if (result.updated_transactions && result.updated_transactions.length > 0) {
+                // Clear manual modifications for applied transactions
                 // Clear manual modifications for applied transactions
                 const appliedTransactionIds = result.updated_transactions.map((r: any) => r.transaction_id);
                 setManuallyModified(prev => {
@@ -214,13 +225,20 @@ export default function UncategorisedTransactionsContent({
         } catch (error) {
             console.error('Error applying suggestions:', error);
             setLastApplyResult({ error: 'Failed to apply suggestions' });
-        } finally {
+            // ✅ Only clear loading on error - success will be cleared by server refresh
             setIsApplying(false);
+            setApplyingTransactions(new Set());
         }
+        // ✅ Don't clear loading states on success - let server refresh handle it
     };
 
     const handleApplyAISuggestionsOnly = async () => {
         setIsApplying(true);
+
+        // ✅ Show all transactions as applying during Apply AI Only
+        const allTransactionIds = suggestedTransactions.map(tx => tx.transaction_id);
+        setApplyingTransactions(new Set(allTransactionIds));
+
         try {
             // Get transactions with manual changes marked
             const transactionsWithManualFlags = suggestedTransactions.map(tx => ({
@@ -233,7 +251,9 @@ export default function UncategorisedTransactionsContent({
             setLastApplyResult(result);
 
             // Show success message - server data will refresh via revalidatePath
+            // Show success message - server data will refresh via revalidatePath
             if (result.length > 0) {
+                // Clear manual modifications for applied transactions
                 // Clear manual modifications for applied transactions
                 const appliedTransactionIds = result.map((r: any) => r.transaction_id);
                 setManuallyModified(prev => {
@@ -245,9 +265,11 @@ export default function UncategorisedTransactionsContent({
         } catch (error) {
             console.error('Error applying AI suggestions:', error);
             setLastApplyResult({ error: 'Failed to apply AI suggestions' });
-        } finally {
+            // ✅ Only clear loading on error - success will be cleared by server refresh
             setIsApplying(false);
+            setApplyingTransactions(new Set());
         }
+        // ✅ Don't clear loading states on success - let server refresh handle it
     };
 
     const handleManualCategoryChange = (transactionId: string, newCategoryName: string) => {
@@ -291,6 +313,7 @@ export default function UncategorisedTransactionsContent({
                 });
 
                 // Show success message - server data will refresh via revalidatePath
+                // Show success message - server data will refresh via revalidatePath
                 setLastApplyResult({
                     message: `✅ Applied '${categoryName}' to transaction`,
                     applied_count: 1
@@ -303,14 +326,14 @@ export default function UncategorisedTransactionsContent({
             setLastApplyResult({
                 error: `Failed to apply category: ${error}`
             });
-        } finally {
-            // Remove from applying set
+            // ✅ Only clear loading on error - success will be cleared by server refresh
             setApplyingTransactions(prev => {
                 const newSet = new Set(prev);
                 newSet.delete(transactionId);
                 return newSet;
             });
         }
+        // ✅ Don't clear loading state on success - let server refresh handle it
     };
 
     const handleApplyManualCategory = async (transactionId: string, categoryName: string) => {
@@ -330,6 +353,7 @@ export default function UncategorisedTransactionsContent({
                 });
 
                 // Show success message with learning info - server data will refresh via revalidatePath
+                // Show success message with learning info - server data will refresh via revalidatePath
                 const learningInfo = result.learned_mapping ? ' (learned for future)' : '';
                 setLastApplyResult({
                     message: `✅ Applied '${categoryName}' to transaction${learningInfo}`,
@@ -343,14 +367,14 @@ export default function UncategorisedTransactionsContent({
             setLastApplyResult({
                 error: `Failed to apply manual category: ${error}`
             });
-        } finally {
-            // Remove from applying set
+            // ✅ Only clear loading on error - success will be cleared by server refresh
             setApplyingTransactions(prev => {
                 const newSet = new Set(prev);
                 newSet.delete(transactionId);
                 return newSet;
             });
         }
+        // ✅ Don't clear loading state on success - let server refresh handle it
     };
 
     const manuallyModifiedCount = manuallyModified.size;
@@ -368,6 +392,14 @@ export default function UncategorisedTransactionsContent({
                 isApplying={isApplying}
                 lastResult={lastApplyResult}
             />
+
+            {/* AI Loading Alert */}
+            {isLoadingSuggestions && (
+                <div className="alert alert-info">
+                    <span className="loading loading-spinner loading-sm"></span>
+                    <span>Loading AI suggestions for uncategorized transactions...</span>
+                </div>
+            )}
 
             {/* Results Alert */}
             {lastApplyResult && (

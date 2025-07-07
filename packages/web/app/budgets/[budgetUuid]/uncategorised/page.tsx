@@ -1,8 +1,10 @@
+import { Suspense } from 'react';
 import TransactionsPageWithTabs from './TransactionsPageWithTabs';
 import { getUncategorizedTransactions } from '../../../api/ai-suggestions.server';
 import { getCategories } from '../../../api/categories.client';
 import { getUnapprovedTransactions } from './actions';
 import BudgetSubNavigation from '../../../components/budget-sub-navigation';
+import Loading from '../../../components/Loading';
 
 interface PageProps {
     params: {
@@ -53,12 +55,14 @@ export default async function UncategorisedTransactionsPage({ params }: PageProp
                 <div className="container mx-auto p-4">
                     <h1 className="text-3xl font-bold mb-6 dark:text-white">Transactions</h1>
 
-                    <TransactionsPageWithTabs
-                        budgetUuid={budgetUuid}
-                        categories={categories}
-                        uncategorizedTransactions={formattedUncategorizedTransactions}
-                        unapprovedTransactions={unapprovedTransactions}
-                    />
+                    <Suspense fallback={<Loading />}>
+                        <TransactionsPageWithTabs
+                            budgetUuid={budgetUuid}
+                            categories={categories}
+                            uncategorizedTransactions={formattedUncategorizedTransactions}
+                            unapprovedTransactions={unapprovedTransactions}
+                        />
+                    </Suspense>
                 </div>
             </>
         );
