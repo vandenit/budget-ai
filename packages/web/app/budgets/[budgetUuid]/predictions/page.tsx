@@ -1,14 +1,11 @@
 import { Suspense } from 'react';
-import { PredictionChart } from '@/components/charts/prediction-chart';
-import { getCategories } from '@/app/api/categories.client';
-import { getAccounts } from '@/app/api/accounts.server';
-import { getPrediction } from '@/app/api/math.server';
-import InteractiveSimulations from './InteractiveSimulations';
-import { getSimulations } from './actions';
-import { FutureChangesTable } from './FutureChangesTable';
 import Link from 'next/link';
 import { TimeRange, TIME_RANGES, DEFAULT_TIME_RANGE } from './constants';
 import BudgetSubNavigation from '../../../components/budget-sub-navigation';
+import Loading from '../../../components/Loading';
+import PredictionChartSection from './PredictionChartSection';
+import FutureChangesSection from './FutureChangesSection';
+import InteractiveSimulationsSection from './InteractiveSimulationsSection';
 
 interface PageProps {
     params: {
@@ -21,16 +18,6 @@ interface PageProps {
 
 export default async function PredictionsPage({ params, searchParams }: PageProps) {
     const timeRange = searchParams.timeRange || DEFAULT_TIME_RANGE;
-    const daysAhead = TIME_RANGES[timeRange].days;
-
-    const [predictionData, categories, simulations, accounts] = await Promise.all([
-        getPrediction(params.budgetUuid, daysAhead),
-        getCategories(params.budgetUuid),
-        getSimulations(params.budgetUuid),
-        getAccounts(params.budgetUuid)
-    ]);
-
-    const categoryOptions = categories.map(category => ({ uuid: category.uuid, name: category.name }));
 
     return (
         <>
@@ -62,11 +49,9 @@ export default async function PredictionsPage({ params, searchParams }: PageProp
                                 </div>
                                 <div className="w-full overflow-hidden">
                                     <Suspense fallback={<div className="loading loading-spinner loading-lg" />}>
-                                        <PredictionChart
-                                            predictionData={predictionData}
-                                            categories={categories}
-                                            variant="detail"
-                                            selectedTimeRange={timeRange}
+                                        <PredictionChartSection
+                                            budgetUuid={params.budgetUuid}
+                                            timeRange={timeRange}
                                         />
                                     </Suspense>
                                 </div>
@@ -76,12 +61,12 @@ export default async function PredictionsPage({ params, searchParams }: PageProp
                         <div className="card bg-base-100 shadow-xl">
                             <div className="card-body p-3 sm:p-6">
                                 <h2 className="card-title text-lg sm:text-xl mb-4">Future Changes</h2>
-                                <FutureChangesTable
-                                    predictionData={predictionData}
-                                    categories={categories}
-                                    accounts={accounts}
-                                    budgetUuid={params.budgetUuid}
-                                />
+                                <Suspense fallback={<Loading />}>
+                                    <FutureChangesSection
+                                        budgetUuid={params.budgetUuid}
+                                        timeRange={timeRange}
+                                    />
+                                </Suspense>
                             </div>
                         </div>
                     </div>
@@ -90,10 +75,12 @@ export default async function PredictionsPage({ params, searchParams }: PageProp
                     <div className="w-full lg:w-1/4 order-2 lg:order-1">
                         <div className="card bg-base-100 shadow-xl lg:sticky lg:top-4">
                             <div className="card-body p-3 sm:p-6">
-                                <InteractiveSimulations
-                                    categoryOptions={categoryOptions}
-                                    initialSimulations={simulations}
-                                />
+                                <h2 className="card-title text-lg sm:text-xl mb-4">Simulations</h2>
+                                <Suspense fallback={<Loading />}>
+                                    <InteractiveSimulationsSection
+                                        budgetUuid={params.budgetUuid}
+                                    />
+                                </Suspense>
                             </div>
                         </div>
                     </div>
