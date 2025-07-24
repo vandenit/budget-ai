@@ -9,7 +9,7 @@ interface AmountInputProps {
     showToggle?: boolean; // Show income/expense toggle buttons
 }
 
-export const AmountInput: React.FC<AmountInputProps> = ({
+const AmountInput: React.FC<AmountInputProps> = ({
     value,
     onChange,
     placeholder = "0.00",
@@ -84,3 +84,5 @@ export const AmountInput: React.FC<AmountInputProps> = ({
         </div>
     );
 };
+
+export { AmountInput };
