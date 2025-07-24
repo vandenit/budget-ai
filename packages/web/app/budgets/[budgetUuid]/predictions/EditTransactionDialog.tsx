@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { FiX } from 'react-icons/fi';
-import { Category, FormField, NumberInput, TextInput, DateInput, SelectInput } from 'common-ts';
+import { Category, FormField, NumberInput, TextInput, DateInput, SelectInput, AmountInput } from 'common-ts';
 import { ScheduledTransactionUpdate, ScheduledTransactionCreate } from '../../../api/scheduledTransactions.client';
 import { Account } from '../../../api/accounts.server';
 
@@ -147,11 +147,12 @@ export const EditTransactionDialog = ({ isOpen, onClose, onSave, onCreate, categ
                 <div className="flex-1 overflow-y-auto p-6 pt-4">
                 <form id="transaction-form" onSubmit={handleSubmit} className="space-y-4">
                     <FormField label="Amount" required>
-                        <NumberInput
+                        <AmountInput
                             value={formData.amount}
                             onChange={(value) => updateField('amount', value)}
                             placeholder="0.00"
                             required
+                            showToggle={true}
                         />
                     </FormField>
 
