@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { FiX } from 'react-icons/fi';
-import { Category, FormField, NumberInput, TextInput, DateInput, SelectInput, AmountInput } from 'common-ts';
+import { Category, FormField, NumberInput, TextInput, DateInput, SelectInput, AmountInput, withoutInflowCategoryFilter } from 'common-ts';
 import { ScheduledTransactionUpdate, ScheduledTransactionCreate } from '../../../api/scheduledTransactions.client';
 import { Account } from '../../../api/accounts.server';
 
@@ -160,7 +160,10 @@ export const EditTransactionDialog = ({ isOpen, onClose, onSave, onCreate, categ
                         <SelectInput
                             value={formData.categoryId}
                             onChange={(value) => updateField('categoryId', value)}
-                            options={categories.map(cat => ({ value: cat.uuid, label: cat.name }))}
+                            options={categories
+                                .filter(withoutInflowCategoryFilter)
+                                .map(cat => ({ value: cat.uuid, label: cat.name }))
+                            }
                             placeholder="Select a category"
                             required
                         />
