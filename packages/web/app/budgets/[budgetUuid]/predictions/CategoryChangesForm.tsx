@@ -109,10 +109,13 @@ export function CategoryChangesForm({ categories, initialChanges = [], onSubmit,
                             <Input
                                 id={`targetAmount-${index}`}
                                 type="number"
+                                step="0.01"
+                                min="0"
                                 value={change.targetAmount}
                                 onChange={(e) => updateChange(index, 'targetAmount', parseFloat(e.target.value))}
                                 placeholder="200"
                                 required
+                                inputMode="decimal"
                             />
                         </div>
 

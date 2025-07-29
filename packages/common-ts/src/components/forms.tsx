@@ -20,25 +20,34 @@ export const FormField = ({
     </div>
 );
 
-export const NumberInput = ({ 
-    value, 
-    onChange, 
-    placeholder, 
-    required = false 
-}: { 
-    value: number; 
-    onChange: (value: number) => void; 
-    placeholder?: string; 
-    required?: boolean; 
+export const NumberInput = ({
+    value,
+    onChange,
+    placeholder,
+    required = false,
+    min,
+    max,
+    step = "0.01"
+}: {
+    value: number;
+    onChange: (value: number) => void;
+    placeholder?: string;
+    required?: boolean;
+    min?: number;
+    max?: number;
+    step?: string;
 }) => (
     <input
         type="number"
-        step="0.01"
+        step={step}
+        min={min}
+        max={max}
         value={value || ''}
         onChange={(e) => onChange(Number(e.target.value))}
         className="input input-bordered w-full"
         placeholder={placeholder}
         required={required}
+        inputMode="decimal"
     />
 );
 
