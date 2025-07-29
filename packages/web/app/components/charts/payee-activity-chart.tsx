@@ -67,7 +67,7 @@ export const PayeeActivityChart = ({
     ],
   };
 
-  const chartRef = useRef();
+  const chartRef = useRef<any>(null);
 
   const togglePayee = (payeeName: string) => {
     setExcludedPayees((excludedPayees) =>
