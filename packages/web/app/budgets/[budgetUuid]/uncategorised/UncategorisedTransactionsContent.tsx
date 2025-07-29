@@ -9,8 +9,10 @@ import UncategorisedStats from './UncategorisedStats';
 export interface SuggestedTransaction {
     transaction_id: string;
     payee_name: string;
+    clean_payee_name?: string;
     amount: number;
     date: string;
+    memo?: string;
     suggested_category_name: string | null;
     loading_suggestion?: boolean;
     cached?: boolean;

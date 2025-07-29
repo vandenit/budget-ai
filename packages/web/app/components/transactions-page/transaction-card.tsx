@@ -10,6 +10,7 @@ export interface BaseTransaction {
   amount: number;
   payee_name?: string;
   payeeName?: string;
+  cleanPayeeName?: string;
   date: string;
   memo?: string;
   id?: string;
@@ -91,7 +92,11 @@ export function TransactionCard<T extends BaseTransaction>({
     }
   };
 
-  const payeeName = transaction.payee_name || transaction.payeeName || 'Unknown Payee';
+  // Get clean payee name for display - prefer clean name if available
+  const payeeName = transaction.cleanPayeeName ||
+                   transaction.payee_name ||
+                   transaction.payeeName ||
+                   'Unknown Payee';
 
   return (
     <div

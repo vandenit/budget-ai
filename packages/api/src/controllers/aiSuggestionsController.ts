@@ -16,6 +16,7 @@ import {
 } from "../data/ynab/ynab-api";
 import { openAIService } from "../services/openai.service";
 import { createPayeeMappingsService } from "../services/payeeMappings.service";
+import { extractPayeeName } from "../data/transaction/utils";
 
 /**
  * Get uncategorized transactions for a budget via YNAB API
@@ -56,6 +57,7 @@ export const getUncategorizedTransactionsForBudget = async (
     const formattedTransactions = transactions.map((transaction) => ({
       transaction_id: transaction.id,
       payee_name: transaction.payee_name || "",
+      clean_payee_name: extractPayeeName(transaction.payee_name),
       amount: transaction.amount,
       date: transaction.date,
       memo: transaction.memo || "",
@@ -104,6 +106,7 @@ export const getUnapprovedTransactionsForBudget = async (
     const formattedTransactions = transactions.map((transaction) => ({
       transaction_id: transaction.id,
       payee_name: transaction.payee_name || "",
+      clean_payee_name: extractPayeeName(transaction.payee_name),
       amount: transaction.amount,
       date: transaction.date,
       memo: transaction.memo || "",

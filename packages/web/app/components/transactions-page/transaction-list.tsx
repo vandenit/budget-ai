@@ -10,6 +10,7 @@ interface TransactionForCard extends BaseTransaction {
   uuid: string;
   categoryId: string | undefined | null;
   payeeName: string;
+  cleanPayeeName: string;
 }
 
 export const TransactionList = ({
@@ -61,6 +62,7 @@ export const TransactionList = ({
     amount: transaction.amount,
     payee_name: transaction.payeeName,
     payeeName: transaction.payeeName,
+    cleanPayeeName: transaction.cleanPayeeName,
     date: transaction.date,
     memo: transaction.memo,
     categoryId: transaction.categoryId,

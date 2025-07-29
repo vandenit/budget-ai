@@ -11,8 +11,10 @@ interface TransactionsDataSectionProps {
 interface FormattedTransaction {
     transaction_id: string;
     payee_name: string;
+    clean_payee_name?: string;
     amount: number;
     date: string;
+    memo?: string;
     suggested_category_name: string | null;
     loading_suggestion: boolean;
     cached: boolean;
@@ -30,8 +32,10 @@ export default async function TransactionsDataSection({ budgetUuid, categories }
         const formattedUncategorizedTransactions: FormattedTransaction[] = uncategorizedTransactions.map((tx: any) => ({
             transaction_id: tx.transaction_id,
             payee_name: tx.payee_name,
+            clean_payee_name: tx.clean_payee_name,
             amount: tx.amount,
             date: tx.date,
+            memo: tx.memo,
             suggested_category_name: tx.ai_suggested_category || null,
             loading_suggestion: !tx.ai_suggested_category, // Need to load if no cached suggestion
             cached: !!tx.ai_suggested_category
