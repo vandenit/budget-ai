@@ -216,6 +216,39 @@ describe("aiSuggestionsController", () => {
       expect(res.status).toHaveBeenCalledWith(404);
       expect(res.json).toHaveBeenCalledWith({ error: "Budget not found or access denied" });
     });
+
+    it("should include memo field in uncategorized transactions response", async () => {
+      // Arrange
+      const req: any = {
+        params: { uuid: "budget-uuid-123" }
+      };
+
+      const transactionsWithMemo = [
+        {
+          id: "tx1",
+          payee_name: "Test Payee",
+          amount: -1000,
+          date: "2024-01-15",
+          memo: "Purchase at store",
+          category_name: null,
+          category_id: null,
+          approved: false,
+        }
+      ];
+
+      mocks.getYnabUncategorizedTransactions.mockResolvedValue(transactionsWithMemo);
+      mocks.getCachedAISuggestionsBatch.mockResolvedValue({});
+
+      // Act
+      await getUncategorizedTransactionsForBudget(req, res);
+
+      // Assert
+      expect(res.json).toHaveBeenCalledWith([
+        expect.objectContaining({
+          memo: "Purchase at store"
+        })
+      ]);
+    });
   });
 
   describe("getUnapprovedTransactionsForBudget", () => {
@@ -272,6 +305,38 @@ describe("aiSuggestionsController", () => {
       expect(mocks.extractPayeeName).toHaveBeenCalledTimes(2);
       expect(mocks.extractPayeeName).toHaveBeenCalledWith("PayPal (Europe) S.a r.l. et Cie, S. Domiciliëring 1043588586390 PAYPAL 4YV22252VFQC6 1043588586390 PAYPAL");
       expect(mocks.extractPayeeName).toHaveBeenCalledWith("PARKING ALBERTINE 1112 BE1000 BRUXELLES Betaling met KBC-Debetkaart");
+    });
+
+    it("should include memo field in response", async () => {
+      // Arrange
+      const req: any = {
+        params: { uuid: "budget-uuid-123" }
+      };
+
+      const transactionsWithMemo = [
+        {
+          id: "tx1",
+          payee_name: "Test Payee",
+          amount: -1000,
+          date: "2024-01-15",
+          memo: "Test memo content",
+          category_name: null,
+          category_id: null,
+          approved: false,
+        }
+      ];
+
+      mocks.getYnabUnapprovedTransactions.mockResolvedValue(transactionsWithMemo);
+
+      // Act
+      await getUnapprovedTransactionsForBudget(req, res);
+
+      // Assert
+      expect(res.json).toHaveBeenCalledWith([
+        expect.objectContaining({
+          memo: "Test memo content"
+        })
+      ]);
     });
   });
 });
