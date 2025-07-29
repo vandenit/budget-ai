@@ -1,7 +1,7 @@
 import { type Config } from "tailwindcss";
 
 const config: Config = {
-  darkMode: ["class"],
+  darkMode: "class",
   content: [
     './pages/**/*.{ts,tsx}',
     './components/**/*.{ts,tsx}',
@@ -78,8 +78,5 @@ const config: Config = {
     require("tailwindcss-animate"),
     require("daisyui")
   ],
-  daisyui: {
-    themes: ["dark", "light", "cupcake"],
-  },
 };
 export default config;

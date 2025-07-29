@@ -126,7 +126,7 @@ export const CategoryPieChart = ({
   };
 
   const router = useRouter();
-  const chartRef = useRef();
+  const chartRef = useRef<any>(null);
 
   const onClick = (event: MouseEvent<HTMLCanvasElement>) => {
     const { current: chart } = chartRef;

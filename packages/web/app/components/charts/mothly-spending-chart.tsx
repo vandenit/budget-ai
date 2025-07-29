@@ -92,7 +92,7 @@ export const MonthlySpendingChart = ({
     );
   };
 
-  const chartRef = useRef();
+  const chartRef = useRef<any>(null);
 
   const onClick = (event: MouseEvent<HTMLCanvasElement>) => {
     const { current: chart } = chartRef;
