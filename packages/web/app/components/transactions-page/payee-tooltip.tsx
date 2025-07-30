@@ -19,7 +19,7 @@ export function PayeeTooltip({ cleanPayeeName, fullPayeeName, className = '' }: 
   }
 
   return (
-    <div className={`tooltip tooltip-top ${className}`} data-tip={fullPayeeName}>
+    <div className={`tooltip tooltip-top tooltip-left ${className}`} data-tip={fullPayeeName}>
       <div className="font-semibold text-lg dark:text-white truncate cursor-help">
         {cleanPayeeName}
       </div>
