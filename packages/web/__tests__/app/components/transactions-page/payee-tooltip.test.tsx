@@ -14,41 +14,43 @@ describe('PayeeTooltip', () => {
     expect(screen.getByText('PayPal')).toBeDefined();
   });
 
-  it('should show info icon when full payee name is different', () => {
-    render(
+  it('should show tooltip with DaisyUI classes when full payee name is different', () => {
+    const { container } = render(
       <PayeeTooltip
         cleanPayeeName="PayPal"
         fullPayeeName="PayPal (Europe) S.a r.l. et Cie, S. Domiciliëring 1043588586390 PAYPAL"
       />
     );
 
-    const infoIcon = screen.getByRole('button');
-    expect(infoIcon).toBeDefined();
-    expect(infoIcon).toHaveAttribute('aria-label', 'Payee: PayPal. Press Enter to see full name.');
+    const tooltipElement = container.querySelector('.tooltip');
+    expect(tooltipElement).toBeDefined();
+    expect(tooltipElement).toHaveAttribute('data-tip', 'PayPal (Europe) S.a r.l. et Cie, S. Domiciliëring 1043588586390 PAYPAL');
   });
 
-  it('should not show info icon when payee names are the same', () => {
-    render(
+  it('should not show tooltip when payee names are the same', () => {
+    const { container } = render(
       <PayeeTooltip
         cleanPayeeName="PayPal"
         fullPayeeName="PayPal"
       />
     );
 
-    expect(screen.queryByRole('button')).toBeNull();
+    const tooltipElement = container.querySelector('.tooltip');
+    expect(tooltipElement).toBeNull();
   });
 
-  it('should not show info icon when no full payee name provided', () => {
-    render(
+  it('should not show tooltip when no full payee name provided', () => {
+    const { container } = render(
       <PayeeTooltip
         cleanPayeeName="PayPal"
       />
     );
 
-    expect(screen.queryByRole('button')).toBeNull();
+    const tooltipElement = container.querySelector('.tooltip');
+    expect(tooltipElement).toBeNull();
   });
 
-  it('should have proper accessibility attributes', () => {
+  it('should have cursor-help styling when tooltip is shown', () => {
     render(
       <PayeeTooltip
         cleanPayeeName="PayPal"
@@ -56,10 +58,7 @@ describe('PayeeTooltip', () => {
       />
     );
 
-    const trigger = screen.getByRole('button');
-
-    expect(trigger).toHaveAttribute('tabIndex', '0');
-    expect(trigger).toHaveAttribute('aria-label', 'Payee: PayPal. Press Enter to see full name.');
-    expect(trigger).toHaveAttribute('aria-expanded', 'false');
+    const payeeElement = screen.getByText('PayPal');
+    expect(payeeElement).toHaveClass('cursor-help');
   });
 });
