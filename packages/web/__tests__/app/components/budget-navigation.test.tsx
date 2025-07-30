@@ -1,6 +1,12 @@
-import { expect, test } from "vitest";
+import { expect, test, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import BudgetNavigation from "../../../app/components/budget-navigation";
+
+// Mock Next.js navigation
+vi.mock('next/navigation', () => ({
+  usePathname: () => '/budgets/test-uuid/transactions',
+  useParams: () => ({ budgetUuid: 'test-uuid' }),
+}));
 
 const mockBudgets = [
   { uuid: "1", name: "Budget 1" },
