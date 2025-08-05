@@ -21,6 +21,8 @@ const localTransactionSchema = new Schema({
   },
   payeeName: String,
   memo: String,
+  // Original payee name from YNAB import (before any payee rename rules)
+  import_payee_name_original: String,
   // AI suggestions caching (same as Python implementation)
   ai_suggested_category: String,
   ai_suggestion_date: Date,

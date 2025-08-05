@@ -64,6 +64,7 @@ const insertOrUpdateMissingTransaction = async (
     categoryId,
     payeeName: ynabTransaction.payee_name,
     memo: ynabTransaction.memo,
+    import_payee_name_original: ynabTransaction.import_payee_name_original,
   };
   await transactionServer.insertOrUpdateMissingTransaction(
     ynabTransaction.id,

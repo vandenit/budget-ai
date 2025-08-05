@@ -9,6 +9,7 @@ export type Transaction = {
   payeeName: string;
   cleanPayeeName: string;
   memo: string;
+  import_payee_name_original?: string;
 };
 
 export interface GroupedTransactions {

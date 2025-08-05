@@ -10,6 +10,7 @@ export type NewOrUpdatedTransaction = {
   categoryId: string | undefined | null;
   payeeName: string | undefined | null;
   memo: string | undefined | null;
+  import_payee_name_original: string | undefined | null;
 };
 
 const TRANSACTION_LIMIT = 10000;
@@ -40,16 +41,22 @@ export const findTransactions = async (
   const localTransactions = await LocalTransaction.find(filter).sort({
     date: -1,
   });
-  return localTransactions.map((transaction) => ({
-    uuid: transaction.uuid,
-    accountName: transaction.accountName,
-    amount: transaction.amount,
-    date: transaction.date,
-    categoryId: transaction.categoryId,
-    payeeName: transaction.payeeName,
-    cleanPayeeName: extractPayeeName(transaction.payeeName),
-    memo: transaction.memo,
-  }));
+  return localTransactions.map((transaction) => {
+    // Use import_payee_name_original as payeeName if available, otherwise use payeeName
+    const displayPayeeName = transaction.import_payee_name_original || transaction.payeeName;
+
+    return {
+      uuid: transaction.uuid,
+      accountName: transaction.accountName,
+      amount: transaction.amount,
+      date: transaction.date,
+      categoryId: transaction.categoryId,
+      payeeName: displayPayeeName,
+      cleanPayeeName: extractPayeeName(transaction.payeeName),
+      memo: transaction.memo,
+      import_payee_name_original: transaction.import_payee_name_original,
+    };
+  });
 };
 
 // todo refactor to have bulk inserts, updates and deletes
@@ -89,16 +96,22 @@ export const getUncategorizedTransactions = async (
     $or: [{ categoryId: null }, { categoryId: undefined }, { categoryId: "" }],
   }).sort({ date: -1 });
 
-  return localTransactions.map((transaction) => ({
-    uuid: transaction.uuid,
-    accountName: transaction.accountName,
-    amount: transaction.amount,
-    date: transaction.date,
-    categoryId: transaction.categoryId,
-    payeeName: transaction.payeeName,
-    cleanPayeeName: extractPayeeName(transaction.payeeName),
-    memo: transaction.memo,
-  }));
+  return localTransactions.map((transaction) => {
+    // Use import_payee_name_original as payeeName if available, otherwise use payeeName
+    const displayPayeeName = transaction.import_payee_name_original || transaction.payeeName;
+
+    return {
+      uuid: transaction.uuid,
+      accountName: transaction.accountName,
+      amount: transaction.amount,
+      date: transaction.date,
+      categoryId: transaction.categoryId,
+      payeeName: displayPayeeName,
+      cleanPayeeName: extractPayeeName(transaction.payeeName),
+      memo: transaction.memo,
+      import_payee_name_original: transaction.import_payee_name_original,
+    };
+  });
 };
 
 /**
