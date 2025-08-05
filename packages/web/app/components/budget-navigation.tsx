@@ -30,7 +30,7 @@ const BudgetNavigation = ({ budgets, loggedIn }: Props) => {
   };
 
   const getActiveClass = (budgetId: string) =>
-    `link ${currentBudgetId === budgetId ? "active" : ""}`;
+    `link ${currentBudgetId === budgetId ? "menu-active" : ""}`;
   return (
     <div className="navbar bg-base-100">
       <div className="navbar-start">
@@ -72,7 +72,7 @@ const BudgetNavigation = ({ budgets, loggedIn }: Props) => {
         </Link>
       </div>
       <div className="navbar-center hidden lg:flex">
-        <ul className="menu menu-horizontal px-1">
+        <ul className="menu menu-horizontal px-1 w-full">
           {budgets.map((budget) => (
             <li className="mr-6" key={budget.uuid}>
               <Link

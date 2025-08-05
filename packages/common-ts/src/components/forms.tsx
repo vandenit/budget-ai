@@ -1,14 +1,14 @@
 import React from 'react';
 
 // Reusable form field components
-export const FormField = ({ 
-    label, 
-    required = false, 
-    children 
-}: { 
-    label: string; 
-    required?: boolean; 
-    children: React.ReactNode; 
+export const FormField = ({
+    label,
+    required = false,
+    children
+}: {
+    label: string;
+    required?: boolean;
+    children: React.ReactNode;
 }) => (
     <div className="form-control">
         <label className="label">
@@ -44,69 +44,69 @@ export const NumberInput = ({
         max={max}
         value={value || ''}
         onChange={(e) => onChange(Number(e.target.value))}
-        className="input input-bordered w-full"
+        className="input w-full"
         placeholder={placeholder}
         required={required}
         inputMode="decimal"
     />
 );
 
-export const TextInput = ({ 
-    value, 
-    onChange, 
-    placeholder, 
-    required = false 
-}: { 
-    value: string; 
-    onChange: (value: string) => void; 
-    placeholder?: string; 
-    required?: boolean; 
+export const TextInput = ({
+    value,
+    onChange,
+    placeholder,
+    required = false
+}: {
+    value: string;
+    onChange: (value: string) => void;
+    placeholder?: string;
+    required?: boolean;
 }) => (
     <input
         type="text"
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="input input-bordered w-full"
+        className="input w-full"
         placeholder={placeholder}
         required={required}
     />
 );
 
-export const DateInput = ({ 
-    value, 
-    onChange, 
-    required = false 
-}: { 
-    value: string; 
-    onChange: (value: string) => void; 
-    required?: boolean; 
+export const DateInput = ({
+    value,
+    onChange,
+    required = false
+}: {
+    value: string;
+    onChange: (value: string) => void;
+    required?: boolean;
 }) => (
     <input
         type="date"
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="input input-bordered w-full"
+        className="input w-full"
         required={required}
     />
 );
 
-export const SelectInput = ({ 
-    value, 
-    onChange, 
-    options, 
-    placeholder, 
-    required = false 
-}: { 
-    value: string; 
-    onChange: (value: string) => void; 
-    options: { value: string; label: string }[]; 
-    placeholder?: string; 
-    required?: boolean; 
+export const SelectInput = ({
+    value,
+    onChange,
+    options,
+    placeholder,
+    required = false
+}: {
+    value: string;
+    onChange: (value: string) => void;
+    options: { value: string; label: string }[];
+    placeholder?: string;
+    required?: boolean;
 }) => (
     <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="select select-bordered w-full"
+        className="select w-full"
         required={required}
     >
         {placeholder && <option value="">{placeholder}</option>}

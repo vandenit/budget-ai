@@ -37,7 +37,6 @@ export default function TransactionsPageWithTabs({
 
     const uncategorizedCount = uncategorizedTransactions.length;
     const unapprovedCount = unapprovedTransactions.length;
-
     return (
         <div className="space-y-6">
             {/* Tab Navigation */}
@@ -45,8 +44,8 @@ export default function TransactionsPageWithTabs({
                 <div className="flex gap-2">
                     <button
                         className={`inline-flex items-center gap-3 px-6 py-3 text-sm font-medium rounded-lg transition-all duration-200 relative ${activeTab === 'uncategorized'
-                                ? 'bg-blue-100 text-blue-800 border border-blue-200 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-800 shadow-sm'
-                                : 'text-slate-600 hover:text-slate-800 hover:bg-slate-50 dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-slate-800'
+                            ? 'bg-blue-100 text-blue-800 border border-blue-200 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-800 shadow-sm'
+                            : 'text-slate-600 hover:text-slate-800 hover:bg-slate-50 dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-slate-800'
                             }`}
                         onClick={() => setActiveTab('uncategorized')}
                     >
@@ -66,8 +65,8 @@ export default function TransactionsPageWithTabs({
 
                     <button
                         className={`inline-flex items-center gap-3 px-6 py-3 text-sm font-medium rounded-lg transition-all duration-200 relative ${activeTab === 'unapproved'
-                                ? 'bg-blue-100 text-blue-800 border border-blue-200 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-800 shadow-sm'
-                                : 'text-slate-600 hover:text-slate-800 hover:bg-slate-50 dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-slate-800'
+                            ? 'bg-blue-100 text-blue-800 border border-blue-200 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-800 shadow-sm'
+                            : 'text-slate-600 hover:text-slate-800 hover:bg-slate-50 dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-slate-800'
                             }`}
                         onClick={() => setActiveTab('unapproved')}
                     >
@@ -88,7 +87,7 @@ export default function TransactionsPageWithTabs({
             </div>
 
             {/* Tab Content */}
-            <div className="tab-content">
+            <div >
                 {activeTab === 'uncategorized' && (
                     <UncategorisedTransactionsContent
                         budgetUuid={budgetUuid}
