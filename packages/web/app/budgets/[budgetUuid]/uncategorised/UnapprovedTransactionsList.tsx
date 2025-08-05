@@ -120,6 +120,7 @@ export default function UnapprovedTransactionsList({
     // Convert transactions to format compatible with TransactionCard
     const convertToCardFormat = (transaction: UnapprovedTransaction): UnapprovedTransactionForCard => ({
         ...transaction,
+        cleanPayeeName: transaction.clean_payee_name,
         memo: transaction.memo || `Transaction ID: ${transaction.transaction_id}`
     });
 

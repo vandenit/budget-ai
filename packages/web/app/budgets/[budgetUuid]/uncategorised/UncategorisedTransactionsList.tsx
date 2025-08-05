@@ -166,7 +166,8 @@ export default function UncategorisedTransactionsList({
     // Convert transactions to format compatible with TransactionCard
     const convertToCardFormat = (transaction: SuggestedTransaction): SuggestedTransactionForCard => ({
         ...transaction,
-        memo: `Transaction ID: ${transaction.transaction_id}`
+        cleanPayeeName: transaction.clean_payee_name,
+        memo: transaction.memo || `Transaction ID: ${transaction.transaction_id}`
     });
 
     // Count statistics for filter badges

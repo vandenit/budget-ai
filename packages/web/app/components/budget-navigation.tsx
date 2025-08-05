@@ -17,7 +17,7 @@ const BudgetNavigation = ({ budgets, loggedIn }: Props) => {
 
   // Extract the sub-route from current pathname to preserve it when switching budgets
   const getSubRoute = () => {
-    if (pathname === "/") return "";
+    if (!pathname || pathname === "/") return "";
 
     // Match patterns like /budgets/[uuid]/subpath
     const match = pathname.match(/^\/budgets\/[^\/]+\/(.+)$/);

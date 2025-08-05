@@ -7,6 +7,7 @@ export const mockTransactions = [
     categoryId: "1",
     amount: 100,
     cleanPayeeName: "mock payee",
+    memo: "test memo 1",
   },
   {
     id: "1",
@@ -14,6 +15,7 @@ export const mockTransactions = [
     categoryId: "1",
     amount: 200,
     cleanPayeeName: "mock payee 2",
+    memo: "test memo 2",
   },
 ];
 

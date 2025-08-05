@@ -50,6 +50,10 @@ const insertOrUpdateMissingTransaction = async (
   categories: Category[],
   budgetId: string
 ) => {
+  // Log available fields for research
+  console.log("YNAB Transaction fields:", Object.keys(ynabTransaction));
+  console.log("Sample transaction:", JSON.stringify(ynabTransaction, null, 2));
+
   const categoryId = categories.find(
     (category) => category.uuid === ynabTransaction.category_id
   )?._id;

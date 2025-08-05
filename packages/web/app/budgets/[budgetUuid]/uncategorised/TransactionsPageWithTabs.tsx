@@ -9,6 +9,7 @@ import { SuggestedTransaction } from './UncategorisedTransactionsContent';
 interface UnapprovedTransaction {
     transaction_id: string;
     payee_name: string;
+    clean_payee_name?: string;
     amount: number;
     date: string;
     memo: string;

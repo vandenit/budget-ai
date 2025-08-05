@@ -4,12 +4,14 @@ import { TransactionAmount } from './transaction-amount';
 import { TransactionBadge, CategoryBadge, BadgeType } from './transaction-badge';
 import { CategoryEditor } from './category-editor';
 import { FaEdit, FaTrash, FaCheck } from 'react-icons/fa';
+import { PayeeTooltip } from './payee-tooltip';
 
 // Base transaction interface that all transaction types should extend
 export interface BaseTransaction {
   amount: number;
   payee_name?: string;
   payeeName?: string;
+  cleanPayeeName?: string;
   date: string;
   memo?: string;
   id?: string;
@@ -91,7 +93,11 @@ export function TransactionCard<T extends BaseTransaction>({
     }
   };
 
-  const payeeName = transaction.payee_name || transaction.payeeName || 'Unknown Payee';
+  // Get clean payee name for display - prefer clean name if available
+  const payeeName = transaction.cleanPayeeName ||
+                   transaction.payee_name ||
+                   transaction.payeeName ||
+                   'Unknown Payee';
 
   return (
     <div
@@ -100,9 +106,11 @@ export function TransactionCard<T extends BaseTransaction>({
       {/* Left section - Payee and badges */}
       <div className="flex-1 min-w-0">
         <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-2">
-          <div className="font-semibold text-lg dark:text-white truncate">
-            {payeeName}
-          </div>
+          <PayeeTooltip
+            cleanPayeeName={payeeName}
+            fullPayeeName={transaction.payee_name || transaction.payeeName}
+            className="flex-1 min-w-0"
+          />
 
           {/* Status badge */}
           {statusBadge && (
