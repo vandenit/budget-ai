@@ -195,7 +195,7 @@ export const getAllCachedAISuggestionsForBudget = async (budgetId: string) => {
 
   return transactions.map((transaction) => ({
     transaction_id: transaction.uuid,
-    payee_name: transaction.payeeName ?? "",
+    payee_name: transaction.import_payee_name_original || transaction.payeeName || "",
     suggested_category_name: transaction.ai_suggested_category ?? "",
     confidence: transaction.ai_suggestion_confidence ?? 0.8,
     cached_at: transaction.ai_suggestion_date ?? new Date(),
