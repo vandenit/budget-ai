@@ -95,9 +95,9 @@ export function TransactionCard<T extends BaseTransaction>({
 
   // Get clean payee name for display - prefer clean name if available
   const payeeName = transaction.cleanPayeeName ||
-                   transaction.payee_name ||
-                   transaction.payeeName ||
-                   'Unknown Payee';
+    transaction.payee_name ||
+    transaction.payeeName ||
+    'Unknown Payee';
 
   return (
     <div
@@ -122,10 +122,16 @@ export function TransactionCard<T extends BaseTransaction>({
           )}
         </div>
 
-        {/* Transaction ID or memo */}
+        {/*  memo */}
         {showMemo && transaction.memo && (
           <div className="text-sm text-gray-500 dark:text-gray-400 truncate">
             {transaction.memo}
+          </div>
+        )}
+        {/* transaction id*/}
+        {transaction.id && (
+          <div className="text-sm text-gray-500 dark:text-gray-400 truncate">
+            {transaction.id}
           </div>
         )}
       </div>
