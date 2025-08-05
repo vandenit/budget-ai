@@ -132,7 +132,7 @@ export const TransactionFilters: React.FC<TransactionFiltersProps> = ({
               {sortOptions.map((option) => (
                 <li key={option.value}>
                   <button
-                    className={sortBy === option.value ? 'active' : ''}
+                    className={sortBy === option.value ? 'menu-active' : ''}
                     onClick={() => onSortChange(option.value)}
                   >
                     {option.emoji && <span>{option.emoji}</span>}

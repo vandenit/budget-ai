@@ -49,7 +49,7 @@ const MonthTotalOverview = ({
           </div>
           <div className="w-full md:w-1/2 lg:w-1/2">
             <div className="flex justify-between items-center mb-4">
-              <div className="tabs tabs-boxed justify-center">
+              <div className="tabs tabs-box justify-center">
                 <button
                   className={`tab ${selectedTab === "categories" ? "tab-active" : ""}`}
                   onClick={() => setSelectedTab("categories")}
