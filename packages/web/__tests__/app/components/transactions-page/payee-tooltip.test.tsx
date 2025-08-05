@@ -60,5 +60,30 @@ describe('PayeeTooltip', () => {
 
     const payeeElement = screen.getByText('PayPal');
     expect(payeeElement).toHaveClass('cursor-help');
+    expect(payeeElement).toHaveClass('text-left');
+  });
+
+  it('should have consistent left alignment with and without tooltip', () => {
+    const { rerender } = render(
+      <PayeeTooltip
+        cleanPayeeName="PayPal"
+        fullPayeeName="PayPal (Europe) S.a r.l. et Cie, S. Domiciliëring 1043588586390 PAYPAL"
+      />
+    );
+
+    // With tooltip
+    let payeeElement = screen.getByText('PayPal');
+    expect(payeeElement).toHaveClass('text-left');
+
+    // Without tooltip (same payee names)
+    rerender(
+      <PayeeTooltip
+        cleanPayeeName="PayPal"
+        fullPayeeName="PayPal"
+      />
+    );
+
+    payeeElement = screen.getByText('PayPal');
+    expect(payeeElement).toHaveClass('text-left');
   });
 });

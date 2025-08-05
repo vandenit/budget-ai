@@ -12,7 +12,7 @@ export function PayeeTooltip({ cleanPayeeName, fullPayeeName, className = '' }: 
 
   if (!shouldShowTooltip) {
     return (
-      <div className={`font-semibold text-lg dark:text-white truncate ${className}`}>
+      <div className={`font-semibold text-lg dark:text-white truncate text-left ${className}`}>
         {cleanPayeeName}
       </div>
     );
@@ -20,7 +20,7 @@ export function PayeeTooltip({ cleanPayeeName, fullPayeeName, className = '' }: 
 
   return (
     <div className={`tooltip tooltip-top ${className}`} data-tip={fullPayeeName}>
-      <div className="font-semibold text-lg dark:text-white truncate cursor-help">
+      <div className="font-semibold text-lg dark:text-white truncate cursor-help text-left">
         {cleanPayeeName}
       </div>
     </div>
