@@ -41,7 +41,7 @@
     "sonner": "^2.0.1",
     "tailwind-merge": "^3.0.2",
     "tailwindcss-animate": "^1.0.7",
-    "vite": "^6.1.6"
+    "vite": "^6.3.6"
   },
   "devDependencies": {
     "@shadcn/ui": "^0.0.4",
