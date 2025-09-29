@@ -316,7 +316,9 @@ def apply_need_category_spending(daily_projection, category, target, current_bal
             effective_balance = max(0, current_balance - scheduled_amount)
             if effective_balance > 0:
                 apply_transaction(daily_projection, date_str, effective_balance, category["name"], "Current Month Balance")
-            elif remaining_amount > 0:
+            elif remaining_amount > 0 and global_overall_left > 0:
+                # Only add current month target if there's still funding needed (goal_overall_left > 0)
+                # If goal_overall_left is 0, the goal is fully funded and no more spending is expected
                 apply_transaction(daily_projection, date_str, remaining_amount, category["name"], "Current Month Target")
             continue
 
