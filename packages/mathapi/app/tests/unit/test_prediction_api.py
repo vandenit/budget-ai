@@ -833,3 +833,47 @@ def test_current_month_salary_prediction_with_balance(base_projection):
     assert len(next_month_changes) == 1, "Should have salary entry for next month 4th"
     assert next_month_changes[0]["amount"] == -7348.21, "Next month salary should use full target amount"
     assert next_month_changes[0]["reason"] == "Future Month Target", "Next month should be marked as Future Month Target"
+
+
+def test_current_month_fully_spent_category(base_projection):
+    """Test that fully spent categories (goal_overall_left = 0) don't add current month targets."""
+    today = datetime.now().date()
+
+    category = {
+        "name": "Internet tools",
+        "balance": 0,  # Fully spent category
+        "target": {
+            "goal_type": "NEED",
+            "goal_target": 116000,  # €116 (in milliunits)
+            "goal_cadence": 1,
+            "goal_cadence_frequency": 1,
+            "goal_day": 1,
+            "goal_target_month": None,
+            "goal_overall_left": 0  # Fully funded/spent - no more funding needed
+        }
+    }
+
+    apply_need_category_spending(
+        base_projection,
+        category,
+        category["target"],
+        0,  # current_balance (fully spent)
+        116.0,  # target_amount (in regular units)
+        30,  # days_ahead
+        0  # global_overall_left (fully funded)
+    )
+
+    # Check current month - should have NO entries since category is fully spent
+    current_month_date = today.replace(day=1).isoformat()
+    current_month_changes = [c for c in base_projection[current_month_date]["changes"]
+                  if c["category"] == "Internet tools"]
+    assert len(current_month_changes) == 0, "Fully spent category should not have current month target"
+
+    # Check next month - should still have future month target
+    next_month = (today.replace(day=1) + timedelta(days=32)).replace(day=1)
+    next_month_date = next_month.isoformat()
+    next_month_changes = [c for c in base_projection[next_month_date]["changes"]
+                   if c["category"] == "Internet tools"]
+    assert len(next_month_changes) == 1, "Should have future month target for next month"
+    assert next_month_changes[0]["amount"] == -116.0, "Next month should use full target amount"
+    assert next_month_changes[0]["reason"] == "Future Month Target", "Next month should be marked as Future Month Target"
