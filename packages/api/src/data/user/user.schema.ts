@@ -16,6 +16,11 @@ const userSchema = new Schema({
     preferredBudgetUuid: String,
   },
   syncDate: Date,
+  // End-to-end encryption
+  encryption: {
+    publicKey: String, // User's RSA public key (PEM format)
+    version: { type: Number, default: 1 }, // Encryption version for future upgrades
+  },
 });
 
 const User = mongoose.models.User || model("User", userSchema);

@@ -25,6 +25,10 @@ export type UserType = {
   settings: {
     preferredBudgetUuid: string;
   };
+  encryption?: {
+    publicKey?: string;
+    version?: number;
+  };
 };
 
 export const createOrUpdateUser = async ({
@@ -159,4 +163,23 @@ export const updateSyncDate = async (user: UserType, date: Date) => {
 export const clearYnabConnection = async (user: UserType) => {
   connectDb();
   await User.updateOne({ _id: user._id }, { ynab: undefined });
+};
+
+/**
+ * Save user's encryption public key
+ */
+export const saveUserPublicKey = async (
+  authId: string,
+  publicKey: string
+): Promise<void> => {
+  await connectDb();
+  console.log(`saving public key for user ${authId}`);
+  await User.updateOne(
+    { authId },
+    {
+      "encryption.publicKey": publicKey,
+      "encryption.version": 1,
+      updatedAt: new Date(),
+    }
+  );
 };

@@ -28,6 +28,8 @@ spec:
           envFrom:
             - secretRef:
                 name: budget-api-dev-secrets
+            - secretRef:
+                name: budget-api-encryption-secret
             - configMapRef:
                 name: budget-api-dev-config
       imagePullSecrets:

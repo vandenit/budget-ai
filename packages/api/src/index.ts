@@ -11,6 +11,7 @@ import userRoutes from "./routes/userRoutes";
 import syncRoutes from "./routes/syncRoutes";
 import simulationRoutes from "./routes/simulation.routes";
 import scheduledTransactionRoutes from "./routes/scheduledTransactions";
+import encryptionRoutes from "./routes/encryptionRoutes";
 import { overrideConsoleLog } from "common-ts";
 
 overrideConsoleLog();
@@ -46,6 +47,9 @@ app.use("/simulations", checkJwt, simulationRoutes);
 
 // Add scheduled transaction routes
 app.use("/budgets", checkJwt, scheduledTransactionRoutes);
+
+// Add encryption routes
+app.use("/encryption", checkJwt, encryptionRoutes);
 
 // The error handler must be registered before any other error middleware and after all controllers
 Sentry.setupExpressErrorHandler(app);
