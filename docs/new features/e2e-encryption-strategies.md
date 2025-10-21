@@ -225,51 +225,106 @@ This approach sacrifices security for convenience. Not suitable for financial da
 
 ---
 
-## Recommendation: Strategy 2 (Hybrid Encryption)
+## Recommendation: Strategy 2 - Hybrid Encryption (Revised)
 
-### Why?
-1. **Best balance** of privacy and functionality
-2. **Amounts protected at rest** (encrypted in DB)
-3. **Analyses still work** (frontend sends plain data when needed)
-4. **Practical implementation** (not overly complex)
-5. **Acceptable security** for most threat models
+### The Pragmatic Approach: "Encryption at Rest + On-Demand Decryption"
+
+This is a practical middle ground that:
+- Protects amounts at rest in database
+- Allows backend to perform analyses when needed
+- Maintains user privacy in normal operation
+- Doesn't require complex client-side calculations
+
+### Why This Approach?
+1. **Amounts protected at rest** (encrypted in DB)
+2. **Analyses work cleanly** (no messy data transfer)
+3. **Practical implementation** (not overly complex)
+4. **Acceptable security** for most threat models
+5. **Admin cannot casually read data** (would need to intercept requests)
+
+### Key Design Decisions
+
+#### Private Key Management
+- **Private key NEVER stored in database**
+- Private key stays in browser (sessionStorage)
+- Only sent to server when user explicitly requests analysis
+- Encrypted with server's public key during transit
+
+#### Server-Side Private Key
+- Server generates its own RSA key pair
+- Server private key stored in Kubernetes secret (admin can read, but that's OK)
+- Used only to decrypt user's private key during analysis requests
+- Never logged or exposed
+
+#### Security Model
+```
+At Rest (Database):
+- Amounts encrypted with user's public key
+- User's private key: NOT stored
+- Server's private key: in Kubernetes secret
+
+During Analysis Request:
+- User sends: encrypted private key (encrypted with server's public key)
+- Server decrypts: user's private key (using server's private key)
+- Server decrypts: amounts (using user's private key)
+- Server performs: analysis
+- Server forgets: user's private key (cleared from memory)
+
+Threat Model:
+✅ Protects against: DB breach, backup theft, casual admin snooping
+✅ Protects against: Network interception (HTTPS)
+⚠️ Does NOT protect against: Compromised server, malicious admin
+⚠️ Does NOT protect against: Logging of private keys (must be careful)
+```
 
 ### Implementation Phases
 
 #### Phase 1: Core Infrastructure
-- [ ] Generate RSA/ECDH key pairs on first login
-- [ ] Store private key in browser sessionStorage
-- [ ] Store public key in user document
-- [ ] Implement hybrid encryption (AES + ECDH)
+- [ ] Generate RSA key pair on first login (frontend)
+- [ ] Store private key in browser sessionStorage (never leave browser)
+- [ ] Store public key in user document (MongoDB)
+- [ ] Generate server RSA key pair (stored in Kubernetes secret)
+- [ ] Implement RSA-OAEP encryption for private key transit
 
 #### Phase 2: Database Encryption
 - [ ] Update transaction schema for encrypted amounts
 - [ ] Update category schema for encrypted amounts
 - [ ] Update account schema for encrypted balances
-- [ ] YNAB sync encrypts amounts with public key
+- [ ] YNAB sync encrypts amounts with user's public key
 
 #### Phase 3: Frontend Decryption
-- [ ] Decrypt amounts on frontend
+- [ ] Decrypt amounts on frontend (using private key from sessionStorage)
 - [ ] Display decrypted data to user
 - [ ] Cache decrypted data in sessionStorage
 
 #### Phase 4: Analysis Flow
 - [ ] Create "analysis request" endpoint
-- [ ] Frontend sends plain amounts for analysis
+- [ ] Frontend sends encrypted private key (encrypted with server's public key)
+- [ ] Backend decrypts private key (using server's private key)
+- [ ] Backend decrypts amounts (using user's private key)
 - [ ] Backend performs analysis
+- [ ] Backend clears private key from memory
 - [ ] Return results to frontend
 
 #### Phase 5: AI Integration
-- [ ] AI categorization receives plain amounts
+- [ ] AI categorization receives decrypted amounts (server-side)
 - [ ] AI API called with decrypted data
 - [ ] Results returned to frontend
 - [ ] Frontend stores encrypted category
 
-#### Phase 6: Testing & Audit
+#### Phase 6: Logging & Security
+- [ ] Verify private keys are NEVER logged
+- [ ] Verify request bodies are NOT logged
+- [ ] Verify response bodies are NOT logged
+- [ ] Log only: user, action, timestamp (metadata)
+- [ ] Code review for accidental logging
+
+#### Phase 7: Testing & Validation
 - [ ] Verify amounts encrypted in DB
-- [ ] Verify private key never sent to backend
-- [ ] Audit what data is sent for analysis
+- [ ] Verify private key never stored in DB
+- [ ] Verify private key cleared from memory after use
 - [ ] Performance testing
+- [ ] Security audit of logging
 
 ---
 
@@ -279,16 +334,49 @@ This approach sacrifices security for convenience. Not suitable for financial da
 - ✅ Amounts at rest in database
 - ✅ Amounts in backups
 - ✅ Historical data from DB breaches
+- ✅ User's private key (never stored, only in browser)
+- ✅ Casual admin snooping (would need to intercept requests)
 
 ### What's NOT Protected
 - ⚠️ Amounts during analysis requests (but only when user initiates)
 - ⚠️ Metadata (payee, category, memo)
 - ⚠️ Amounts in browser memory (while decrypted)
+- ⚠️ Server private key (admin can read from Kubernetes secret, but that's expected)
 
 ### Threat Model
 - ✅ Protects against: DB admin reading data, DB breaches, backup theft
-- ⚠️ Does NOT protect against: compromised browser, malicious frontend code, HTTPS interception
-- ⚠️ Does NOT protect against: server-side analysis requests (by design)
+- ✅ Protects against: Casual snooping by admins
+- ✅ Protects against: Network interception (HTTPS)
+- ⚠️ Does NOT protect against: Compromised server, malicious admin
+- ⚠️ Does NOT protect against: Malicious frontend code
+- ⚠️ Does NOT protect against: Logging of private keys (must be careful)
+
+### Admin Access Model
+```
+Admin can read:
+- Server private key (from Kubernetes secret) ✅ Expected
+- Encrypted amounts in DB ✅ But cannot decrypt
+- Encrypted private keys in requests ⚠️ But only if intercepting
+
+Admin CANNOT read:
+- User's private key (never stored) ✅
+- Decrypted amounts (unless intercepting request) ✅
+- User's data (without user's private key) ✅
+```
+
+### Critical: Logging Safety
+**MUST NOT LOG:**
+- Request bodies (contains encrypted private key)
+- Response bodies (contains decrypted amounts)
+- Private keys in any form
+- Decrypted amounts
+
+**CAN LOG:**
+- User ID
+- Action type (e.g., "analysis_request")
+- Timestamp
+- HTTP status code
+- Error messages (without sensitive data)
 
 ---
 
@@ -316,10 +404,68 @@ This approach sacrifices security for convenience. Not suitable for financial da
 
 ---
 
+## Kubernetes Secret Setup (Phase 1)
+
+### Generate Server Key Pair
+```bash
+# Generate RSA private key
+openssl genrsa -out server-private.pem 2048
+
+# Generate public key
+openssl rsa -in server-private.pem -pubout -out server-public.pem
+
+# Convert to base64 for Kubernetes secret
+cat server-private.pem | base64 -w 0
+```
+
+### Create Kubernetes Secret
+```yaml
+# kube/config/dev/api-encryption-secret.yml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: budget-api-encryption-secret
+  namespace: dev
+type: Opaque
+data:
+  SERVER_PRIVATE_KEY: <base64-encoded-private-key>
+  SERVER_PUBLIC_KEY: <base64-encoded-public-key>
+```
+
+### Load in API
+```typescript
+// packages/api/src/encryption/server-keys.ts
+import fs from 'fs';
+
+export function getServerPrivateKey(): string {
+  const key = process.env.SERVER_PRIVATE_KEY;
+  if (!key) {
+    throw new Error('SERVER_PRIVATE_KEY not configured');
+  }
+  return key;
+}
+
+export function getServerPublicKey(): string {
+  const key = process.env.SERVER_PUBLIC_KEY;
+  if (!key) {
+    throw new Error('SERVER_PUBLIC_KEY not configured');
+  }
+  return key;
+}
+```
+
+### Important Notes
+- Server private key is in Kubernetes secret (admin can read, expected)
+- Server private key is ONLY used to decrypt user's private key
+- User's private key is NEVER stored in database
+- User's private key is ONLY sent during analysis requests
+- Must ensure private keys are never logged
+
 ## Next Steps
-1. Decide on Strategy 2 (Hybrid Encryption)
-2. Design detailed key management flow
-3. Plan database schema changes
-4. Implement Phase 1 (Core Infrastructure)
-5. Test with real YNAB data
+1. ✅ Finalize Strategy 2 (Hybrid Encryption with On-Demand Decryption)
+2. [ ] Design detailed key management flow
+3. [ ] Plan database schema changes
+4. [ ] Implement Phase 1 (Core Infrastructure)
+5. [ ] Test with real YNAB data
+6. [ ] Security audit of logging
 
