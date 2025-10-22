@@ -5,7 +5,7 @@ import { extractPayeeName } from "./utils";
 
 export type NewOrUpdatedTransaction = {
   accountName: string;
-  amount: number;
+  amount: string; // Encrypted with user's public key (RSA-OAEP)
   date: string;
   categoryId: string | undefined | null;
   payeeName: string | undefined | null;

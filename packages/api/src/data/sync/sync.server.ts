@@ -2,8 +2,10 @@ import {
   UserType,
   findNonSyncedUsers,
   updateSyncDate,
+  getUserByAuthId,
 } from "../user/user.server";
 import { syncYnabUser } from "../ynab/ynab.server";
+import { ensureUserEncryptionKey } from "../encryption/encryption.server";
 
 export const syncBudgetData = async (): Promise<number> => {
   const users = await findNonSyncedUsers();
@@ -15,7 +17,15 @@ export const syncBudgetData = async (): Promise<number> => {
 export const syncUser = async (user: UserType) => {
   try {
     if (user.ynab?.connection) {
-      await syncYnabUser(user);
+      // Ensure user has encryption key before syncing
+      const userWithEncryption = await ensureUserEncryptionKey(user);
+      if (!userWithEncryption.encryption?.publicKey) {
+        console.warn(
+          `Skipping sync for user ${user.authId}: encryption key generation failed`
+        );
+        return;
+      }
+      await syncYnabUser(userWithEncryption);
     }
     await updateSyncDate(user, new Date());
   } catch (exception) {

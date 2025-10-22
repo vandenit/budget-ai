@@ -12,7 +12,11 @@ const localTransactionSchema = new Schema({
     ref: "LocalBudget",
   },
   accountName: String,
-  amount: Number,
+  // Amount is encrypted with user's public key (RSA-OAEP)
+  amount: {
+    type: String, // Changed from Number to String (encrypted)
+    required: true,
+  },
   date: String,
   categoryId: {
     type: mongoose.Schema.Types.ObjectId,

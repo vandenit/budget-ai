@@ -8,6 +8,7 @@ import {
 } from "../budget/budget.server";
 import { UserType, clearYnabConnection } from "../user/user.server";
 import * as ynabApi from "./ynab-api"; // Import the missing ynapApi module
+import { encryptAmountForUser } from "../encryption/encryption.server";
 import {
   deleteCategory,
   findCategories,
@@ -48,7 +49,8 @@ type YnabBudgetType = {
 const insertOrUpdateMissingTransaction = async (
   ynabTransaction: ynab.TransactionDetail,
   categories: Category[],
-  budgetId: string
+  budgetId: string,
+  user: UserType
 ) => {
   // Log available fields for research
   console.log("YNAB Transaction fields:", Object.keys(ynabTransaction));
@@ -57,9 +59,13 @@ const insertOrUpdateMissingTransaction = async (
   const categoryId = categories.find(
     (category) => category.uuid === ynabTransaction.category_id
   )?._id;
+
+  // Encrypt amount with user's public key
+  const encryptedAmount = await encryptAmountForUser(ynabTransaction.amount, user);
+
   const newData: NewOrUpdatedTransaction = {
     accountName: ynabTransaction.account_name,
-    amount: ynabTransaction.amount,
+    amount: encryptedAmount, // Now encrypted
     date: ynabTransaction.date,
     categoryId,
     payeeName: ynabTransaction.payee_name,
@@ -75,13 +81,14 @@ const insertOrUpdateMissingTransaction = async (
 };
 
 const transactionToInsertOrUpdatePromise =
-  (budgetId: string, categories: Category[]) =>
+  (budgetId: string, categories: Category[], user: UserType) =>
   (transaction: ynab.TransactionDetail) =>
-    insertOrUpdateMissingTransaction(transaction, categories, budgetId);
+    insertOrUpdateMissingTransaction(transaction, categories, budgetId, user);
 
 const insertOrUpdateMissingTransactions = async (
   budgetId: string,
-  transactions: ynab.TransactionDetail[]
+  transactions: ynab.TransactionDetail[],
+  user: UserType
 ) => {
   try {
     console.log(
@@ -90,7 +97,8 @@ const insertOrUpdateMissingTransactions = async (
     const categories = await findCategories(budgetId);
     const promiseMapper = transactionToInsertOrUpdatePromise(
       budgetId,
-      categories
+      categories,
+      user
     );
     await Promise.all(transactions.map(promiseMapper));
     if (transactions.length > 0) {
@@ -172,7 +180,8 @@ const syncTransactions = async (user: UserType, budget: Budget) => {
   );
   await insertOrUpdateMissingTransactions(
     budget._id || "",
-    ynabTransactions.transactions
+    ynabTransactions.transactions,
+    user
   );
   await updateUserServerKnowledge({
     user,
