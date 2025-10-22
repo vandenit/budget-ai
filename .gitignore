@@ -51,3 +51,6 @@ __pycache__
 
 # MongoDB backups
 /backups/
+
+# scripts backups
+/scripts/backups/
