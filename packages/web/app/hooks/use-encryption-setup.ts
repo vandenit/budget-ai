@@ -32,8 +32,8 @@ export function useEncryptionSetup() {
       setError(null);
 
       const response = await apiGet('encryption/setup-status');
-      if (response) {
-        setSetupStatus(response);
+      if (response && typeof response === 'object') {
+        setSetupStatus(response as EncryptionSetupStatus);
       }
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to check encryption setup';

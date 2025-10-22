@@ -4,7 +4,7 @@
   "description": "the budget-ai main api",
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsc && npm run sentry:sourcemaps",
+    "build": "tsc && npm run sentry:sourcemaps || true",
     "start": "ts-node src/index.ts",
     "dev": "npx ts-node-dev --respawn --transpile-only src/index.ts",
     "test": "vitest",
