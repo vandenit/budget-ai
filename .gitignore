@@ -54,3 +54,6 @@ __pycache__
 
 # scripts backups
 /scripts/backups/
+
+
+api-encryption-secret.yml
