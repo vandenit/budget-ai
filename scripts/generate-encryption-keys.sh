@@ -26,9 +26,16 @@ openssl rsa -in "$PRIVATE_KEY_FILE" -pubout -out "$PUBLIC_KEY_FILE"
 PRIVATE_KEY=$(cat "$PRIVATE_KEY_FILE")
 PUBLIC_KEY=$(cat "$PUBLIC_KEY_FILE")
 
-# Encode to base64
-PRIVATE_KEY_BASE64=$(echo "$PRIVATE_KEY" | base64 -w 0)
-PUBLIC_KEY_BASE64=$(echo "$PUBLIC_KEY" | base64 -w 0)
+# Encode to base64 (compatible with both macOS and Linux)
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  # macOS
+  PRIVATE_KEY_BASE64=$(echo "$PRIVATE_KEY" | base64)
+  PUBLIC_KEY_BASE64=$(echo "$PUBLIC_KEY" | base64)
+else
+  # Linux
+  PRIVATE_KEY_BASE64=$(echo "$PRIVATE_KEY" | base64 -w 0)
+  PUBLIC_KEY_BASE64=$(echo "$PUBLIC_KEY" | base64 -w 0)
+fi
 
 echo ""
 echo "=========================================="
