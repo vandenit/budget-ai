@@ -36,8 +36,16 @@ export function EncryptionSetupProvider() {
     }
 
     if (!setupStatus.hasEncryption) {
-      console.log('Setting up encryption for user:', user.sub);
-      setupEncryption(user.sub);
+      console.log('🔐 Setting up encryption for user:', user.sub);
+      setupEncryption(user.sub).then((result) => {
+        if (result.success) {
+          console.log('✅ Encryption setup successful');
+        } else {
+          console.error('❌ Encryption setup failed:', result.error);
+        }
+      });
+    } else {
+      console.log('✅ User already has encryption set up');
     }
   }, [user, setupStatus, setupEncryption]);
 
