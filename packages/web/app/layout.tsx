@@ -8,7 +8,7 @@ import { findBudgets } from "./api/budget/budget.client";
 import { useEffect } from "react";
 import { overrideConsoleLog } from "common-ts";
 import { Toaster } from "@/components/ui/sonner";
-import { EncryptionSetupProvider } from "./components/encryption-setup-provider";
+import { LayoutClientWrapper } from "./components/layout-client-wrapper";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -31,10 +31,11 @@ export default async function RootLayout({
     <UserProvider>
       <html lang="en" data-theme="dark" className="dark">
         <body className="dark:bg-background dark:text-foreground">
-          <EncryptionSetupProvider />
-          <BudgetNavigation budgets={budgets} loggedIn={isLoggedIn} />
-          <main className="container mx-auto p-2">{children}</main>
-          <Toaster />
+          <LayoutClientWrapper>
+            <BudgetNavigation budgets={budgets} loggedIn={isLoggedIn} />
+            <main className="container mx-auto p-2">{children}</main>
+            <Toaster />
+          </LayoutClientWrapper>
         </body>
       </html>
     </UserProvider>
