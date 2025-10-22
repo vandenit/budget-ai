@@ -24,6 +24,9 @@ if (isSentryEnabled) {
       hideSourceMaps: true,
       disableLogger: true,
       automaticVercelMonitors: true,
+      eslint: {
+        ignoreDuringBuilds: true,
+      },
     }
   );
 }
