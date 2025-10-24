@@ -1,0 +1,27 @@
+{
+  "name": "mcp-server",
+  "version": "1.0.0",
+  "description": "MCP Server for Budget AI - allows conversational access to budget data",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "budget-mcp": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "tsx watch src/index.ts"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.4",
+    "common-ts": "*",
+    "dotenv": "^16.4.5",
+    "mongoose": "^8.9.5",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^20.12.12",
+    "tsx": "^4.7.1",
+    "typescript": "^5.4.5"
+  }
+}

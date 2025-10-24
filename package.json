@@ -8,11 +8,13 @@
     "build": "npm run build:web && npm run build:api",
     "build:web": "npm run build --workspace web",
     "build:api": "npm run build --workspace api",
+    "build:mcp": "npm run build --workspace mcp-server",
     "postbuild": "echo Build completed successfully!",
     "dev": "concurrently \"npm run dev:web\" \"npm run dev:api\" \"npm run dev:mathapi\"",
     "dev:web": "npm run dev --workspace web",
     "dev:api": "npm run dev --workspace api",
-    "dev:mathapi": "cd packages/mathapi && export FLASK_APP=app/app.py && export FLASK_ENV=development && flask run"
+    "dev:mathapi": "cd packages/mathapi && export FLASK_APP=app/app.py && export FLASK_ENV=development && flask run",
+    "dev:mcp": "npm run dev --workspace mcp-server"
   },
   "dependencies": {
     "concurrently": "^8.2.2",
