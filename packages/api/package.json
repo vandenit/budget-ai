@@ -8,7 +8,7 @@
     "start": "ts-node src/index.ts",
     "dev": "npx ts-node-dev --respawn --transpile-only src/index.ts",
     "test": "vitest",
-    "sentry:sourcemaps": "sentry-cli sourcemaps inject --org vanden-it --project budget-ai-api ./dist && sentry-cli sourcemaps upload --org vanden-it --project budget-ai-api ./dist"
+    "sentry:sourcemaps": "bash scripts/sentry-sourcemaps.sh"
   },
   "dependencies": {
     "@sentry/cli": "^2.38.2",
