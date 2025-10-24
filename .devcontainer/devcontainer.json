@@ -1,0 +1,72 @@
+{
+  "name": "Budget AI Development Environment",
+  "image": "mcr.microsoft.com/devcontainers/typescript-node:1-20-bullseye",
+
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {
+      "version": "latest",
+      "moby": true
+    },
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "20"
+    },
+    "ghcr.io/devcontainers/features/python:1": {
+      "version": "3.11"
+    }
+  },
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "ms-playwright.playwright",
+        "bradlc.vscode-tailwindcss"
+      ]
+    }
+  },
+
+  "forwardPorts": [
+    3000, 3001,
+    4000, 4001,
+    5000, 5001,
+    27017, 27018
+  ],
+
+  "portsAttributes": {
+    "3000": {
+      "label": "Web (Dev)",
+      "onAutoForward": "notify"
+    },
+    "3001": {
+      "label": "Web (Test)",
+      "onAutoForward": "notify"
+    },
+    "4000": {
+      "label": "API (Dev)"
+    },
+    "4001": {
+      "label": "API (Test)"
+    },
+    "5000": {
+      "label": "Math API (Dev)"
+    },
+    "5001": {
+      "label": "Math API (Test)"
+    },
+    "27017": {
+      "label": "MongoDB (Dev)"
+    },
+    "27018": {
+      "label": "MongoDB (Test)"
+    }
+  },
+
+  "postCreateCommand": "npm install && npm run setup:test && cd packages/web && npm run playwright:install chromium",
+
+  "remoteUser": "node",
+
+  "mounts": [
+    "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind"
+  ]
+}
