@@ -224,4 +224,5 @@ class BudgetApiClient {
 }
 
 export const apiClient = new BudgetApiClient();
+export { BudgetApiClient };
 export type { ApiError };

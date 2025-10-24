@@ -12,7 +12,9 @@
     "start": "node dist/index-api.js",
     "dev": "tsx watch src/index-api.ts",
     "start:db": "node dist/index.js",
-    "dev:db": "tsx watch src/index.ts"
+    "dev:db": "tsx watch src/index.ts",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.4",
@@ -24,6 +26,7 @@
   "devDependencies": {
     "@types/node": "^20.12.12",
     "tsx": "^4.7.1",
-    "typescript": "^5.4.5"
+    "typescript": "^5.4.5",
+    "vitest": "^3.2.4"
   }
 }
