@@ -1,0 +1,118 @@
+version: '3.8'
+
+services:
+  # MongoDB Test Database
+  mongodb-test:
+    image: mongo:6.0
+    container_name: budget-ai-mongodb-test
+    restart: unless-stopped
+    ports:
+      - "27018:27017"  # Use different port to avoid conflicts
+    environment:
+      MONGO_INITDB_DATABASE: budget_ai_test
+    volumes:
+      - mongodb-test-data:/data/db
+    networks:
+      - test-network
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # API Service for Testing
+  api-test:
+    build:
+      context: .
+      dockerfile: packages/api/Dockerfile
+      args:
+        SENTRY_DISABLED: "true"
+    container_name: budget-ai-api-test
+    ports:
+      - "4001:4000"  # Use different port for testing
+    environment:
+      NODE_ENV: test
+      PORT: 4000
+      MONGODB_URI: mongodb://mongodb-test:27017/budget_ai_test
+      SENTRY_DISABLED: "true"
+    env_file:
+      - ./packages/api/.env.test
+    depends_on:
+      mongodb-test:
+        condition: service_healthy
+    networks:
+      - test-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Math API Service for Testing
+  mathapi-test:
+    build:
+      context: .
+      dockerfile: packages/mathapi/Dockerfile
+    container_name: budget-ai-mathapi-test
+    ports:
+      - "5001:5000"  # Use different port for testing
+    environment:
+      PYTHONPATH: /app
+      FLASK_APP: app/app.py
+      FLASK_ENV: test
+      FLASK_DEBUG: 0
+      CORS_ORIGINS: http://localhost:3001
+      API_SERVICE_URL: http://api-test:4000
+      MONGODB_URI: mongodb://mongodb-test:27017/budget_ai_test
+    env_file:
+      - ./packages/mathapi/.env.test
+    depends_on:
+      mongodb-test:
+        condition: service_healthy
+      api-test:
+        condition: service_healthy
+    networks:
+      - test-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Web Service for Testing
+  web-test:
+    build:
+      context: .
+      dockerfile: packages/web/Dockerfile
+    container_name: budget-ai-web-test
+    ports:
+      - "3001:3000"  # Use different port for testing
+    environment:
+      NODE_ENV: test
+      API_URL: http://api-test:4000
+      MATH_API_URL: http://mathapi-test:5000
+      SENTRY_DISABLED: "true"
+      NEXT_PUBLIC_API_URL: http://localhost:4001
+      NEXT_PUBLIC_MATH_API_URL: http://localhost:5001
+    env_file:
+      - ./packages/web/.env.test
+    depends_on:
+      api-test:
+        condition: service_healthy
+      mathapi-test:
+        condition: service_healthy
+    networks:
+      - test-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  mongodb-test-data:
+    driver: local
+
+networks:
+  test-network:
+    driver: bridge

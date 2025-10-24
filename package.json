@@ -12,7 +12,14 @@
     "dev": "concurrently \"npm run dev:web\" \"npm run dev:api\" \"npm run dev:mathapi\"",
     "dev:web": "npm run dev --workspace web",
     "dev:api": "npm run dev --workspace api",
-    "dev:mathapi": "cd packages/mathapi && export FLASK_APP=app/app.py && export FLASK_ENV=development && flask run"
+    "dev:mathapi": "cd packages/mathapi && export FLASK_APP=app/app.py && export FLASK_ENV=development && flask run",
+    "test:e2e": "npm run test:e2e --workspace web",
+    "test:e2e:ui": "npm run test:e2e:ui --workspace web",
+    "docker:test:up": "docker-compose -f docker-compose.test.yml up -d",
+    "docker:test:down": "docker-compose -f docker-compose.test.yml down",
+    "docker:test:logs": "docker-compose -f docker-compose.test.yml logs -f",
+    "docker:test:clean": "docker-compose -f docker-compose.test.yml down -v",
+    "setup:test": "bash scripts/setup-test-env.sh"
   },
   "dependencies": {
     "concurrently": "^8.2.2",

@@ -7,6 +7,9 @@ node_modules
 .vscode
 # testing
 coverage
+test-results/
+playwright-report/
+playwright/.cache/
 
 # next.js
 .next/
@@ -27,6 +30,7 @@ yarn-error.log*
 
 # local env files
 .env*.local
+.env.test
 
 # vercel
 .vercel
